@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name RX621-rescue)(type Legacy)(uri ${KIPRJMOD}/RX621-rescue.lib)(options "")(descr ""))
+)
