@@ -14,8 +14,16 @@
       <Path>wait.h</Path>
       <Path>RX621_Cmausu.c</Path>
       <Path>Gyro.c</Path>
+      <Path>IR.c</Path>
+      <Path>IR.h</Path>
       <Path>DataFlash.c</Path>
       <Path>DataFlash.h</Path>
+      <Path>Motor.c</Path>
+      <Path>Motor.h</Path>
+      <Path>Queue.c</Path>
+      <Path>Queue.h</Path>
+      <Path>Encoder.h</Path>
+      <Path>Encoder.c</Path>
       <Path>wait.c</Path>
       <Path>printf_lib.h</Path>
       <Path>r_flash_api_rx.c</Path>
@@ -105,6 +113,10 @@
           <Path>DefaultBuild\r_flash_api_rx.obj</Path>
           <Path>DefaultBuild\DataFlash.obj</Path>
           <Path>DefaultBuild\printf_lib.obj</Path>
+          <Path>DefaultBuild\Encoder.obj</Path>
+          <Path>DefaultBuild\Motor.obj</Path>
+          <Path>DefaultBuild\Queue.obj</Path>
+          <Path>DefaultBuild\IR.obj</Path>
         </LinkOrder>
         <CommonOptions>
           <IncludePathForC>USBStack\CDC</IncludePathForC>

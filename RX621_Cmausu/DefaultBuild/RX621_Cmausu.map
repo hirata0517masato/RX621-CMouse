@@ -1,4 +1,4 @@
-Renesas Optimizing Linker (W3.03.00 )             28-May-2022 22:56:51
+Renesas Optimizing Linker (W3.03.00 )             13-Jun-2022 00:06:21
 
 *** Options ***
 
@@ -17,6 +17,10 @@ Renesas Optimizing Linker (W3.03.00 )             28-May-2022 22:56:51
 -input=DefaultBuild\r_flash_api_rx.obj
 -input=DefaultBuild\DataFlash.obj
 -input=DefaultBuild\printf_lib.obj
+-input=DefaultBuild\Encoder.obj
+-input=DefaultBuild\Motor.obj
+-input=DefaultBuild\Queue.obj
+-input=DefaultBuild\IR.obj
 -noprelink
 -output=DefaultBuild\RX621_Cmausu.abs
 -list=DefaultBuild\RX621_Cmausu.map
@@ -34,19 +38,19 @@ SECTION                            START      END         SIZE   ALIGN
 B_1
                                   00000004  00000066        63   1
 R_1
-                                  00000067  000000bb        55   1
+                                  00000067  000001c7       161   1
 B_2
-                                  000000bc  000000c1         6   2
+                                  000001c8  000001cd         6   2
 R_2
-                                  000000c2  000000c2         0   1
+                                  000001ce  00000bd5       a08   2
 B
-                                  000000c4  0000053f       47c   4
+                                  00000bd8  00001043       46c   4
 R
-                                  00000540  000007d7       298   4
+                                  00001044  00001327       2e4   4
 SU
-                                  000007d8  000008d7       100   4
+                                  00001328  00001427       100   4
 SI
-                                  000008d8  00000bd7       300   4
+                                  00001428  00001727       300   4
 PResetPRG
                                   fff80000  fff80030        31   1
 C_1
@@ -66,23 +70,23 @@ C$VTBL
 C$VECT
                                   fff80824  fff80c23       400   4
 D_1
-                                  fff80c24  fff80c78        55   1
+                                  fff80c24  fff80d84       161   1
 D_2
-                                  fff80c79  fff80c79         0   1
+                                  fff80d86  fff8178d       a08   2
 D
-                                  fff80c7c  fff80f13       298   4
+                                  fff81790  fff81a73       2e4   4
 P
-                                  fff80f14  fff864ea      55d7   1
+                                  fff81a74  fff88cc2      724f   1
 PIntPRG
-                                  fff864eb  fff86632       148   1
+                                  fff88cc3  fff88e0a       148   1
 W_1
-                                  fff86633  fff86633         0   1
+                                  fff88e0b  fff88e0b         0   1
 W_2
-                                  fff86633  fff86633         0   1
+                                  fff88e0b  fff88e0b         0   1
 W
-                                  fff86633  fff86633         0   1
+                                  fff88e0b  fff88e0b         0   1
 L
-                                  fff86634  fff866b4        81   4
+                                  fff88e0c  fff88e80        75   4
 $ADDR_C_FFFFFFA0
                                   ffffffa0  ffffffaf        10   1
 FIXEDVECT

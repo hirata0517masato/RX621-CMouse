@@ -12,6 +12,10 @@
 -input=DefaultBuild\r_flash_api_rx.obj
 -input=DefaultBuild\DataFlash.obj
 -input=DefaultBuild\printf_lib.obj
+-input=DefaultBuild\Encoder.obj
+-input=DefaultBuild\Motor.obj
+-input=DefaultBuild\Queue.obj
+-input=DefaultBuild\IR.obj
 -noprelink
 -output=DefaultBuild\RX621_Cmausu.abs
 -list=DefaultBuild\RX621_Cmausu.map

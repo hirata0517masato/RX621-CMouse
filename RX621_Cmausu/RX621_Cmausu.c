@@ -12,11 +12,15 @@
 #include "wait.h"
 #include "Gyro.h"
 #include "DataFlash.h"
+#include "Encoder.h"
+#include "Motor.h"
+#include "Queue.h"
+#include "IR.h"
 //#include "usb.h"
 
 #include "printf_lib.h"   /* printf2 関連処理    コンパイルおよびライブラリジェネレートオプションにてC99対応が必要  */
 
-#define PRINT /* 使用時は有効化すること*/
+//#define PRINT /* 使用時は有効化すること*/
 
 #ifndef PRINT
 	#define printf2(...)  
@@ -34,55 +38,103 @@ void CMT_init(void);
 void MTU0_init(void);
 void MTU1_init(void);
 
-
-void motor(float, float);
-void AD_update( void );
 void led(char);
-void ir(char);
 int get_sw(void);
-void ir_update(void);
 
-
+void maze_update(char,char,char);
+void maze_search_adachi(short,short);
+void shortest_path_search_fin(void);
+void remake_shortest_path_list_naname(void);
+void run_shortest_path_fin(char);
+	
 /* 定数設定 */
-#define	L1_PWM	PORT3.DR.BIT.B4       // CN2-4 : L1モーターPWM出力 
-#define	L2_PWM	PORT2.DR.BIT.B0       // CN2-16: L2モーターPWM出力 
+#define true 1
+#define false 0
 
-#define R1_PWM	PORT1.DR.BIT.B4       // CN2-10: R1モーターPWM出力
-#define R2_PWM	PORT2.DR.BIT.B4       // CN2-12: R2モーターPWM出力
+#define maze_d_max	9999
+#define H	16
+#define W	16
+#define Start_x  0
+#define Start_y  0
+#define Goal_x  3
+#define Goal_y  3
 
-#define AD_0	S12AD.ADDR0	     // CN3-9 : AN0(0～4069)
-#define AD_1	S12AD.ADDR1	     // CN3-10: AN1(0～4069)
-#define AD_2	S12AD.ADDR2	     // CN3-11 :AN2(0～4069)
-#define AD_3	S12AD.ADDR3	     // CN3-12 :AN3(0～4069)
-#define AD_4	S12AD.ADDR4	     // AN4(0～4069)
+#define r45  (24000)
+#define l45  (24000)
+#define r90  (44000)
+#define l90  (45000)
+#define r180  (-90000)
+#define s1 (181)
+#define s45 (120)
+#define h1 (90)
+#define rsls90 (195)
+#define sr90  (43500)
+#define sl90  (43800)
 
-#define Lenc	MTU7.TCNT	     //A:CN4-15 B:CN4-16
-#define Renc	MTU8.TCNT	     //A:CN4-13 B:CN4-14
-
-#define	LED_HIGH	PORTD.DR.BIT.B0 = 1	/* CN3-17 */
-#define	LED_LOW		PORTD.DR.BIT.B0 = 0	/* CN3-17 */
+#define r_cost 4
 
 //グローバル変数
-int s1,s2,s3,s4;
+short motor_stop_cnt = 0;
+char maze_w[H][W] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
+short maze_d[H][W][4] = {0};	//4方向分の重み
 
+char dx[4] = {0,1,0,-1},dy[4] = {-1,0,1,0};
+
+char my_x = Start_x,my_y = Start_y,my_angle = 1;//0:up 1:right 2:down 3:left
 
 /***********************************************************************/
 /* メインプログラム                                                    */
 /***********************************************************************/
 void main(void)
 {
-	//unsigned char c,buf[256];
-	volatile int i = 0;
+/*	unsigned char c,buf[256];
+	
  	float l=0,r=0;
 	int aa;
 	
 	uint8_t prog_buff[512] = "hello world RX621";
 	uint8_t read_buff[512];
 	
-
+*/
+	volatile int i = 0;
+	
 	ALL_init();//初期化
 	
 
+	while(1){
+		
+		//正面センサーに手をかざす
+		while((get_IR(0) < 30) || (get_IR(3) < 30)) nop();
+  		while((get_IR(0) > 30) || (get_IR(3) > 30)) nop();
+  		delay(1000);
+		
+		for(i = 1;i <= 8; i*= 2){
+			led(i);
+			delay(200);
+		}
+		led(0);
+		
+		maze_search_adachi(Goal_x,Goal_y);
+		 
+		maze_search_adachi(Start_x,Start_y);
+
+		shortest_path_search_fin();
+		//remake_shortest_path_list_naname();
+		
+		for(i = 1;i <= 8; i*= 2){
+			led(i);
+			delay(200);
+		}
+		led(0);
+		
+		run_shortest_path_fin(false);//not naname
+		//run_shortest_path_fin(true);//naname
+		
+		//スイッチ入力待ち
+		while(get_sw() == 0) nop();
+		while(get_sw() == 1) nop();
+	}
+	
 	/*
 	while(1){
 		printf2("input: ");
@@ -114,78 +166,6 @@ void main(void)
     }
 	*/
 	
-	printf2("FIN\n");
-//	while(1){
-//		 nop();
-//	}
-	
-
-	
-	/*
-	i = 1;
-	while(1){
-		led(i);
-		
-		i <<= 1;
-		if(i > 0x0f)i = 1;
-		
-		delay(250);
-	}
-	*/
-/*
-	l = -100;
-	r = 100;
-	while(1){
-		
-		printf2("L:%f \tR:%f\n",l,r);
-		motor(l,r);
-		
-		l += 0.1;
-		if( l > 100.0)l = -100;
-		r = - l;
-		
-		//for(i = 0; i < 500; i++);
-		
-	}
-	*/
-	
-
-	
-	while(1){
-		//delay(1000);
-
-		printf2("%ld\n",GyroSum_get());
-		
-		if(get_sw() == 1)GyroSum_reset();
-	}
-	
-
-/*
-	while(1){
-		//motor(10,10);
-		printf2("%d\t%d\n",Lenc,Renc);	
-		delay(250);
-	}
-*/
-
-
-
-	while(1){
-		delay(1);
-		printf2("%d\t%d\t%d\t%d\n",s1,s2,s3,s4);
-		
-		int p = 0;
-		
-		if(s1 > 30)p += 1;
-		if(s2 > 30)p += 2;
-		if(s3 > 30)p += 4;
-		if(s4 > 30)p += 8;
-		
-		led(p);
-			
-	}
-	
-	
  
 }
 
@@ -208,6 +188,27 @@ void ALL_init(){
 	MTU1_init();  //エンコーダの初期化
 	DataFlash_init();//データフラッシュの初期化
 	
+	led(0);
+	ir(0);
+	
+	//迷路の外周の確定壁を設定
+	//0
+  	for(int i = 0; i < W;i++)maze_w[0][i] |= 0x11;
+  	//1
+  	for(int i = 0; i < H;i++)maze_w[i][W-1] |= 0x22;
+  	//2
+  	for(int i = 0; i < W;i++)maze_w[H-1][i] |= 0x44;
+  	//3
+  	for(int i = 0; i < H;i++)maze_w[i][0] |= 0x88;
+  
+	//スタート地点の確定壁を設定
+  	maze_w[my_y][my_x] = 0xfd;//13;//15-2;
+  	maze_w[my_y+1][my_x] |= 0x11;
+  
+	//スイッチ入力待ち
+	while(get_sw() == 0) nop();
+	while(get_sw() == 1) nop();
+	
 	Gyro_init();	//ジャイロ、SPIの初期化 　注意：少し時間かかります 処理中はジャイロセンサーを動かさないこと
 
 	CMT_init();  // CMT0の初期化
@@ -215,8 +216,7 @@ void ALL_init(){
 	initSCI1(SPEED_9600);
 	//USB_init();  //USB CDCの初期化
 	
-	led(0);
-	ir(0);
+	led(1);
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -287,17 +287,7 @@ void AD_init(void)
 	
 }
 
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* 関 数 概 要：A/D値の更新                                                                         */
-/* 関 数 詳 細：S12AD.ADANS.WORD で設定されたポートをAD変換する                                     */
-/* 引       数：なし										    */
-/* 戻  り   値：なし										    */
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-void AD_update(void)
-{	
-	S12AD.ADCSR.BIT.ADST = 1;  	// A/D変換開始
-   	while(S12AD.ADCSR.BIT.ADST == 0); // 測定が終了するまで待つ
-}
+
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：CMT0(コンペアマッチタイマー)の初期化                                                */
@@ -367,6 +357,8 @@ void MTU0_init(void){
 	MTUA.TOER.BIT.OE4A = 1;  //
 	
 	MTUA.TSTR.BYTE = 0xc3;	// 11xx x011　カウンタの開始
+	
+  	motor(0,0);
 
 }
 
@@ -392,67 +384,11 @@ void MTU1_init(void){
 	PORTB.ICR.BIT.B5 = 1;
 
 	MTUB.TSTR.BYTE = 0x06;	// 0000 0110 カウンタの開始
+	
+	Encoder_reset();
 }
 		
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* 関 数 概 要：モーターのPWM設定											  			            */
-/* 関 数 詳 細：												                                   */
-/* 引       数：左モーターPWM、右モーターPWM	（-100.0から+100.0） 							    */
-/* 戻  り   値：なし										    									*/
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
-void motor(float duty_L, float duty_R){
-	
-    unsigned int dt_L, dt_R;
-	int L_PM = 0,R_PM = 0; // 0:プラス 1:マイナス
-	
-    if(duty_L >  100.0) duty_L =  100.0; // duty_Lを100以上にしない
-    if(duty_L < -100.0) duty_L = -100.0; // duty_Lを-100以下にしない
-    if(duty_R >  100.0) duty_R =  100.0;
-    if(duty_R < -100.0) duty_R = -100.0;
-	
-	
-	if(duty_L < 0.0){
-		L_PM = 1;
-		duty_L = -duty_L;
-	}
-	
-	/* デューティ比の算出 */
-   	dt_L = MTU1.TGRA * duty_L / 100.0;//  dt_L = 0.9445*50/100 = 0.5
-		 
-	/* デューティ比のオーバーフロー保護 */
-    if(dt_L >= MTU1.TGRA)   dt_L = MTU1.TGRA - 1;  // 
-		
-	if(L_PM == 0){
-		 /* デューティ比の設定 */
-   		 MTU0.TGRB = dt_L;
-   		 MTU1.TGRB = 0;
-	}else{
-		/* デューティ比の設定 */
-   		 MTU0.TGRB = 0;
-   		 MTU1.TGRB = dt_L;
-	}
-	
-	if(duty_R < 0.0){
-		R_PM = 1;
-		duty_R = -duty_R;
-	}
-	
-	/* デューティ比の算出 */
-   	dt_R = MTU3.TGRA * duty_R / 100.0;//  dt_R = 0.9445*50/100 = 0.5
-		 
-	/* デューティ比のオーバーフロー保護 */
-    if(dt_R >= MTU3.TGRA)   dt_R = MTU3.TGRA - 1;  // 
-		
-	if(R_PM == 0){
-		 /* デューティ比の設定 */
-   		 MTU3.TGRB = dt_R;
-   		 MTU4.TGRB = 0;
-	}else{
-		/* デューティ比の設定 */
-   		 MTU3.TGRB = 0;
-   		 MTU4.TGRB = dt_R;
-	}
-}
+
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：LED出力														  			            */
@@ -475,67 +411,8 @@ void led(char n){
 	else PORTA.DR.BIT.B3 = 0;
 }
 
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* 関 数 概 要：赤外線LED出力												  			            */
-/* 関 数 詳 細：												                                   */
-/* 引       数： 	3:LED4 2:LED3 1:LED2 0:LED1													    */
-/* 戻  り   値：なし										    									*/
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
-void ir(char n){
-	
-	if((n & 0x01) > 0)PORTD.DR.BIT.B0 = 1;
-	else PORTD.DR.BIT.B0 = 0;
-	
-	if((n & 0x02) > 0)PORTD.DR.BIT.B1 = 1;
-	else PORTD.DR.BIT.B1 = 0;
-	
-	if((n & 0x04) > 0)PORTD.DR.BIT.B2 = 1;
-	else PORTD.DR.BIT.B2 = 0;
-	
-	if((n & 0x08) > 0)PORTD.DR.BIT.B3 = 1;
-	else PORTD.DR.BIT.B3 = 0;
-}
 
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* 関 数 概 要：赤外線センサー値更新										  			            */
-/* 関 数 詳 細：												                                   */
-/* 引       数： なし																			    */
-/* 戻  り   値：なし										    									*/
-/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
-void ir_update(){
-	
-	static int num = 0;
-	static int s[4] = {0,0,0,0};
-	
-	AD_update();
-	
-	
-	switch(num){
-		case 0:	//front
-			s1 = AD_1 - s[0];
-			s4 = AD_4 - s[3];
-			
-			s[1] = AD_2;
-			s[2] = AD_3;
-			
-			ir(6);//0110
-			break;
-			
-		case 1://side
-			s2 = AD_2 - s[1];
-			s3 = AD_3 - s[2];
-			
-			s[0] = AD_1;
-			s[3] = AD_4;
-			
-			ir(9);// 1001
-			break;
-		
-	}
-	
-	num++;
-	if(num > 1)num = 0;
-}
+
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：スイッチ入力												  			            */
@@ -545,6 +422,652 @@ void ir_update(){
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 int get_sw(){
 	return (PORTA.PORT.BIT.B4 == 1)? 0: 1 ;
+}
+
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：迷路情報の更新											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 現在地のXY座標、方角															    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void maze_update(char x,char y,char angle){
+  if((maze_w[y][x]&0xf0) == 0xf0)return;
+
+  for(short i = -1; i < 3;i++){
+    short ii = (4 + angle+i)%4;
+    char nx = x+dx[ii], ny = y+dy[ii];
+
+    if((maze_w[y][x] & (1 << (4+ii))) == 0 ){
+      maze_w[y][x] |= 1 << (4+ii);
+      
+      switch(i){
+        case -1://L
+          if(get_IR(IR_L) > 30)maze_w[y][x] |= 1 << ii;
+          break;
+        case 0://S
+          if(get_IR(IR_FL) > 30)maze_w[y][x] |= 1 << ii;
+          break;
+        case 1://R
+          if(get_IR(IR_R) > 30)maze_w[y][x] |= 1 << ii; 
+          break;
+      }
+      if((0 <= nx && nx < W) && (0 <= ny && ny < H)){
+        maze_w[ny][nx] |= 1 << (4+(ii+2)%4);
+        if((maze_w[y][x] & (1 << ii)) != 0)maze_w[ny][nx] |= 1 << ((ii+2)%4);
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+void L_rotate(long long a){
+  Tmotor(-a);
+  my_angle = (4+my_angle-1)%4;
+}
+
+void R_rotate(long long a){
+  Tmotor(a);
+  my_angle = (4+my_angle+1)%4;
+}
+
+void L_curve(long long a,char flag){
+  ETmotor(-a,rsls90,flag);
+ 
+  my_angle = (4+my_angle-1)%4;
+}
+
+void R_curve(long long a ,char flag ){
+  ETmotor(a,rsls90,flag);
+  
+  my_angle = (4+my_angle+1)%4;
+}
+
+void S_run(int path,int powor, char non_stop,char kabe){
+  //GyroSum_reset();
+  ESmotor(path,powor,non_stop,kabe);
+  int cnt2 = 0;
+
+  if(!non_stop && kabe){
+   // GyroSum_reset();
+    while(500 < get_IR(IR_FL)){
+      if(get_IR(IR_FL) > 981){
+        Smotor(-20,true);
+
+        cnt2 = 0;
+      }else if(get_IR(IR_FL) < 981){
+        Smotor(+20,true);
+       
+        cnt2 = 0;
+      }else {
+        motor(0,0);
+        cnt2++;
+      }
+      if(cnt2 > 100)break;
+    }
+  }
+  motor(0,0);
+  //GyroSum_reset();
+}
+
+void S_run_kabe(int powor, char flag){//壁切れまで走行
+  int Lflag = 0,Rflag = 0;
+ 
+  while(1){
+    if(Lflag == 0){
+      if(get_IR(IR_L) > 400)Lflag = 1;
+    }else if(Lflag == 1){
+      if(get_IR(IR_L) < 150)break;
+    }
+
+    if(Rflag == 0){
+      if(get_IR(IR_R) > 400)Rflag = 1;
+    }else if(Rflag == 1){
+      if(get_IR(IR_R) < 200)break;
+    }
+    
+    Smotor(powor,flag);
+  }
+ 
+  ESmotor(35,powor,true,false);//35は更新する必要あり
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路探索											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 目的地のXY座標															    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void shortest_path_search(short target_x,short target_y){
+  queue_reset();
+  for(int i = 0; i < H;i++){
+    for(int j = 0;j < W; j++){
+      for(int k = 0; k < 4; k++){
+        maze_d[i][j][k] = maze_d_max;
+      }
+    }
+  }
+  for(int k = 0; k < 4; k++){
+    if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;
+  }
+  enqueue(target_x*100 + target_y);
+  
+  while(!queue_empty()){
+    int x = dequeue(),y;
+    y = x%100;
+    x /=100;
+
+    for(char i =0;i<4;i++){
+      char update_flag = 0;
+      int nx = x+dx[i],ny = y+dy[i];
+      if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) ){
+
+        short num = maze_d[y][x][i];
+        for(int k = 0; k < 4; k++){
+           
+          if(i == k){//S
+            if(maze_d[ny][nx][k] > num + 1){
+              update_flag = true;
+              maze_d[ny][nx][k] = num + 1;
+            }
+          }else if((i+2+4)%4 == k){//B
+            if(maze_d[ny][nx][k] > num+1 + r_cost*2){
+              update_flag = true;
+              maze_d[ny][nx][k] = num+1 + r_cost*2;
+            }
+          }else{// L or R
+            if(maze_d[ny][nx][k] > num+1 + r_cost){
+              update_flag = true;
+              maze_d[ny][nx][k] = num+1 + r_cost;
+            }
+          }
+        }
+        if(update_flag)enqueue(nx*100 + ny);
+      }
+    }
+  }
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路作成											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 目的地のXY座標															    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void make_shortest_path_list(short target_x,short target_y){
+  queue_reset();
+  short s_path = 0;
+  char x = my_x,y = my_y,angle = my_angle;
+  
+  while(x != target_x || y != target_y){
+    short num = maze_d[y][x][(angle+2)%4];
+    char n_num = 0;
+    char s_flag = 0;
+    int nx = x+dx[angle],ny = y+dy[angle];
+    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) ){
+      short next = maze_d[ny][nx][(angle+2)%4];
+      if(num == next+1){
+        n_num = (angle+2)%4;
+        num = next;
+        s_flag = true;
+      }
+    }
+
+    if(s_flag == false){
+      for(int i = 0;i < 4;i++){
+        if(i == (angle+2)%4){
+        }else{
+          short next = maze_d[y][x][i];
+          if(num > next){
+            n_num = i;
+            num = next;
+          }
+        }
+      }
+    }
+    
+    n_num = (n_num+2)%4;// 0 ~ 4
+    char ni = ((4 + n_num - ((4+angle-1)%4))%4) -1;// -1 ~ 2
+
+    if((maze_w[y][x] & (1 << (4+n_num))) == 0)break;//unknown
+    switch(ni){
+      case -1://L
+        if(s_path > 0){
+          enqueue(0);
+          enqueue(s_path);
+          s_path = 0;
+        }
+
+        enqueue(-1);
+        enqueue(1);
+
+        s_path += 1;
+        
+        angle = (4+angle-1)%4;
+        x += dx[n_num];
+        y += dy[n_num];
+        break;
+      case 0://S
+   
+        s_path +=1;
+        x += dx[n_num];
+        y += dy[n_num];
+        break;
+      case 1://R
+        if(s_path > 0){
+          enqueue(0);
+          enqueue(s_path);
+          s_path = 0;
+        }
+        
+        enqueue(1);
+        enqueue(1);
+
+        s_path += 1;
+         
+        angle = (4+angle+1)%4;
+        x += dx[n_num];
+        y += dy[n_num];
+        break;
+      case 2://B
+        if(s_path > 0){
+          enqueue(0);
+          enqueue(s_path);
+          s_path = 0;
+        }
+        
+        enqueue(2);
+        enqueue(1);
+
+        angle = (4+angle+2)%4;
+        break;
+    }
+  }
+ 
+  if(s_path > 0){
+    enqueue(0);
+    enqueue(s_path);
+    s_path = 0;
+   }
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路を走行									  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void run_shortest_path(){
+  GyroSum_reset();
+  Encoder_reset();
+  
+  int comand ,path_num;
+  
+  while(!queue_empty()){
+    comand = dequeue();path_num = dequeue();
+    switch(comand){
+      case -1://L
+        L_rotate(l90);
+        break;
+      case 0://S
+        if(path_num == 1)S_run(s1 * path_num,35,false,true);
+        else S_run(s1 * path_num,55,false,true);
+
+        switch(my_angle){
+          case 0:
+            my_y -= path_num;
+            break;
+          case 1:
+            my_x += path_num;
+            break;
+          case 2:
+            my_y += path_num;
+            break;
+          case 3:
+            my_x -= path_num;
+            break;
+        }
+        break;
+      case 1://R
+        R_rotate(r90);
+        break;
+      case 2://B
+        Tmotor(r180);
+        my_angle = (4+my_angle+2)%4;
+        break;
+    }
+  }
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：足立法で探索走行											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 目的地のXY座標															    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void maze_search_adachi(short target_x,short target_y){
+  GyroSum_reset();
+  Encoder_reset();
+
+  while(1){
+    maze_update(my_x,my_y,my_angle);
+    if((target_x != Goal_x || target_y != Goal_y) && (target_x != Start_x || target_y != Start_y)){
+      if((maze_w[target_y][target_x] & 0xf0) == 0xf0)break;      
+    }
+    if(target_x == my_x && target_y == my_y){
+      if(target_x == Start_x && target_y == Start_y){
+        Tmotor(r180);
+        my_angle = (4+my_angle+2)%4;
+      }
+      break;
+    }
+    shortest_path_search(target_x,target_y);
+    make_shortest_path_list(target_x,target_y);
+    run_shortest_path();
+  }
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路探索（最終版）											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void shortest_path_search_fin(){
+  queue_reset();
+  for(int i = 0; i < H;i++){
+    for(int j = 0;j < W; j++){
+      for(int k = 0; k < 4; k++){
+        maze_d[i][j][k] = maze_d_max;
+      }
+    }
+  }
+  for(int k = 0; k < 4; k++){
+    if(((maze_w[Goal_y][Goal_x] & (1<<k)) == 0 ) && ((maze_w[Goal_y][Goal_x] & (1<<(4+k))) != 0 )){
+      maze_d[Goal_y][Goal_x][k] = 0;
+    }
+  }
+  enqueue(Goal_x*100 + Goal_y);
+  
+  while(!queue_empty()){
+    int x = dequeue(),y;
+    y = x%100;
+    x /=100;
+
+    for(char i =0;i<4;i++){
+      char update_flag = 0;
+      int nx = x+dx[i],ny = y+dy[i];
+      if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){
+
+        short num = maze_d[y][x][i];
+        for(int k = 0; k < 4; k++){
+           
+          if(i == k){//S
+            if(maze_d[ny][nx][k] > num + 1){
+              update_flag = true;
+              maze_d[ny][nx][k] = num + 1;
+            }
+          }else if((i+2+4)%4 == k){//B
+            if(maze_d[ny][nx][k] > num+1 + r_cost*2){
+              update_flag = true;
+              maze_d[ny][nx][k] = num+1 + r_cost*2;
+            }
+          }else{// L or R
+            if(maze_d[ny][nx][k] > num+1 + r_cost){
+              update_flag = true;
+              maze_d[ny][nx][k] = num+1 + r_cost;
+            }
+          }
+        }
+        if(update_flag)enqueue(nx*100 + ny);
+      }
+    }
+  }
+  
+  for(int i = 1;i <= 8; i*= 2){
+	led(i);
+	delay(200);
+  }
+  led(0);
+ 
+  //run_list
+  queue_reset();
+  short h_path = 0;
+  my_x = Start_x;my_y = Start_y;my_angle = 1;
+ 
+  while(my_x != Goal_x || my_y != Goal_y){
+
+    short num = maze_d[my_y][my_x][(my_angle+2)%4];
+    char n_num = 0;
+    char s_flag = 0;
+    int nx = my_x+dx[my_angle],ny = my_y+dy[my_angle];
+    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<my_angle)) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+my_angle))) != 0 ) ){
+      short next = maze_d[ny][nx][(my_angle+2)%4];
+      if(num == next+1){
+        n_num = (my_angle+2)%4;
+        num = next;
+        s_flag = true;
+      }
+    }
+
+    if(s_flag == false){
+      for(int i = 0;i < 4;i++){
+        if(i == (my_angle+2)%4){
+        }else{
+          short next = maze_d[my_y][my_x][i];
+          if(num > next){
+            n_num = i;
+            num = next;
+          }
+        }
+      }
+    }
+    
+    n_num = (n_num+2)%4;// 0 ~ 4
+    char ni = ((4 + n_num - ((4+my_angle-1)%4))%4) -1;// -1 ~ 2
+
+    switch(ni){
+      case -1://L
+        if(h_path > 0){
+          if(queue_empty())h_path--;
+          enqueue(0);
+          enqueue(h_path);
+          h_path = 0;
+        }
+
+        enqueue(-1);
+        enqueue(1);
+        my_angle = (4+my_angle-1)%4;
+        
+        my_x += dx[n_num];
+        my_y += dy[n_num];
+        break;
+      case 0://S
+   
+        h_path +=2;
+        my_x += dx[n_num];
+        my_y += dy[n_num];
+        break;
+      case 1://R
+        if(h_path > 0){
+          if(queue_empty())h_path--;
+          enqueue(0);
+          enqueue(h_path);
+          h_path = 0;
+        }
+        
+        enqueue(1);
+        enqueue(1);
+     
+        my_angle = (4+my_angle+1)%4;
+
+        my_x += dx[n_num];
+        my_y += dy[n_num];
+        break;
+    }
+  }
+ 
+  if(h_path > 0){
+    if(queue_empty())h_path--;
+    enqueue(0);
+    enqueue(h_path+1);
+    h_path = 0;
+   }else{
+    enqueue(0);
+    enqueue(1);
+   }
+  
+  for(int i = 1;i <= 8; i*= 2){
+	led(i);
+	delay(200);
+  }
+  led(0);
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路に斜め有効化										  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし													    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void remake_shortest_path_list_naname(){
+  enqueue(99);
+  enqueue(99);
+  int naname_cnt = 0,lr = 0;
+  
+  while(1){
+    short mode = dequeue(),num = dequeue();
+    if(mode == 99)break;
+
+    switch(mode){
+      case -1://L
+        if(naname_cnt == 0){
+          enqueue(-11);
+          enqueue(1);
+          naname_cnt = 1;
+          lr = -1;
+        }else{
+          if(lr == 1){
+            lr = -1;
+            naname_cnt++;
+          }else{
+            enqueue(10);
+            enqueue(naname_cnt);
+            naname_cnt = 1;
+            enqueue(-1);
+            enqueue(1);
+            lr = -1;
+          }
+        }
+        break;
+       case 0://S
+        if(naname_cnt > 0){
+          if(lr == 1){
+            enqueue(10);
+            enqueue(naname_cnt);
+            enqueue(11);
+            enqueue(1);
+            naname_cnt = 0;
+            lr = 0;
+          }else{
+            enqueue(10);
+            enqueue(naname_cnt);
+            enqueue(-11);
+            enqueue(1);
+            naname_cnt = 0;
+            lr = 0;
+          }
+        }
+        enqueue(mode);
+        enqueue(num);
+        break;
+       case 1://R
+        if(naname_cnt == 0){
+          enqueue(11);
+          enqueue(1);
+          naname_cnt = 1;
+          lr = 1;
+        }else{
+          if(lr == -1){
+            lr = 1;
+            naname_cnt++;
+          }else{
+            enqueue(10);
+            enqueue(naname_cnt);
+            naname_cnt = 1;
+            enqueue(1);
+            enqueue(1);
+            lr = 1;
+          }
+        }
+        break;
+    }
+  }
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路走行（最終版）											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 0 斜めなし　１斜めあり														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void run_shortest_path_fin(	char naname){
+  GyroSum_reset();
+  Encoder_reset();
+  
+  my_x = Start_x;my_y = Start_y;my_angle = 1;
+  char non_stop = 0;
+  int comand ,path_num;
+  
+  while(!queue_empty()){
+    comand = dequeue();path_num = dequeue();
+    switch(comand){
+      case -1://L
+        if(naname)L_rotate(l90);
+        else L_curve(sl90,non_stop);
+        non_stop = 1;
+        break;
+      case -11://L45
+        L_rotate(l45);
+        non_stop = 1;
+        break;
+      case 0://S
+        if(queue_empty())S_run(h1 * path_num + (h1/4),80,false,true);
+        else {
+          path_num--;
+          if(path_num > 0)S_run(h1 * path_num ,80,true,true);
+          S_run_kabe(50,true);
+        }
+
+         non_stop = 0;
+        //my_x = nx;
+        //my_y = ny;
+        break;
+      case 10://Snaname
+        S_run(s45 * path_num ,60,false,false);
+
+         non_stop = 0;
+        //my_x = nx;
+        //my_y = ny;
+        break;
+      case 1://R
+        if(naname)R_rotate(r90);
+        else R_curve(sr90,non_stop);
+        non_stop = 1;
+        break;
+      case 11://R45
+        R_rotate(r45);
+        non_stop = 1;
+        break;
+    }
+  }
+
+  for(int i = 1;i <= 8; i*= 2){
+	led(i);
+	delay(200);
+  }
+  led(0);
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -558,20 +1081,20 @@ void Excep_CMT0_CMI0(void)
 {	
 	static int task = 0;
 	task ++;                         // タスクの更新						
-  	if (task == 10) task = 0;             // 2まで来たら0にクリア
+  	if (task == 10) task = 0;            
 	
 	Gyro_update();
 	
 	ir_update();
 	
-	
-	switch(task) {                         // タスクポインタに従って処理を行う			
+	switch(task) {                         			
 	case 0:
-        	break;
+		encoder_update();
+        break;
    
    	case 1:
    		
-        	break;
+        break;
 		
 	default:
 		break;
