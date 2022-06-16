@@ -2,17 +2,20 @@
 #include "iodefine.h"
 #include <machine.h>
 
-#define LencTotal	MTU7.TCNT	     //A:CN4-15 B:CN4-16
-#define RencTotal	MTU8.TCNT	     //A:CN4-13 B:CN4-14
+#define LencTotal	(short)(MTU7.TCNT)	     //A:CN4-15 B:CN4-16
+#define RencTotal	(short)(MTU8.TCNT)	     //A:CN4-13 B:CN4-14
 
 volatile long long  L_enc_total_rev = 0;
-volatile long long  L_enc_base = 0;
+volatile short  L_enc_base = 0;
 volatile int  L_enc = 0;
+volatile int  L_plus = 1;
+volatile int  L_cnt = 0;
 
 volatile long long  R_enc_total_rev = 0;
-volatile long long  R_enc_base = 0;
+volatile short  R_enc_base = 0;
 volatile int  R_enc = 0;
-
+volatile int  R_plus = 1;
+volatile int  R_cnt = 0;
 
 void Encoder_reset(){
 	L_enc = 0;
@@ -21,6 +24,10 @@ void Encoder_reset(){
 	R_enc_base = RencTotal;
 	L_enc_total_rev = 0;
 	R_enc_total_rev = 0;
+	L_plus = 1;
+	L_cnt = 0;
+	R_plus = 1;
+	R_cnt = 0;
 }
 
 void encoder_update(){
@@ -44,9 +51,44 @@ int get_encoder_R(){
 }
 
 long long get_encoder_total_R(){
-	return RencTotal - R_enc_base;
+	short tmp = RencTotal - R_enc_base;
+	
+	if(R_plus == 1 && tmp < -2000){
+		R_cnt++;
+		R_enc_base = RencTotal;
+		tmp = 0;
+	}
+	
+	if(R_plus == 0 && tmp > 2000){
+		R_cnt--;
+		R_enc_base = RencTotal;
+		tmp = 0;
+	}
+	
+	if(RencTotal - R_enc_base >= 0)R_plus = 1;
+	else R_plus = 0;
+	
+	return (long long)tmp + (R_cnt * 32767);
 }
+
 long long get_encoder_total_L(){
-	return LencTotal - L_enc_base;
+	short tmp = LencTotal - L_enc_base;
+	
+	if(L_plus == 1 && tmp < -2000){
+		L_cnt++;
+		L_enc_base = LencTotal;
+		tmp = 0;
+	}
+	
+	if(L_plus == 0 && tmp > 2000){
+		L_cnt--;
+		L_enc_base = LencTotal;
+		tmp = 0;
+	}
+	
+	if(LencTotal - L_enc_base >= 0)L_plus = 1;
+	else L_plus = 0;
+	
+	return (long long)tmp + (L_cnt * 32767);
 }
 

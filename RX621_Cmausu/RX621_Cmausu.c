@@ -20,7 +20,7 @@
 
 #include "printf_lib.h"   /* printf2 関連処理    コンパイルおよびライブラリジェネレートオプションにてC99対応が必要  */
 
-//#define PRINT /* 使用時は有効化すること*/
+#define PRINT /* 使用時は有効化すること*/
 
 #ifndef PRINT
 	#define printf2(...)  
@@ -56,7 +56,7 @@ void run_shortest_path_fin(char);
 #define W	16
 #define Start_x  0
 #define Start_y  0
-#define Goal_x  3
+#define Goal_x  0
 #define Goal_y  3
 
 #define r45  (24000)
@@ -100,8 +100,24 @@ void main(void)
 	
 	ALL_init();//初期化
 	
-
+	delay(3);
+	
 	while(1){
+		
+		//while(1)printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
+		
+		while(1){
+			motor(10,-10);
+			
+			printf2("%d\t",get_encoder_total_L());
+			printf2("%d\t",get_encoder_total_R());
+			
+			printf2("%d\t",(int)(MTU7.TCNT));
+			printf2("%d\n",(int)(MTU8.TCNT));
+			
+			if(get_sw() == 1)Encoder_reset();
+			delay(1000);
+		}
 		
 		//正面センサーに手をかざす
 		while((get_IR(0) < 30) || (get_IR(3) < 30)) nop();
@@ -114,11 +130,18 @@ void main(void)
 		}
 		led(0);
 		
-		maze_search_adachi(Goal_x,Goal_y);
+		
+		
+		while(1){
+			Tmotor(r90);
+			delay(1000);
+		}
+		
+		//maze_search_adachi(Goal_x,Goal_y);
 		 
-		maze_search_adachi(Start_x,Start_y);
+		//maze_search_adachi(Start_x,Start_y);
 
-		shortest_path_search_fin();
+		//shortest_path_search_fin();
 		//remake_shortest_path_list_naname();
 		
 		for(i = 1;i <= 8; i*= 2){
@@ -127,7 +150,7 @@ void main(void)
 		}
 		led(0);
 		
-		run_shortest_path_fin(false);//not naname
+		//run_shortest_path_fin(false);//not naname
 		//run_shortest_path_fin(true);//naname
 		
 		//スイッチ入力待ち
@@ -490,13 +513,14 @@ void S_run(int path,int powor, char non_stop,char kabe){
 
   if(!non_stop && kabe){
    // GyroSum_reset();
-    while(500 < get_IR(IR_FL)){
-      if(get_IR(IR_FL) > 981){
-        Smotor(-20,true);
+    //while(35 < get_IR(IR_FL)){
+	 while(1){
+      if(get_IR(IR_FL) > 35){
+        Smotor(-10,true);
 
         cnt2 = 0;
-      }else if(get_IR(IR_FL) < 981){
-        Smotor(+20,true);
+      }else if(get_IR(IR_FL) < 30){
+        Smotor(+10,true);
        
         cnt2 = 0;
       }else {
@@ -515,21 +539,21 @@ void S_run_kabe(int powor, char flag){//壁切れまで走行
  
   while(1){
     if(Lflag == 0){
-      if(get_IR(IR_L) > 400)Lflag = 1;
+      if(get_IR(IR_L) > 20)Lflag = 1;
     }else if(Lflag == 1){
-      if(get_IR(IR_L) < 150)break;
+      if(get_IR(IR_L) < 10)break;
     }
 
     if(Rflag == 0){
-      if(get_IR(IR_R) > 400)Rflag = 1;
+      if(get_IR(IR_R) > 20)Rflag = 1;
     }else if(Rflag == 1){
-      if(get_IR(IR_R) < 200)break;
+      if(get_IR(IR_R) < 10)break;
     }
     
     Smotor(powor,flag);
   }
  
-  ESmotor(35,powor,true,false);//35は更新する必要あり
+  ESmotor(50,powor,true,false);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -711,8 +735,8 @@ void run_shortest_path(){
         L_rotate(l90);
         break;
       case 0://S
-        if(path_num == 1)S_run(s1 * path_num,35,false,true);
-        else S_run(s1 * path_num,55,false,true);
+        if(path_num == 1)S_run(s1 * path_num,25,false,true);
+        else S_run(s1 * path_num,35,false,true);
 
         switch(my_angle){
           case 0:

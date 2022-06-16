@@ -1,4 +1,4 @@
-Renesas Optimizing Linker (W3.03.00 )             13-Jun-2022 00:06:21
+Renesas Optimizing Linker (W3.03.00 )             17-Jun-2022 00:17:05
 
 *** Options ***
 
@@ -42,15 +42,15 @@ R_1
 B_2
                                   000001c8  000001cd         6   2
 R_2
-                                  000001ce  00000bd5       a08   2
+                                  000001ce  00000bd9       a0c   2
 B
-                                  00000bd8  00001043       46c   4
+                                  00000bdc  00001047       46c   4
 R
-                                  00001044  00001327       2e4   4
+                                  00001048  0000132b       2e4   4
 SU
-                                  00001328  00001427       100   4
+                                  0000132c  0000142b       100   4
 SI
-                                  00001428  00001727       300   4
+                                  0000142c  0000172b       300   4
 PResetPRG
                                   fff80000  fff80030        31   1
 C_1
@@ -72,21 +72,21 @@ C$VECT
 D_1
                                   fff80c24  fff80d84       161   1
 D_2
-                                  fff80d86  fff8178d       a08   2
+                                  fff80d86  fff81791       a0c   2
 D
-                                  fff81790  fff81a73       2e4   4
+                                  fff81794  fff81a77       2e4   4
 P
-                                  fff81a74  fff88cc2      724f   1
+                                  fff81a78  fff88d09      7292   1
 PIntPRG
-                                  fff88cc3  fff88e0a       148   1
+                                  fff88d0a  fff88e51       148   1
 W_1
-                                  fff88e0b  fff88e0b         0   1
+                                  fff88e52  fff88e52         0   1
 W_2
-                                  fff88e0b  fff88e0b         0   1
+                                  fff88e52  fff88e52         0   1
 W
-                                  fff88e0b  fff88e0b         0   1
+                                  fff88e52  fff88e52         0   1
 L
-                                  fff88e0c  fff88e80        75   4
+                                  fff88e54  fff88ed0        7d   4
 $ADDR_C_FFFFFFA0
                                   ffffffa0  ffffffaf        10   1
 FIXEDVECT

@@ -124,16 +124,16 @@ void Smotor(int M,char w_flag){
 	if(w_flag){
 		if(get_encoder_L() > 0){
 
-			if((get_IR(IR_FL) < 980) && abs(GyroSum_get()) < 400){
-				if((get_IR(IR_R) > 985)
-			 	|| (get_IR(IR_L) > 965 && get_IR(IR_L) < 975)){
+			if((get_IR(IR_FL) < 30) && abs(GyroSum_get()) < 400){
+				if((get_IR(IR_R) > 35)
+			 	|| (get_IR(IR_L) > 20 && get_IR(IR_L) < 25)){
 					long long n = (long long)-14 * get_encoder_L();
 					if(n < -30)n = -30;
 					GyroSum_add(n);
 				}
 			
-				if((get_IR(IR_L) > 988 )
-			 	|| (get_IR(IR_R) > 965 && get_IR(IR_R) < 974)){
+				if((get_IR(IR_L) > 35 )
+			 	|| (get_IR(IR_R) > 20 && get_IR(IR_R) < 25)){
 					long long n = (long long)14 * get_encoder_L();
 					if(n > 30)n = 30;
 					GyroSum_add(n);
@@ -142,7 +142,7 @@ void Smotor(int M,char w_flag){
 		}
 	
 		if(get_encoder_L() > 0){	
-			if(get_IR(IR_FL) > 960){
+			if(get_IR(IR_FL) > 20){
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
 				if(abs(diff) < 8){
 					long long n = diff * get_encoder_L();
@@ -153,7 +153,7 @@ void Smotor(int M,char w_flag){
 			}
 		}
 	}
-	int powor_max = 70;
+	int powor_max = 40;
 	int powor = gyro_powor_L();
 	if(powor > powor_max)powor = powor_max;
 	else if(-powor_max > powor)powor = -powor_max; 
@@ -168,10 +168,10 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 	long long L_prev = A;
 	int cnt = 0;
 	
-	int p = 5,d = 0,min_M = 15,M = 10;
-	int max_FL = 987,Eb = 5,Ebf = 0;
+	int p = 5,d = 0,min_M = 10,M = 10;
+	int max_FL = 35,Eb = 5,Ebf = 0;
 	
-	int non_stop_min_M = 40;
+	int non_stop_min_M = 20;
 	
 	while(1){
 		if(get_IR(IR_FL) > max_FL && Ebf == 0){
@@ -234,7 +234,7 @@ void Tmotor(long long A){
 	int MA = 8,min_M = 8;
 	
 	int cnt = 0;
-	int powor_max = 35;
+	int powor_max = 20;
 	int powor;
 
 	while(1){
@@ -290,20 +290,20 @@ void ETmotor(long long A, long long E, char non_stop){
 //	GyroSum_reset();
 	Encoder_reset();
 
-	int M = 40;//35
+	int M = 30;//35
 	char flag = 0;
 	if(A > 0){//R
-		while(get_IR(IR_R) > 300){
+		while(get_IR(IR_R) > 25){
 			Smotor(M,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(30,M,true,false);
+		if(flag)ESmotor(40,M,true,false);
 	}else{//L
-		while(get_IR(IR_L) > 200){
+		while(get_IR(IR_L) > 25){
 			Smotor(M,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(30,M,true,false);
+		if(flag)ESmotor(40,M,true,false);
 	}
 
 //	GyroSum_reset();
