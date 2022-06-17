@@ -20,7 +20,7 @@
 
 #include "printf_lib.h"   /* printf2 関連処理    コンパイルおよびライブラリジェネレートオプションにてC99対応が必要  */
 
-#define PRINT /* 使用時は有効化すること*/
+//#define PRINT /* 使用時は有効化すること*/
 
 #ifndef PRINT
 	#define printf2(...)  
@@ -47,6 +47,8 @@ void shortest_path_search_fin(void);
 void remake_shortest_path_list_naname(void);
 void run_shortest_path_fin(char);
 	
+void S_run(int,int, char,char);
+	
 /* 定数設定 */
 #define true 1
 #define false 0
@@ -59,17 +61,21 @@ void run_shortest_path_fin(char);
 #define Goal_x  0
 #define Goal_y  3
 
-#define r45  (24000)
-#define l45  (24000)
-#define r90  (44000)
-#define l90  (45000)
-#define r180  (-90000)
-#define s1 (181)
-#define s45 (120)
-#define h1 (90)
-#define rsls90 (195)
-#define sr90  (43500)
-#define sl90  (43800)
+
+#define r45  (11000)
+#define l45  (11000)
+#define r90  (22000)
+#define l90  (22000)
+#define r180  (-44000)
+
+//memo : 1mm = 4
+#define s1 (699)
+#define s45 (12 * 40)
+#define h1 (90 * 4)
+
+#define rsls90 (195 * 4)
+#define sr90  (22000)
+#define sl90  (22000)
 
 #define r_cost 4
 
@@ -106,8 +112,19 @@ void main(void)
 		
 		//while(1)printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
 		
+		delay(2000);
+		for(i = 1;i <= 8; i*= 2){
+			led(i);
+			delay(200);
+		}
+		led(0);
+		delay(1000);
+		S_run(s1,15,false,false);
+		delay(1000);
+		while(1);
+		
 		while(1){
-			motor(10,-10);
+			//motor(10,-10);
 			
 			printf2("%d\t",get_encoder_total_L());
 			printf2("%d\t",get_encoder_total_R());

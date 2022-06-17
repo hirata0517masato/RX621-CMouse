@@ -168,10 +168,10 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 	long long L_prev = A;
 	int cnt = 0;
 	
-	int p = 5,d = 0,min_M = 10,M = 10;
+	int p = 5,d = 0,min_M = 5,M = 5;
 	int max_FL = 35,Eb = 5,Ebf = 0;
 	
-	int non_stop_min_M = 20;
+	int non_stop_min_M = 8;
 	
 	while(1){
 		if(get_IR(IR_FL) > max_FL && Ebf == 0){
@@ -182,9 +182,9 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 		if((L_target - L) >= 0){	
 
 			if(get_encoder_total_L() - (L_target-A) < A*2/3){//up
-				M += (get_encoder_total_L() - (L_target-A)) / 3;	
+				M += (get_encoder_total_L() - (L_target-A)) / 10;	
 			}else{
-				M = (L_target - get_encoder_total_L())/4;//down
+				M = (L_target - get_encoder_total_L())/10;//down
 			}
 
 			if(max_M < M)M = max_M;
@@ -207,9 +207,9 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 		L = get_encoder_total_L();
 	
 		if(non_stop){
-			if(L_target - L < 2)break; 
+			if(L_target - L < 8)break; 
 		}else{
-			if(abs(L-L_target) < 3)cnt++;
+			if(abs(L-L_target) < 10)cnt++;
 			else cnt = 0;
 
 			if(cnt > 100)break;

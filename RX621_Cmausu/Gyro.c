@@ -7,7 +7,7 @@
 int gyro= 0;        /* ジャイロセンサーの値  左＋　右ー   */
 long long gyro_base = 0;
 long long gyro_sum = 0;  //左＋　右ー  
-int Gyro_kp = 2,Gyro_kd = 20;
+int Gyro_kp = 1,Gyro_kd = 5;
 
 
 
@@ -29,7 +29,7 @@ int Gyro(){
 
 long long Gyro_get(){
 	read_gyro();
-	return (long long)get_gyro_data(2);
+	return (long long)get_gyro_data(2)/4;
 }
 
 
@@ -43,7 +43,9 @@ void Gyro_update(){
   if(g < 0)gyro = (g * 105) / 100;
   else gyro = g;
 */
-  gyro = (Gyro_get() - gyro_base)/2;
+
+
+  gyro = (Gyro_get() - gyro_base);
   gyro_sum += (long long)gyro ; 
 }
 
