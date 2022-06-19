@@ -1,7 +1,7 @@
 #include"Queue.h"
 
 short queue[MAXqueue] = {0};
-short queue_front = -1,queue_end = 0;
+short queue_front = 0,queue_end = 0;
 short queue_num = 0;
 
 char queue_empty(){
@@ -9,7 +9,7 @@ char queue_empty(){
 }
 
 void queue_reset(){
-	queue_front = -1;
+	queue_front = 0;
 	queue_end = 0;
  	queue_num = 0;
 }
@@ -23,7 +23,7 @@ void enqueue(short n){
 
 short dequeue(){
     if(queue_empty())return -1;
-    int r = queue[++queue_front];
+    int r = queue[queue_front++];
     if(queue_front == MAXqueue)queue_front = 0;
     queue_num--;
     return r;

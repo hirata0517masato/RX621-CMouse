@@ -9,6 +9,7 @@
 /****************************************************************************************************/                  
 #include "iodefine.h"
 #include <machine.h>
+#include <stdlib.h>
 #include "wait.h"
 #include "Gyro.h"
 #include "DataFlash.h"
@@ -47,6 +48,8 @@ void shortest_path_search_fin(void);
 void remake_shortest_path_list_naname(void);
 void run_shortest_path_fin(char);
 	
+void L_rotate(long long);
+void R_rotate(long long);
 void S_run(int,int, char,char);
 	
 /* 定数設定 */
@@ -58,24 +61,24 @@ void S_run(int,int, char,char);
 #define W	16
 #define Start_x  0
 #define Start_y  0
-#define Goal_x  0
+#define Goal_x  2
 #define Goal_y  3
 
 
 #define r45  (11000)
 #define l45  (11000)
-#define r90  (22000)
-#define l90  (22000)
-#define r180  (-44000)
+#define r90  (21000) 
+#define l90  (21000)
+#define r180  (-42100)
 
 //memo : 1mm = 4
-#define s1 (699)
-#define s45 (12 * 40)
-#define h1 (90 * 4)
+#define s1 (740)
+#define s45 (480)
+#define h1 (345)
 
-#define rsls90 (195 * 4)
-#define sr90  (22000)
-#define sl90  (22000)
+#define rsls90 (690)
+#define sr90  (23000)
+#define sl90  (23000)
 
 #define r_cost 4
 
@@ -84,7 +87,7 @@ short motor_stop_cnt = 0;
 char maze_w[H][W] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
 short maze_d[H][W][4] = {0};	//4方向分の重み
 
-char dx[4] = {0,1,0,-1},dy[4] = {-1,0,1,0};
+short dx[4] = {0,1,0,-1},dy[4] = {-1,0,1,0};
 
 char my_x = Start_x,my_y = Start_y,my_angle = 1;//0:up 1:right 2:down 3:left
 
@@ -110,66 +113,48 @@ void main(void)
 	
 	while(1){
 		
-		//while(1)printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
-		
-		delay(2000);
-		for(i = 1;i <= 8; i*= 2){
-			led(i);
-			delay(200);
-		}
-		led(0);
-		delay(1000);
-		S_run(s1,15,false,false);
-		delay(1000);
-		while(1);
-		
+		/*
 		while(1){
-			//motor(10,-10);
+			motor(20,20);
 			
-			printf2("%d\t",get_encoder_total_L());
-			printf2("%d\t",get_encoder_total_R());
-			
-			printf2("%d\t",(int)(MTU7.TCNT));
-			printf2("%d\n",(int)(MTU8.TCNT));
-			
-			if(get_sw() == 1)Encoder_reset();
+			printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
+			//printf2("%d\n",get_encoder_total_L());
 			delay(1000);
-		}
+		}*/
+		
 		
 		//正面センサーに手をかざす
-		while((get_IR(0) < 30) || (get_IR(3) < 30)) nop();
-  		while((get_IR(0) > 30) || (get_IR(3) > 30)) nop();
+		while((get_IR(0) < 15) || (get_IR(3) < 15)) led(1);
+  		while((get_IR(0) > 15) || (get_IR(3) > 15)) led(8);
+		led(0);
   		delay(1000);
 		
 		for(i = 1;i <= 8; i*= 2){
 			led(i);
-			delay(200);
+			delay(100);
 		}
 		led(0);
 		
 		
+		maze_search_adachi(Goal_x,Goal_y);
 		
-		while(1){
-			Tmotor(r90);
-			delay(1000);
-		}
-		
-		//maze_search_adachi(Goal_x,Goal_y);
-		 
-		//maze_search_adachi(Start_x,Start_y);
+		maze_search_adachi(Start_x,Start_y);
 
-		//shortest_path_search_fin();
+
+		
+		shortest_path_search_fin();
 		//remake_shortest_path_list_naname();
 		
 		for(i = 1;i <= 8; i*= 2){
 			led(i);
-			delay(200);
+			delay(100);
 		}
 		led(0);
 		
-		//run_shortest_path_fin(false);//not naname
+		run_shortest_path_fin(false);//not naname
 		//run_shortest_path_fin(true);//naname
 		
+		led(9);
 		//スイッチ入力待ち
 		while(get_sw() == 0) nop();
 		while(get_sw() == 1) nop();
@@ -244,6 +229,7 @@ void ALL_init(){
 	//スタート地点の確定壁を設定
   	maze_w[my_y][my_x] = 0xfd;//13;//15-2;
   	maze_w[my_y+1][my_x] |= 0x11;
+	maze_w[my_y][my_x+1] |= 0x80;
   
 	//スイッチ入力待ち
 	while(get_sw() == 0) nop();
@@ -476,20 +462,20 @@ void maze_update(char x,char y,char angle){
 
   for(short i = -1; i < 3;i++){
     short ii = (4 + angle+i)%4;
-    char nx = x+dx[ii], ny = y+dy[ii];
+    int nx = x+dx[ii], ny = y+dy[ii];
 
     if((maze_w[y][x] & (1 << (4+ii))) == 0 ){
       maze_w[y][x] |= 1 << (4+ii);
       
       switch(i){
         case -1://L
-          if(get_IR(IR_L) > 30)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_L) > 8)maze_w[y][x] |= 1 << ii;
           break;
         case 0://S
-          if(get_IR(IR_FL) > 30)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_FL) > 19)maze_w[y][x] |= 1 << ii;
           break;
         case 1://R
-          if(get_IR(IR_R) > 30)maze_w[y][x] |= 1 << ii; 
+          if(get_IR(IR_R) > 8)maze_w[y][x] |= 1 << ii; 
           break;
       }
       if((0 <= nx && nx < W) && (0 <= ny && ny < H)){
@@ -525,29 +511,30 @@ void R_curve(long long a ,char flag ){
 
 void S_run(int path,int powor, char non_stop,char kabe){
   //GyroSum_reset();
-  ESmotor(path,powor,non_stop,kabe);
-  int cnt2 = 0;
+	ESmotor(path,powor,non_stop,kabe);
+  	int cnt2 = 0;
 
-  if(!non_stop && kabe){
-   // GyroSum_reset();
-    //while(35 < get_IR(IR_FL)){
-	 while(1){
-      if(get_IR(IR_FL) > 35){
-        Smotor(-10,true);
+  	if(!non_stop && kabe){
+   		// GyroSum_reset();
+    	if(10 < get_IR(IR_FL) && 10 < get_IR(IR_FR) ){
+	 		while(1){
+      			if(get_IR(IR_FL) > 40){
+        			Smotor(-10,true);
 
-        cnt2 = 0;
-      }else if(get_IR(IR_FL) < 30){
-        Smotor(+10,true);
+        			cnt2 = 0;
+      			}else if(get_IR(IR_FL) < 37){
+       	 			Smotor(+10,true);
        
-        cnt2 = 0;
-      }else {
-        motor(0,0);
-        cnt2++;
-      }
-      if(cnt2 > 100)break;
-    }
-  }
-  motor(0,0);
+        			cnt2 = 0;
+      			}else {
+        			motor(0,0);
+        			cnt2++;
+      			}
+      			if(cnt2 > 100)break;
+			}
+    	}
+  	}
+  	motor(0,0);
   //GyroSum_reset();
 }
 
@@ -556,13 +543,13 @@ void S_run_kabe(int powor, char flag){//壁切れまで走行
  
   while(1){
     if(Lflag == 0){
-      if(get_IR(IR_L) > 20)Lflag = 1;
+      if(get_IR(IR_L) > 15)Lflag = 1;
     }else if(Lflag == 1){
       if(get_IR(IR_L) < 10)break;
     }
 
     if(Rflag == 0){
-      if(get_IR(IR_R) > 20)Rflag = 1;
+      if(get_IR(IR_R) > 15)Rflag = 1;
     }else if(Rflag == 1){
       if(get_IR(IR_R) < 10)break;
     }
@@ -570,7 +557,7 @@ void S_run_kabe(int powor, char flag){//壁切れまで走行
     Smotor(powor,flag);
   }
  
-  ESmotor(50,powor,true,false);
+  ESmotor(160,powor,true,false);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -595,13 +582,13 @@ void shortest_path_search(short target_x,short target_y){
   enqueue(target_x*100 + target_y);
   
   while(!queue_empty()){
-    int x = dequeue(),y;
+    short x = dequeue(),y;
     y = x%100;
     x /=100;
 
     for(char i =0;i<4;i++){
       char update_flag = 0;
-      int nx = x+dx[i],ny = y+dy[i];
+      short nx = x+dx[i],ny = y+dy[i];
       if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) ){
 
         short num = maze_d[y][x][i];
@@ -639,13 +626,13 @@ void shortest_path_search(short target_x,short target_y){
 void make_shortest_path_list(short target_x,short target_y){
   queue_reset();
   short s_path = 0;
-  char x = my_x,y = my_y,angle = my_angle;
+  short x = my_x,y = my_y,angle = my_angle;
   
   while(x != target_x || y != target_y){
     short num = maze_d[y][x][(angle+2)%4];
-    char n_num = 0;
+    short n_num = 0;
     char s_flag = 0;
-    int nx = x+dx[angle],ny = y+dy[angle];
+    short nx = x+dx[angle],ny = y+dy[angle];
     if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) ){
       short next = maze_d[ny][nx][(angle+2)%4];
       if(num == next+1){
@@ -669,7 +656,7 @@ void make_shortest_path_list(short target_x,short target_y){
     }
     
     n_num = (n_num+2)%4;// 0 ~ 4
-    char ni = ((4 + n_num - ((4+angle-1)%4))%4) -1;// -1 ~ 2
+    short ni = ((4 + n_num - ((4+angle-1)%4))%4) -1;// -1 ~ 2
 
     if((maze_w[y][x] & (1 << (4+n_num))) == 0)break;//unknown
     switch(ni){
@@ -743,17 +730,21 @@ void run_shortest_path(){
   GyroSum_reset();
   Encoder_reset();
   
-  int comand ,path_num;
+  short comand ,path_num;
+  int time = 50;
   
   while(!queue_empty()){
     comand = dequeue();path_num = dequeue();
+	
     switch(comand){
       case -1://L
         L_rotate(l90);
+		
+		delay(time);
         break;
       case 0://S
-        if(path_num == 1)S_run(s1 * path_num,25,false,true);
-        else S_run(s1 * path_num,35,false,true);
+        if(path_num == 1)S_run(s1 * path_num,15,false,true);
+        else S_run(s1 * path_num,20,false,true);
 
         switch(my_angle){
           case 0:
@@ -769,13 +760,18 @@ void run_shortest_path(){
             my_x -= path_num;
             break;
         }
+		delay(time);
         break;
       case 1://R
         R_rotate(r90);
+		
+		delay(time);
         break;
       case 2://B
         Tmotor(r180);
         my_angle = (4+my_angle+2)%4;
+		
+		delay(time);
         break;
     }
   }
@@ -788,25 +784,39 @@ void run_shortest_path(){
 /* 戻  り   値： なし										    									*/
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void maze_search_adachi(short target_x,short target_y){
-  GyroSum_reset();
-  Encoder_reset();
+	GyroSum_reset();
+	Encoder_reset();
 
-  while(1){
-    maze_update(my_x,my_y,my_angle);
-    if((target_x != Goal_x || target_y != Goal_y) && (target_x != Start_x || target_y != Start_y)){
-      if((maze_w[target_y][target_x] & 0xf0) == 0xf0)break;      
-    }
-    if(target_x == my_x && target_y == my_y){
-      if(target_x == Start_x && target_y == Start_y){
-        Tmotor(r180);
-        my_angle = (4+my_angle+2)%4;
-      }
-      break;
-    }
-    shortest_path_search(target_x,target_y);
-    make_shortest_path_list(target_x,target_y);
-    run_shortest_path();
-  }
+	for(int i = 8;i > 0; i/= 2){
+		led(i);
+		delay(100);
+	}
+	led(0);
+	
+	while(1){
+    	maze_update(my_x,my_y,my_angle);
+    	if((target_x != Goal_x || target_y != Goal_y) && (target_x != Start_x || target_y != Start_y)){//スタート地点、ゴール地点以外が目標地点のとき
+      		if((maze_w[target_y][target_x] & 0xf0) == 0xf0)break;    //目標地点の壁がすべて確定したら探索完了  
+    	}
+		
+    	if(target_x == my_x && target_y == my_y){//ゴール
+			for(int i = 1;i <= 8; i*= 2){
+				led(i);
+				delay(100);
+			}
+			led(0);
+			
+      		if(target_x == Start_x && target_y == Start_y){
+        		Tmotor(r180);
+        		my_angle = (4+my_angle+2)%4;
+      		}
+      		break;
+    	}
+		
+    	shortest_path_search(target_x,target_y);
+    	make_shortest_path_list(target_x,target_y);
+		run_shortest_path();
+  	}
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -832,13 +842,13 @@ void shortest_path_search_fin(){
   enqueue(Goal_x*100 + Goal_y);
   
   while(!queue_empty()){
-    int x = dequeue(),y;
+    short x = dequeue(),y;
     y = x%100;
     x /=100;
 
     for(char i =0;i<4;i++){
       char update_flag = 0;
-      int nx = x+dx[i],ny = y+dy[i];
+      short nx = x+dx[i],ny = y+dy[i];
       if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){
 
         short num = maze_d[y][x][i];
@@ -868,7 +878,7 @@ void shortest_path_search_fin(){
   
   for(int i = 1;i <= 8; i*= 2){
 	led(i);
-	delay(200);
+	delay(100);
   }
   led(0);
  
@@ -880,7 +890,7 @@ void shortest_path_search_fin(){
   while(my_x != Goal_x || my_y != Goal_y){
 
     short num = maze_d[my_y][my_x][(my_angle+2)%4];
-    char n_num = 0;
+    short n_num = 0;
     char s_flag = 0;
     int nx = my_x+dx[my_angle],ny = my_y+dy[my_angle];
     if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<my_angle)) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+my_angle))) != 0 ) ){
@@ -906,7 +916,7 @@ void shortest_path_search_fin(){
     }
     
     n_num = (n_num+2)%4;// 0 ~ 4
-    char ni = ((4 + n_num - ((4+my_angle-1)%4))%4) -1;// -1 ~ 2
+    short ni = ((4 + n_num - ((4+my_angle-1)%4))%4) -1;// -1 ~ 2
 
     switch(ni){
       case -1://L
@@ -959,9 +969,9 @@ void shortest_path_search_fin(){
     enqueue(1);
    }
   
-  for(int i = 1;i <= 8; i*= 2){
+  for(int i = 8;i > 0; i/= 2){
 	led(i);
-	delay(200);
+	delay(100);
   }
   led(0);
 }
@@ -1074,11 +1084,11 @@ void run_shortest_path_fin(	char naname){
         non_stop = 1;
         break;
       case 0://S
-        if(queue_empty())S_run(h1 * path_num + (h1/4),80,false,true);
+        if(queue_empty())S_run(h1 * path_num + (h1/4),20,false,true);
         else {
           path_num--;
-          if(path_num > 0)S_run(h1 * path_num ,80,true,true);
-          S_run_kabe(50,true);
+          if(path_num > 0)S_run(h1 * path_num ,20,true,true);
+          S_run_kabe(20,true);
         }
 
          non_stop = 0;
@@ -1086,7 +1096,7 @@ void run_shortest_path_fin(	char naname){
         //my_y = ny;
         break;
       case 10://Snaname
-        S_run(s45 * path_num ,60,false,false);
+        S_run(s45 * path_num ,25,false,false);
 
          non_stop = 0;
         //my_x = nx;
@@ -1106,7 +1116,7 @@ void run_shortest_path_fin(	char naname){
 
   for(int i = 1;i <= 8; i*= 2){
 	led(i);
-	delay(200);
+	delay(100);
   }
   led(0);
 }
@@ -1128,6 +1138,13 @@ void Excep_CMT0_CMI0(void)
 	
 	ir_update();
 	
+	
+	if(abs(Gyro()) > 250){
+    	motor_stop_cnt++;
+    	if(motor_stop_cnt > 20)motor_stop();
+  	}else motor_stop_cnt = 0;
+	
+
 	switch(task) {                         			
 	case 0:
 		encoder_update();

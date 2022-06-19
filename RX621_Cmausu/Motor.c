@@ -91,25 +91,31 @@ void motor(int LM,int RM){
   if(100 < RM)RM = 100;
 
   
-  if(((LM - RM) > 400) || ((RM - LM) > 400))motor_stop();
+  //if(((LM - RM) > 50) || ((RM - LM) > 50))motor_stop();
 
-  if(LM > 5){
-	if(get_encoder_L() == 0){
+  if(abs(LM) > 5){
+	if(abs(get_encoder_L()) < 2){
 		safe_cnt ++;
 		if(safe_cnt > 10000)motor_stop();
 	}else safe_cnt = 0;
-  }
+  }else safe_cnt = 0;
 
-  if(RM > 5){
-	if(get_encoder_R() == 0){
+  if(abs(RM) > 5){
+	if(abs(get_encoder_R()) < 2){
 		safe_cnt ++;
 		if(safe_cnt > 10000)motor_stop();
 	}else safe_cnt = 0;
-  }
+  }else safe_cnt = 0;
   
   if(motor_stop_flag == 1){
 	LM = 0;
 	RM = 0;
+	
+	//LED全灯
+	PORTA.DR.BIT.B0 = 1;
+	PORTA.DR.BIT.B1 = 1;
+	PORTA.DR.BIT.B2 = 1;
+	PORTA.DR.BIT.B3 = 1;
   }
 
   LM_prev = LM;
@@ -121,57 +127,79 @@ void motor(int LM,int RM){
 
 void Smotor(int M,char w_flag){
 
+	static int cnt = 0;
+	
 	if(w_flag){
-		if(get_encoder_L() > 0){
+		if(get_encoder_L() > 0 || get_encoder_R() > 0){
 
-			if((get_IR(IR_FL) < 30) && abs(GyroSum_get()) < 400){
-				if((get_IR(IR_R) > 35)
-			 	|| (get_IR(IR_L) > 20 && get_IR(IR_L) < 25)){
-					long long n = (long long)-14 * get_encoder_L();
-					if(n < -30)n = -30;
-					GyroSum_add(n);
+			if(((get_IR(IR_FL) < 30) || (get_IR(IR_FR) < 30)) && abs(GyroSum_get()) < 6000){
+				
+				
+				if((get_IR(IR_R) > 33 )//){
+			 	|| (get_IR(IR_L) > 10 && get_IR(IR_L) < 22)){
+					cnt++;
+					if(cnt > 5){
+						cnt = 0;
+						long long n = (long long)-1 * get_encoder_L();
+						if(n < -1)n = -1;
+						GyroSum_add(n);
+					}
 				}
 			
-				if((get_IR(IR_L) > 35 )
-			 	|| (get_IR(IR_R) > 20 && get_IR(IR_R) < 25)){
-					long long n = (long long)14 * get_encoder_L();
-					if(n > 30)n = 30;
-					GyroSum_add(n);
+				if((get_IR(IR_L) > 33 )//){
+			 	|| (get_IR(IR_R) > 10 && get_IR(IR_R) < 22)){
+				 	cnt++;
+					if(cnt > 5){
+						cnt = 0;
+						long long n = (long long)1 * get_encoder_L();
+						if(n > 1)n = 1;
+						GyroSum_add(n);
+					}
 				}
 			}
 		}
 	
-		if(get_encoder_L() > 0){	
-			if(get_IR(IR_FL) > 20){
+	/*	 //前壁補正　センサーが左右で誤差があるので未使用
+		if(get_encoder_L() > 0 || get_encoder_R() > 0){
+			if(get_IR(IR_FL) > 12 && get_IR(IR_FR) > 12){//前壁あり
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
-				if(abs(diff) < 8){
-					long long n = diff * get_encoder_L();
-					if(n > 10)n = 10;
-					if(n < -10)n = -10;
-					GyroSum_add(n);
+				if(abs(diff) < 15){
+					cnt++;
+					if(cnt > 5){
+						cnt = 0;
+						long long n = diff * get_encoder_L();
+						if(n > 1)n = 1;
+						if(n < -1)n = -1;
+						GyroSum_add(n);
+					}
 				}	
 			}
-		}
+		}*/
 	}
-	int powor_max = 40;
+	int powor_max = 20;
 	int powor = gyro_powor_L();
 	if(powor > powor_max)powor = powor_max;
 	else if(-powor_max > powor)powor = -powor_max; 
 	
+	if( get_encoder_L() < 10){//速度が遅い時はジャイロ弱める	
+		powor /= 2;
+	}
 	motor(M + powor ,M - powor);
 }
 
 
 void ESmotor(int A, int max_M,char non_stop,char w_flag){
-	long long L = get_encoder_total_L();
-	long long L_target = L + A;
-	long long L_prev = A;
+	long long L = get_encoder_total_L();//現在地
+	long long L_target = L + A;			//目標地点
+	long long L_prev = A;				//残り距離
 	int cnt = 0;
 	
-	int p = 5,d = 0,min_M = 5,M = 5;
-	int max_FL = 35,Eb = 5,Ebf = 0;
+	int p = 5,d = 0,min_M = 5,M = 0;
+	int max_FL = 40,Eb = 5,Ebf = 0;
 	
-	int non_stop_min_M = 8;
+	int non_stop_min_M = 15;
+	
+	GyroSum_reset();
 	
 	while(1){
 		if(get_IR(IR_FL) > max_FL && Ebf == 0){
@@ -179,12 +207,12 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 			Ebf = 1;
 		}
 		
-		if((L_target - L) >= 0){	
+		if((L_target - L) >= 0){//目標地点まで移動中	
 
-			if(get_encoder_total_L() - (L_target-A) < A*2/3){//up
-				M += (get_encoder_total_L() - (L_target-A)) / 10;	
+			if(get_encoder_total_L() - (L_target-A) < A*2/3){// 進んだ距離 < A*2/3　＝ 加速区間
+				M += (get_encoder_total_L() - (L_target-A)) / 8;	
 			}else{
-				M = (L_target - get_encoder_total_L())/10;//down
+				M = (L_target - get_encoder_total_L())/10;//減速区間
 			}
 
 			if(max_M < M)M = max_M;
@@ -195,12 +223,15 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 				if(M < min_M)M = min_M;
 			}
 
-		}else{
+		}else{//行き過ぎた
 			M = (L_target - L) * p   + ((L_target - L) - L_prev) * d;
 		}
 		 
-		Smotor(M,w_flag);
-		
+		if(get_encoder_total_L() - (L_target-A) > 20){//5mmくらい進んだ場合はジャイロ有効　
+			Smotor(M,w_flag);
+		}else{
+			motor(M,M);
+		}
 		
 		//delay(1);
 		L_prev = (L_target - L);
@@ -223,6 +254,7 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 }
 
 void Tmotor(long long A){
+	GyroSum_reset();
 	GyroSum_add(A);
 	Encoder_reset();
 	
@@ -231,10 +263,10 @@ void Tmotor(long long A){
 
 	int sa = 0;
 	int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
-	int MA = 8,min_M = 8;
+	int MA = 1,min_M = 2;
 	
 	int cnt = 0;
-	int powor_max = 20;
+	int powor_max = 10;
 	int powor;
 
 	while(1){
@@ -272,7 +304,7 @@ void Tmotor(long long A){
 		L = get_encoder_total_L();
 		R = get_encoder_total_R();
 
-		if(abs(GyroSum_get()) < 80)cnt += 10;
+		if(abs(GyroSum_get()) < 50)cnt += 10;
 		else if(abs(GyroSum_get()) < 150)cnt++;
 		else cnt = 0;
 
@@ -281,29 +313,29 @@ void Tmotor(long long A){
 
 
 	motor(0,0);
-//	GyroSum_reset();
+	GyroSum_reset();
 	Encoder_reset();
 }
 
 
 void ETmotor(long long A, long long E, char non_stop){
-//	GyroSum_reset();
+	GyroSum_reset();
 	Encoder_reset();
 
-	int M = 30;//35
+	int M = 20;//35
 	char flag = 0;
 	if(A > 0){//R
-		while(get_IR(IR_R) > 25){
+		while(get_IR(IR_R) > 13){
 			Smotor(M,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(40,M,true,false);
+		if(flag)ESmotor(160,M,true,false);
 	}else{//L
-		while(get_IR(IR_L) > 25){
+		while(get_IR(IR_L) > 13){
 			Smotor(M,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(40,M,true,false);
+		if(flag)ESmotor(160,M,true,false);
 	}
 
 //	GyroSum_reset();
@@ -314,7 +346,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	long long L_prev = L, R_prev = R;
 	long long E_sum = 0;
 	
-	int powor_max = 30;
+	int powor_max = 40;
 	int powor;
 	
 	int LM = 0, RM = 0;
@@ -331,13 +363,15 @@ void ETmotor(long long A, long long E, char non_stop){
 	while(1){
 		
 		i++;
+		
 		if(A > 0){//R
-			GyroSum_add(A * (((L - L_prev)*1000) / E) / 1000 + 1 + (i&1));
-			E_sum += (int)(L - L_prev);
+			GyroSum_add( (A * (((L - L_prev)*100000) / E)) / 100000);//+ 1 + (i&1));
+			E_sum += (L - L_prev);
 		}else{//L
-		   	GyroSum_add(A * (((R - R_prev)*1000) / E) / 1000 - 1 - (i&1));
-			E_sum += (int)(R - R_prev);
+		   	GyroSum_add( (A * (((R - R_prev)*100000) / E)) / 100000);//- 1 - (i&1));
+			E_sum += (R - R_prev);
 		}
+		
 		
 		powor = gyro_powor_L();
 		
@@ -376,7 +410,7 @@ void ETmotor(long long A, long long E, char non_stop){
 
 
 	//motor(0,0);
-//	GyroSum_reset();
+	GyroSum_reset();
 	Encoder_reset();
 }
 
