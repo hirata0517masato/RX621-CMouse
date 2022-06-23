@@ -21,7 +21,7 @@
 
 #include "printf_lib.h"   /* printf2 関連処理    コンパイルおよびライブラリジェネレートオプションにてC99対応が必要  */
 
-//#define PRINT /* 使用時は有効化すること*/
+#define PRINT /* 使用時は有効化すること*/
 
 #ifndef PRINT
 	#define printf2(...)  
@@ -40,8 +40,12 @@ void MTU0_init(void);
 void MTU1_init(void);
 
 void led(char);
+void led_up(void);
+void led_down(void);
 int get_sw(void);
 
+void maze_save(void);
+void maze_load(void);
 void maze_update(char,char,char);
 void maze_search_adachi(short,short);
 void shortest_path_search_fin(void);
@@ -62,11 +66,11 @@ void S_run(int,int, char,char);
 #define Start_x  0
 #define Start_y  0
 #define Goal_x  2
-#define Goal_y  3
+#define Goal_y  4
 
 
-#define r45  (11000)
-#define l45  (11000)
+#define r45  (11500)
+#define l45  (11500)
 #define r90  (21000) 
 #define l90  (21000)
 #define r180  (-42100)
@@ -76,7 +80,7 @@ void S_run(int,int, char,char);
 #define s45 (480)
 #define h1 (345)
 
-#define rsls90 (690)
+#define rsls90 (685)
 #define sr90  (23000)
 #define sl90  (23000)
 
@@ -91,6 +95,7 @@ short dx[4] = {0,1,0,-1},dy[4] = {-1,0,1,0};
 
 char my_x = Start_x,my_y = Start_y,my_angle = 1;//0:up 1:right 2:down 3:left
 
+int ir_flag = 0; // 0:赤外線OFF 1:赤外線ON
 /***********************************************************************/
 /* メインプログラム                                                    */
 /***********************************************************************/
@@ -106,66 +111,135 @@ void main(void)
 	
 */
 	volatile int i = 0;
+	int mode = 0;
 	
 	ALL_init();//初期化
 	
-	delay(3);
+	delay(100);
 	
-	while(1){
-		
-		/*
-		while(1){
-			motor(20,20);
+	
+/*	while(1){
+		//motor(20,20);
 			
-			printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
-			//printf2("%d\n",get_encoder_total_L());
-			delay(1000);
-		}*/
+		printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
+		//printf2("%d\n",get_encoder_total_L());
+		delay(1000);
+	}
+*/		
+	while(1){
+		Encoder_reset();
 		
+		ir_flag = 0;//赤外線OFF
 		
-		//正面センサーに手をかざす
-		while((get_IR(0) < 15) || (get_IR(3) < 15)) led(1);
-  		while((get_IR(0) > 15) || (get_IR(3) > 15)) led(8);
-		led(0);
-  		delay(1000);
-		
-		for(i = 1;i <= 8; i*= 2){
-			led(i);
-			delay(100);
+		//モード選択
+		while(1){
+			led(mode);
+			
+			mode = get_encoder_total_R() / 100;
+			
+			if(get_sw() == 1){
+				led_up();
+				while(get_sw() == 1)nop();
+				break;
+			}
 		}
-		led(0);
 		
+		ir_flag = 1;//赤外線ON
 		
-		maze_search_adachi(Goal_x,Goal_y);
+		if(mode != 5){//迷路情報のリセットでなければ
+			led(6);
+			//スイッチ入力待ち
+			while(get_sw() == 0) nop();
+			while(get_sw() == 1) nop();
 		
-		maze_search_adachi(Start_x,Start_y);
-
-
-		
-		shortest_path_search_fin();
-		//remake_shortest_path_list_naname();
-		
-		for(i = 1;i <= 8; i*= 2){
-			led(i);
-			delay(100);
+			//正面センサーに手をかざす
+			while((get_IR(0) < 20) || (get_IR(3) < 20)) led(1);
+  			while((get_IR(0) > 20) || (get_IR(3) > 20)) led(8);
+				
+			led_up();
+			
+			GyroSum_reset();
+			Encoder_reset();
 		}
-		led(0);
 		
-		run_shortest_path_fin(false);//not naname
-		//run_shortest_path_fin(true);//naname
+		switch(mode){
+			case 1://探索モード
+				
+				maze_search_adachi(Goal_x,Goal_y);
+		
+				maze_search_adachi(Start_x,Start_y);
+				
+				break;
+				
+			case 2://最短走行モード
+				shortest_path_search_fin();
+				
+				run_shortest_path_fin(false);
+				
+				break;
+			case 3://最短走行（斜めあり）モード
+				shortest_path_search_fin();
+				remake_shortest_path_list_naname();
+				
+				run_shortest_path_fin(true);
+				break;
+				
+				
+				
+				
+			case 5://迷路情報リセットモード
+				for(int i = 0; i < H;i++)for(int j = 0; j < W; j++)maze_w[i][j] = 0;
+				
+				//迷路の外周の確定壁を設定
+				//0
+  				for(int i = 0; i < W;i++)maze_w[0][i] |= 0x11;
+  				//1
+  				for(int i = 0; i < H;i++)maze_w[i][W-1] |= 0x22;
+  				//2
+  				for(int i = 0; i < W;i++)maze_w[H-1][i] |= 0x44;
+  				//3
+  				for(int i = 0; i < H;i++)maze_w[i][0] |= 0x88;
+  
+				//スタート地点の確定壁を設定
+  				maze_w[my_y][my_x] = 0xfd;//13;//15-2;
+  				maze_w[my_y+1][my_x] |= 0x11;
+				maze_w[my_y][my_x+1] |= 0x80;
+				
+				break;
+			default:
+				led(9);
+				delay(200);
+				led(0);
+				delay(200);
+				led(9);
+				delay(200);
+				led(0);
+				delay(200);
+				break;
+		}
+		
+		ir_flag = 0;//赤外線OFF
 		
 		led(9);
 		//スイッチ入力待ち
 		while(get_sw() == 0) nop();
 		while(get_sw() == 1) nop();
+		
+		maze_save();
+		
+		led_up();
+		led_down();
+		
+		//スイッチ入力待ち
+		while(get_sw() == 0) nop();
+		while(get_sw() == 1) nop();
+		
+		led(9);
+		delay(100);
+		
 	}
 	
-	/*
-	while(1){
-		printf2("input: ");
-		scanf2("%d",&aa);
-		printf2("%d\n",aa);
-	}*/
+	
 	
 	/*
 	DataFlash_read(1,read_buff,sizeof(read_buff));
@@ -216,20 +290,7 @@ void ALL_init(){
 	led(0);
 	ir(0);
 	
-	//迷路の外周の確定壁を設定
-	//0
-  	for(int i = 0; i < W;i++)maze_w[0][i] |= 0x11;
-  	//1
-  	for(int i = 0; i < H;i++)maze_w[i][W-1] |= 0x22;
-  	//2
-  	for(int i = 0; i < W;i++)maze_w[H-1][i] |= 0x44;
-  	//3
-  	for(int i = 0; i < H;i++)maze_w[i][0] |= 0x88;
-  
-	//スタート地点の確定壁を設定
-  	maze_w[my_y][my_x] = 0xfd;//13;//15-2;
-  	maze_w[my_y+1][my_x] |= 0x11;
-	maze_w[my_y][my_x+1] |= 0x80;
+	maze_load();//迷路データの読み込み
   
 	//スイッチ入力待ち
 	while(get_sw() == 0) nop();
@@ -242,7 +303,7 @@ void ALL_init(){
 	initSCI1(SPEED_9600);
 	//USB_init();  //USB CDCの初期化
 	
-	led(1);
+	led(9);
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -437,7 +498,21 @@ void led(char n){
 	else PORTA.DR.BIT.B3 = 0;
 }
 
+void led_up(){
+	for(int i = 1;i <= 8; i*= 2){
+		led(i);
+		delay(100);
+	}
+	led(0);
+}
 
+void led_down(){
+	for(int i = 8;i > 0; i/= 2){
+		led(i);
+		delay(100);
+	}
+	led(0);
+}
 
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -450,6 +525,42 @@ int get_sw(){
 	return (PORTA.PORT.BIT.B4 == 1)? 0: 1 ;
 }
 
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：迷路情報の保存                                                                         */
+/* 関 数 詳 細：                                                                                    */
+/* 引       数：なし										    */
+/* 戻  り   値：なし										    */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void maze_save(){
+	uint8_t buff[H*W];
+	
+	for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++){
+			buff[i*W + j] = maze_w[i][j];
+		}
+	}
+	
+	DataFlash_write(1,buff,sizeof(buff));
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：迷路情報の復元                                                                        */
+/* 関 数 詳 細：                                                                                    */
+/* 引       数：なし										    */
+/* 戻  り   値：なし										    */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void maze_load(){
+	uint8_t buff[H*W];
+	
+	DataFlash_read(1,buff,sizeof(buff));
+	
+	for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++){
+			 maze_w[i][j] = buff[i*W + j];
+		}
+	}
+}
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：迷路情報の更新											  			            */
@@ -469,13 +580,13 @@ void maze_update(char x,char y,char angle){
       
       switch(i){
         case -1://L
-          if(get_IR(IR_L) > 8)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_L) > 20)maze_w[y][x] |= 1 << ii;
           break;
         case 0://S
-          if(get_IR(IR_FL) > 19)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_FL) > 20)maze_w[y][x] |= 1 << ii;
           break;
         case 1://R
-          if(get_IR(IR_R) > 8)maze_w[y][x] |= 1 << ii; 
+          if(get_IR(IR_R) > 20)maze_w[y][x] |= 1 << ii; 
           break;
       }
       if((0 <= nx && nx < W) && (0 <= ny && ny < H)){
@@ -516,13 +627,13 @@ void S_run(int path,int powor, char non_stop,char kabe){
 
   	if(!non_stop && kabe){
    		// GyroSum_reset();
-    	if(10 < get_IR(IR_FL) && 10 < get_IR(IR_FR) ){
+    	if(20 < get_IR(IR_FL) && 20 < get_IR(IR_FR) ){
 	 		while(1){
-      			if(get_IR(IR_FL) > 40){
+      			if(get_IR(IR_FL) > 90){
         			Smotor(-10,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 37){
+      			}else if(get_IR(IR_FL) < 70){
        	 			Smotor(+10,true);
        
         			cnt2 = 0;
@@ -543,15 +654,15 @@ void S_run_kabe(int powor, char flag){//壁切れまで走行
  
   while(1){
     if(Lflag == 0){
-      if(get_IR(IR_L) > 15)Lflag = 1;
+      if(get_IR(IR_L) > 30)Lflag = 1;
     }else if(Lflag == 1){
-      if(get_IR(IR_L) < 10)break;
+      if(get_IR(IR_L) < 20)break;
     }
 
     if(Rflag == 0){
-      if(get_IR(IR_R) > 15)Rflag = 1;
+      if(get_IR(IR_R) > 30)Rflag = 1;
     }else if(Rflag == 1){
-      if(get_IR(IR_R) < 10)break;
+      if(get_IR(IR_R) < 20)break;
     }
     
     Smotor(powor,flag);
@@ -787,11 +898,7 @@ void maze_search_adachi(short target_x,short target_y){
 	GyroSum_reset();
 	Encoder_reset();
 
-	for(int i = 8;i > 0; i/= 2){
-		led(i);
-		delay(100);
-	}
-	led(0);
+	led_down();
 	
 	while(1){
     	maze_update(my_x,my_y,my_angle);
@@ -800,11 +907,7 @@ void maze_search_adachi(short target_x,short target_y){
     	}
 		
     	if(target_x == my_x && target_y == my_y){//ゴール
-			for(int i = 1;i <= 8; i*= 2){
-				led(i);
-				delay(100);
-			}
-			led(0);
+			led_up();
 			
       		if(target_x == Start_x && target_y == Start_y){
         		Tmotor(r180);
@@ -969,11 +1072,7 @@ void shortest_path_search_fin(){
     enqueue(1);
    }
   
-  for(int i = 8;i > 0; i/= 2){
-	led(i);
-	delay(100);
-  }
-  led(0);
+  led_down();
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -1114,11 +1213,7 @@ void run_shortest_path_fin(	char naname){
     }
   }
 
-  for(int i = 1;i <= 8; i*= 2){
-	led(i);
-	delay(100);
-  }
-  led(0);
+  led_up();
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -1134,17 +1229,19 @@ void Excep_CMT0_CMI0(void)
 	task ++;                         // タスクの更新						
   	if (task == 10) task = 0;            
 	
+	if(ir_flag == 1){
+		ir_update();
+	}else{
+		ir(0);
+	}
+	
 	Gyro_update();
-	
-	ir_update();
-	
-	
+		
 	if(abs(Gyro()) > 250){
     	motor_stop_cnt++;
     	if(motor_stop_cnt > 20)motor_stop();
   	}else motor_stop_cnt = 0;
 	
-
 	switch(task) {                         			
 	case 0:
 		encoder_update();

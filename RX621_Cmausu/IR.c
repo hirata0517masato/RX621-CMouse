@@ -30,17 +30,17 @@ void AD_update(void)
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void ir(char n){
 	
-	if((n & 0x01) > 0)PORTD.DR.BIT.B0 = 1;
-	else PORTD.DR.BIT.B0 = 0;
+	if((n & 0x01) > 0)PORTD.DR.BIT.B0 = 0;
+	else PORTD.DR.BIT.B0 = 1;
 	
-	if((n & 0x02) > 0)PORTD.DR.BIT.B1 = 1;
-	else PORTD.DR.BIT.B1 = 0;
+	if((n & 0x02) > 0)PORTD.DR.BIT.B1 = 0;
+	else PORTD.DR.BIT.B1 = 1;
 	
-	if((n & 0x04) > 0)PORTD.DR.BIT.B2 = 1;
-	else PORTD.DR.BIT.B2 = 0;
+	if((n & 0x04) > 0)PORTD.DR.BIT.B2 = 0;
+	else PORTD.DR.BIT.B2 = 1;
 	
-	if((n & 0x08) > 0)PORTD.DR.BIT.B3 = 1;
-	else PORTD.DR.BIT.B3 = 0;
+	if((n & 0x08) > 0)PORTD.DR.BIT.B3 = 0;
+	else PORTD.DR.BIT.B3 = 1;
 }
 
 
@@ -55,17 +55,17 @@ void ir_update(){
 	static int num = 0;
 	static int s[4] = {0,0,0,0};
 	
-	AD_update();
+	//AD_update();
 	
 	switch(num){
 		case 0:	//front
 			S[0] = AD_1 - s[0];
-			S[3] = AD_4 - s[3];
+			S[3] = AD_0 - s[3];
 			
 			s[1] = AD_2;
 			s[2] = AD_3;
 			
-			ir(6);//0110
+			ir(9);//0110
 			num = 1;
 			break;
 			
@@ -74,13 +74,13 @@ void ir_update(){
 			S[2] = AD_3 - s[2];
 			
 			s[0] = AD_1;
-			s[3] = AD_4;
+			s[3] = AD_0;
 			
-			ir(9);// 1001
+			ir(6);// 1001
 			num = 0;
 			break;
-		
 	}
+	AD_update();
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */

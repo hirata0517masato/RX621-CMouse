@@ -132,11 +132,11 @@ void Smotor(int M,char w_flag){
 	if(w_flag){
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
 
-			if(((get_IR(IR_FL) < 30) || (get_IR(IR_FR) < 30)) && abs(GyroSum_get()) < 6000){
+			if(((get_IR(IR_FL) < 50) || (get_IR(IR_FR) < 50)) && abs(GyroSum_get()) < 6000){
 				
 				
-				if((get_IR(IR_R) > 33 )//){
-			 	|| (get_IR(IR_L) > 10 && get_IR(IR_L) < 22)){
+				if((get_IR(IR_R) > 65 )//){
+			 	|| (get_IR(IR_L) > 20 && get_IR(IR_L) < 40)){
 					cnt++;
 					if(cnt > 5){
 						cnt = 0;
@@ -146,8 +146,8 @@ void Smotor(int M,char w_flag){
 					}
 				}
 			
-				if((get_IR(IR_L) > 33 )//){
-			 	|| (get_IR(IR_R) > 10 && get_IR(IR_R) < 22)){
+				if((get_IR(IR_L) > 65 )//){
+			 	|| (get_IR(IR_R) > 20 && get_IR(IR_R) < 40)){
 				 	cnt++;
 					if(cnt > 5){
 						cnt = 0;
@@ -325,13 +325,13 @@ void ETmotor(long long A, long long E, char non_stop){
 	int M = 20;//35
 	char flag = 0;
 	if(A > 0){//R
-		while(get_IR(IR_R) > 13){
+		while(get_IR(IR_R) > 15){
 			Smotor(M,true);
 			flag = 1;
 		}
 		if(flag)ESmotor(160,M,true,false);
 	}else{//L
-		while(get_IR(IR_L) > 13){
+		while(get_IR(IR_L) > 15){
 			Smotor(M,true);
 			flag = 1;
 		}
