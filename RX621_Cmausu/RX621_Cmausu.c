@@ -65,8 +65,8 @@ void S_run(int,int, char,char);
 #define W	16
 #define Start_x  0
 #define Start_y  0
-#define Goal_x  2
-#define Goal_y  4
+#define Goal_x  6
+#define Goal_y  0
 
 
 #define r45  (11500)
@@ -77,10 +77,10 @@ void S_run(int,int, char,char);
 
 //memo : 1mm = 4
 #define s1 (740)
-#define s45 (480)
+#define s45 (550)
 #define h1 (345)
 
-#define rsls90 (685)
+#define rsls90 (660)
 #define sr90  (23000)
 #define sl90  (23000)
 
@@ -135,7 +135,7 @@ void main(void)
 		while(1){
 			led(mode);
 			
-			mode = get_encoder_total_R() / 100;
+			mode = get_encoder_total_R() / 50;
 			
 			if(get_sw() == 1){
 				led_up();
@@ -144,6 +144,10 @@ void main(void)
 			}
 		}
 		
+		my_x = Start_x;
+		my_y = Start_y;
+		my_angle = 1;
+		 
 		ir_flag = 1;//赤外線ON
 		
 		if(mode != 5){//迷路情報のリセットでなければ
@@ -182,6 +186,7 @@ void main(void)
 				remake_shortest_path_list_naname();
 				
 				run_shortest_path_fin(true);
+				
 				break;
 				
 				
@@ -849,6 +854,8 @@ void run_shortest_path(){
 	
     switch(comand){
       case -1://L
+	  	delay(time);
+		
         L_rotate(l90);
 		
 		delay(time);
@@ -871,14 +878,18 @@ void run_shortest_path(){
             my_x -= path_num;
             break;
         }
-		delay(time);
+		//delay(time);
         break;
       case 1://R
+	  	delay(time);
+		
         R_rotate(r90);
 		
 		delay(time);
         break;
       case 2://B
+	  	delay(time);
+		
         Tmotor(r180);
         my_angle = (4+my_angle+2)%4;
 		
@@ -1183,11 +1194,11 @@ void run_shortest_path_fin(	char naname){
         non_stop = 1;
         break;
       case 0://S
-        if(queue_empty())S_run(h1 * path_num + (h1/4),20,false,true);
+        if(queue_empty())S_run(h1 * path_num + (h1/2),27,false,true);
         else {
           path_num--;
-          if(path_num > 0)S_run(h1 * path_num ,20,true,true);
-          S_run_kabe(20,true);
+          if(path_num > 0)S_run(h1 * path_num ,27,true,true);
+          S_run_kabe(27,true);
         }
 
          non_stop = 0;
@@ -1195,7 +1206,7 @@ void run_shortest_path_fin(	char naname){
         //my_y = ny;
         break;
       case 10://Snaname
-        S_run(s45 * path_num ,25,false,false);
+        S_run(s45 * path_num ,30,false,false);
 
          non_stop = 0;
         //my_x = nx;

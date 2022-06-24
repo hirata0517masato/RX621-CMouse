@@ -127,54 +127,80 @@ void motor(int LM,int RM){
 
 void Smotor(int M,char w_flag){
 
-	static int cnt = 0;
+	static int cnt1 = 0,cnt2 = 0;
+	//static int cnt3 = 0,cnt4 = 0;
+	static int cnt5 = 0;
 	
 	if(w_flag){
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
 
-			if(((get_IR(IR_FL) < 50) || (get_IR(IR_FR) < 50)) && abs(GyroSum_get()) < 6000){
+			if(((get_IR(IR_FL) < 70) || (get_IR(IR_FR) < 70)) && abs(GyroSum_get()) < 6000){
 				
 				
-				if((get_IR(IR_R) > 65 )//){
-			 	|| (get_IR(IR_L) > 20 && get_IR(IR_L) < 40)){
-					cnt++;
-					if(cnt > 5){
-						cnt = 0;
+				if((get_IR(IR_R) > 85 )//){
+			 	|| (get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){
+					cnt1++;
+					if(cnt1 > 5){
+						cnt1 = 0;
 						long long n = (long long)-1 * get_encoder_L();
 						if(n < -1)n = -1;
 						GyroSum_add(n);
 					}
-				}
+				}else cnt1 = 0;
 			
-				if((get_IR(IR_L) > 65 )//){
-			 	|| (get_IR(IR_R) > 20 && get_IR(IR_R) < 40)){
-				 	cnt++;
-					if(cnt > 5){
-						cnt = 0;
+				if((get_IR(IR_L) > 85 )//){
+			 	|| (get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){
+				 	cnt2++;
+					if(cnt2 >5){
+						cnt2 = 0;
 						long long n = (long long)1 * get_encoder_L();
 						if(n > 1)n = 1;
 						GyroSum_add(n);
 					}
-				}
+				}else cnt2 = 0;
+			}else{
+				cnt1 = 0;
+				cnt2 = 0;
 			}
 		}
 	
-	/*	 //前壁補正　センサーが左右で誤差があるので未使用
+				/*
+		//斜め対策
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
-			if(get_IR(IR_FL) > 12 && get_IR(IR_FR) > 12){//前壁あり
+			if(get_IR(IR_FL) > 10 && get_IR(IR_L) < 10 && get_IR(IR_R) < 10 && get_IR(IR_FR) < 10){//左前のみ
+				cnt3++;
+				if(cnt3 > 2){
+					cnt3 = 0;
+					GyroSum_add(1);
+				}	
+			}else cnt3 = 0;
+			
+			if(get_IR(IR_FL) < 10 && get_IR(IR_L) < 10 && get_IR(IR_R) < 10 && get_IR(IR_FR) > 10){//右前のみ
+				cnt4++;
+				if(cnt4 > 2){
+					cnt4 = 0;
+					GyroSum_add(-1);
+				}	
+			}else cnt4 = 0;
+		}
+		*/
+		
+		 //前壁補正　センサーが左右で誤差があるので未使用
+		if(get_encoder_L() > 0 || get_encoder_R() > 0){
+			if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15){//前壁あり
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
 				if(abs(diff) < 15){
-					cnt++;
-					if(cnt > 5){
-						cnt = 0;
+					cnt5++;
+					if(cnt5 > 3){
+						cnt5 = 0;
 						long long n = diff * get_encoder_L();
 						if(n > 1)n = 1;
 						if(n < -1)n = -1;
 						GyroSum_add(n);
 					}
-				}	
-			}
-		}*/
+				}else cnt5 = 0;	
+			}else cnt5 = 0;
+		}
 	}
 	int powor_max = 20;
 	int powor = gyro_powor_L();
@@ -210,7 +236,7 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 		if((L_target - L) >= 0){//目標地点まで移動中	
 
 			if(get_encoder_total_L() - (L_target-A) < A*2/3){// 進んだ距離 < A*2/3　＝ 加速区間
-				M += (get_encoder_total_L() - (L_target-A)) / 8;	
+				M += (get_encoder_total_L() - (L_target-A)) / 15;	
 			}else{
 				M = (L_target - get_encoder_total_L())/10;//減速区間
 			}
@@ -319,10 +345,10 @@ void Tmotor(long long A){
 
 
 void ETmotor(long long A, long long E, char non_stop){
-	GyroSum_reset();
-	Encoder_reset();
+	//GyroSum_reset();
+	//Encoder_reset();
 
-	int M = 20;//35
+	int M = 17;//35
 	char flag = 0;
 	if(A > 0){//R
 		while(get_IR(IR_R) > 15){
@@ -339,14 +365,14 @@ void ETmotor(long long A, long long E, char non_stop){
 	}
 
 //	GyroSum_reset();
-	Encoder_reset();
+	//Encoder_reset();
 	
 	long long L = get_encoder_total_L();
 	long long R = get_encoder_total_R();
 	long long L_prev = L, R_prev = R;
 	long long E_sum = 0;
 	
-	int powor_max = 40;
+	int powor_max = 30;
 	int powor;
 	
 	int LM = 0, RM = 0;
@@ -360,6 +386,8 @@ void ETmotor(long long A, long long E, char non_stop){
 	int i = 0;
 
 
+	ESmotor(60,M,true,false);
+	
 	while(1){
 		
 		i++;
@@ -408,9 +436,10 @@ void ETmotor(long long A, long long E, char non_stop){
 		if(E - E_sum < 0)break;
 	}
 
-
+	ESmotor(60,M,true,false);
+	
 	//motor(0,0);
-	GyroSum_reset();
-	Encoder_reset();
+	//GyroSum_reset();
+	//Encoder_reset();
 }
 
