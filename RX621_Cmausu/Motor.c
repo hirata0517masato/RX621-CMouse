@@ -137,8 +137,8 @@ void Smotor(int M,char w_flag){
 			if(((get_IR(IR_FL) < 70) || (get_IR(IR_FR) < 70)) && abs(GyroSum_get()) < 6000){
 				
 				
-				if((get_IR(IR_R) > 85 )//){
-			 	|| (get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){
+				if((get_IR(IR_R) > 75 )//){ //右壁近い
+			 	|| (get_IR(IR_R) < 15 && get_IR(IR_L) > 15 && get_IR(IR_L) < 60)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
 					if(cnt1 > 5){
 						cnt1 = 0;
@@ -148,10 +148,10 @@ void Smotor(int M,char w_flag){
 					}
 				}else cnt1 = 0;
 			
-				if((get_IR(IR_L) > 85 )//){
-			 	|| (get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){
+				if((get_IR(IR_L) > 75 )//){ //左壁近い
+			 	|| (get_IR(IR_L) < 15 && get_IR(IR_R) > 15 && get_IR(IR_R) < 60)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if(cnt2 >5){
+					if(cnt2 > 5 ){
 						cnt2 = 0;
 						long long n = (long long)1 * get_encoder_L();
 						if(n > 1)n = 1;
@@ -191,7 +191,7 @@ void Smotor(int M,char w_flag){
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
 				if(abs(diff) < 15){
 					cnt5++;
-					if(cnt5 > 3){
+					if(cnt5 > 10){
 						cnt5 = 0;
 						long long n = diff * get_encoder_L();
 						if(n > 1)n = 1;
@@ -207,9 +207,9 @@ void Smotor(int M,char w_flag){
 	if(powor > powor_max)powor = powor_max;
 	else if(-powor_max > powor)powor = -powor_max; 
 	
-	if( get_encoder_L() < 10){//速度が遅い時はジャイロ弱める	
+/*	if( get_encoder_L() < 10){//速度が遅い時はジャイロ弱める	
 		powor /= 2;
-	}
+	}*/
 	motor(M + powor ,M - powor);
 }
 
@@ -220,8 +220,8 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 	long long L_prev = A;				//残り距離
 	int cnt = 0;
 	
-	int p = 5,d = 0,min_M = 5,M = 0;
-	int max_FL = 40,Eb = 5,Ebf = 0;
+	int p = 5,d = 0,min_M = 5,M = 5;
+	int max_FL = 70,Eb = 5,Ebf = 0;
 	
 	int non_stop_min_M = 15;
 	
@@ -243,8 +243,15 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 
 			if(max_M < M)M = max_M;
 
-			if(non_stop){
+			if(non_stop == 1){
 				if(M < non_stop_min_M)M = non_stop_min_M;
+				
+			}else if(non_stop == 3){//加速ゆっくり　減速すくなめ
+				if(get_encoder_total_L() - (L_target-A) < A/2){// 進んだ距離 < A/2
+					if(M < min_M)M = min_M;
+				}else{
+					if(M < non_stop_min_M)M = non_stop_min_M;
+				}
 			}else{
 				if(M < min_M)M = min_M;
 			}
@@ -253,18 +260,18 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 			M = (L_target - L) * p   + ((L_target - L) - L_prev) * d;
 		}
 		 
-		if(get_encoder_total_L() - (L_target-A) > 20){//5mmくらい進んだ場合はジャイロ有効　
+		//if(get_encoder_total_L() - (L_target-A) > 20){//5mmくらい進んだ場合はジャイロ有効　
 			Smotor(M,w_flag);
-		}else{
-			motor(M,M);
-		}
+		//}else{
+		//	motor(M,M);
+		//}
 		
 		//delay(1);
 		L_prev = (L_target - L);
 		L = get_encoder_total_L();
 	
-		if(non_stop){
-			if(L_target - L < 8)break; 
+		if(non_stop != 0){
+			if(L_target - L < 12)break; 
 		}else{
 			if(abs(L-L_target) < 10)cnt++;
 			else cnt = 0;
@@ -386,7 +393,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	int i = 0;
 
 
-	ESmotor(60,M,true,false);
+	ESmotor(55,M,true,false);
 	
 	while(1){
 		
@@ -436,7 +443,7 @@ void ETmotor(long long A, long long E, char non_stop){
 		if(E - E_sum < 0)break;
 	}
 
-	ESmotor(60,M,true,false);
+	ESmotor(55,M,true,false);
 	
 	//motor(0,0);
 	//GyroSum_reset();

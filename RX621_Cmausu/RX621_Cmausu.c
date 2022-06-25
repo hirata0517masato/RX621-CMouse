@@ -65,8 +65,8 @@ void S_run(int,int, char,char);
 #define W	16
 #define Start_x  0
 #define Start_y  0
-#define Goal_x  6
-#define Goal_y  0
+#define Goal_x  0
+#define Goal_y  2
 
 
 #define r45  (11500)
@@ -78,9 +78,9 @@ void S_run(int,int, char,char);
 //memo : 1mm = 4
 #define s1 (740)
 #define s45 (550)
-#define h1 (345)
+#define h1 (340)
 
-#define rsls90 (660)
+#define rsls90 (657)
 #define sr90  (23000)
 #define sl90  (23000)
 
@@ -632,7 +632,7 @@ void S_run(int path,int powor, char non_stop,char kabe){
 
   	if(!non_stop && kabe){
    		// GyroSum_reset();
-    	if(20 < get_IR(IR_FL) && 20 < get_IR(IR_FR) ){
+    	if(13 < get_IR(IR_FL) && 13 < get_IR(IR_FR) ){
 	 		while(1){
       			if(get_IR(IR_FL) > 90){
         			Smotor(-10,true);
@@ -659,15 +659,15 @@ void S_run_kabe(int powor, char flag){//壁切れまで走行
  
   while(1){
     if(Lflag == 0){
-      if(get_IR(IR_L) > 30)Lflag = 1;
+      if(get_IR(IR_L) > 20)Lflag = 1;
     }else if(Lflag == 1){
-      if(get_IR(IR_L) < 20)break;
+      if(get_IR(IR_L) < 10)break;
     }
 
     if(Rflag == 0){
-      if(get_IR(IR_R) > 30)Rflag = 1;
+      if(get_IR(IR_R) > 20)Rflag = 1;
     }else if(Rflag == 1){
-      if(get_IR(IR_R) < 20)break;
+      if(get_IR(IR_R) < 10)break;
     }
     
     Smotor(powor,flag);
@@ -1180,6 +1180,7 @@ void run_shortest_path_fin(	char naname){
   my_x = Start_x;my_y = Start_y;my_angle = 1;
   char non_stop = 0;
   int comand ,path_num;
+  int first_flag = 0; //0:まだ走行してない 1:走行中
   
   while(!queue_empty()){
     comand = dequeue();path_num = dequeue();
@@ -1194,10 +1195,13 @@ void run_shortest_path_fin(	char naname){
         non_stop = 1;
         break;
       case 0://S
-        if(queue_empty())S_run(h1 * path_num + (h1/2),27,false,true);
+        if(queue_empty())S_run(h1 * path_num + (h1/2),32,false,true);
         else {
           path_num--;
-          if(path_num > 0)S_run(h1 * path_num ,27,true,true);
+          if(path_num > 0){
+			  if(first_flag == 0)S_run(h1 * path_num ,32,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
+		  	  else S_run(h1 * path_num ,32,true,true);
+		  }
           S_run_kabe(27,true);
         }
 
@@ -1222,6 +1226,7 @@ void run_shortest_path_fin(	char naname){
         non_stop = 1;
         break;
     }
+	first_flag = 1;
   }
 
   led_up();
