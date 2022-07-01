@@ -43,6 +43,7 @@
       <Path>stacksct.h</Path>
       <Path>typedefine.h</Path>
       <Path>vect.h</Path>
+      <Path>Parameters.h</Path>
     </Files>
     <DebugOptions>
       <ConnectSettings>

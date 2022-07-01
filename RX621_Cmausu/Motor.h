@@ -10,7 +10,7 @@
 void motor_stop(void);
 void motor(int,int);
 void Smotor(int,char);
-void ESmotor(int,int,char,char);
+void ESmotor(long long,int,char,char);
 char motor_stop_get(void);
 void Tmotor(long long);
 void ETmotor(long long , long long,char);

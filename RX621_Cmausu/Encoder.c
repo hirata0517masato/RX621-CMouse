@@ -1,33 +1,31 @@
 #include"Encoder.h"
 #include "iodefine.h"
 #include <machine.h>
+#include <stdlib.h>
 
-#define LencTotal	(short)(MTU7.TCNT)	     //A:CN4-15 B:CN4-16
-#define RencTotal	(short)(MTU8.TCNT)	     //A:CN4-13 B:CN4-14
+#define LencData	(short)(MTU7.TCNT)	     //A:CN4-15 B:CN4-16
+#define RencData	(short)(MTU8.TCNT)	     //A:CN4-13 B:CN4-14
 
 volatile long long  L_enc_total_rev = 0;
+volatile long long  L_enc_total = 0;
 volatile short  L_enc_base = 0;
 volatile int  L_enc = 0;
-volatile int  L_plus = 1;
-volatile int  L_cnt = 0;
 
 volatile long long  R_enc_total_rev = 0;
+volatile long long  R_enc_total = 0;
 volatile short  R_enc_base = 0;
 volatile int  R_enc = 0;
-volatile int  R_plus = 1;
-volatile int  R_cnt = 0;
+
 
 void Encoder_reset(){
 	L_enc = 0;
 	R_enc = 0;
-	L_enc_base = LencTotal;
-	R_enc_base = RencTotal;
+	L_enc_base = LencData;
+	R_enc_base = RencData;
 	L_enc_total_rev = 0;
+	L_enc_total = 0;
 	R_enc_total_rev = 0;
-	L_plus = 1;
-	L_cnt = 0;
-	R_plus = 1;
-	R_cnt = 0;
+	R_enc_total = 0;
 }
 
 void encoder_update(){
@@ -51,44 +49,38 @@ int get_encoder_R(){
 }
 
 long long get_encoder_total_R(){
-	short tmp = RencTotal - R_enc_base;
+	short tmp = RencData;
+	short sa = tmp - R_enc_base;
 	
-	if(R_plus == 1 && tmp < -2000){
-		R_cnt++;
-		R_enc_base = RencTotal;
-		tmp = 0;
+	if(abs(sa) > 10000){
+		if( tmp >  R_enc_base){
+			sa = (32767 - tmp) + ( R_enc_base + 32768);
+		}else{
+			sa = (32767 - R_enc_base) + ( tmp + 32768);
+		}
 	}
 	
-	if(R_plus == 0 && tmp > 2000){
-		R_cnt--;
-		R_enc_base = RencTotal;
-		tmp = 0;
-	}
+	R_enc_total += sa;
+	R_enc_base = tmp;
 	
-	if(RencTotal - R_enc_base >= 0)R_plus = 1;
-	else R_plus = 0;
-	
-	return (long long)tmp + (R_cnt * 32767);
+	return R_enc_total;
 }
 
 long long get_encoder_total_L(){
-	short tmp = LencTotal - L_enc_base;
+	short tmp = LencData;
+	short sa = tmp - L_enc_base;
 	
-	if(L_plus == 1 && tmp < -2000){
-		L_cnt++;
-		L_enc_base = LencTotal;
-		tmp = 0;
+	if(abs(sa) > 10000){
+		if( tmp >  L_enc_base){
+			sa = (32767 - tmp) + ( L_enc_base + 32768);
+		}else{
+			sa = (32767 - L_enc_base) + ( tmp + 32768);
+		}
 	}
 	
-	if(L_plus == 0 && tmp > 2000){
-		L_cnt--;
-		L_enc_base = LencTotal;
-		tmp = 0;
-	}
+	L_enc_total += sa;
+	L_enc_base = tmp;
 	
-	if(LencTotal - L_enc_base >= 0)L_plus = 1;
-	else L_plus = 0;
-	
-	return (long long)tmp + (L_cnt * 32767);
+	return L_enc_total;
 }
 

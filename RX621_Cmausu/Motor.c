@@ -94,14 +94,14 @@ void motor(int LM,int RM){
   //if(((LM - RM) > 50) || ((RM - LM) > 50))motor_stop();
 
   if(abs(LM) > 5){
-	if(abs(get_encoder_L()) < 2){
+	if(abs(get_encoder_L()) < 1){
 		safe_cnt ++;
 		if(safe_cnt > 10000)motor_stop();
 	}else safe_cnt = 0;
   }else safe_cnt = 0;
 
   if(abs(RM) > 5){
-	if(abs(get_encoder_R()) < 2){
+	if(abs(get_encoder_R()) < 1){
 		safe_cnt ++;
 		if(safe_cnt > 10000)motor_stop();
 	}else safe_cnt = 0;
@@ -129,7 +129,7 @@ void Smotor(int M,char w_flag){
 
 	static int cnt1 = 0,cnt2 = 0;
 	//static int cnt3 = 0,cnt4 = 0;
-	static int cnt5 = 0;
+	//static int cnt5 = 0;
 	
 	if(w_flag){
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
@@ -185,7 +185,8 @@ void Smotor(int M,char w_flag){
 		}
 		*/
 		
-		 //前壁補正　センサーが左右で誤差があるので未使用
+		 //前壁補正　
+		 /*
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
 			if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15){//前壁あり
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
@@ -200,7 +201,7 @@ void Smotor(int M,char w_flag){
 					}
 				}else cnt5 = 0;	
 			}else cnt5 = 0;
-		}
+		}*/
 	}
 	int powor_max = 20;
 	int powor = gyro_powor_L();
@@ -214,14 +215,16 @@ void Smotor(int M,char w_flag){
 }
 
 
-void ESmotor(int A, int max_M,char non_stop,char w_flag){
+void ESmotor(long long A, int max_M,char non_stop,char w_flag){
+	Encoder_reset();
+	
 	long long L = get_encoder_total_L();//現在地
 	long long L_target = L + A;			//目標地点
 	long long L_prev = A;				//残り距離
 	int cnt = 0;
 	
 	int p = 5,d = 0,min_M = 5,M = 5;
-	int max_FL = 70,Eb = 5,Ebf = 0;
+	int max_FL = 90,Eb = 20,Ebf = 0;
 	
 	int non_stop_min_M = 15;
 	
@@ -234,7 +237,7 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 		}
 		
 		if((L_target - L) >= 0){//目標地点まで移動中	
-
+			
 			if(get_encoder_total_L() - (L_target-A) < A*2/3){// 進んだ距離 < A*2/3　＝ 加速区間
 				M += (get_encoder_total_L() - (L_target-A)) / 15;	
 			}else{
@@ -253,11 +256,26 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 					if(M < non_stop_min_M)M = non_stop_min_M;
 				}
 			}else{
-				if(M < min_M)M = min_M;
+				if(M < min_M){
+					M = min_M;
+				}
 			}
-
+			/*
+			if((get_encoder_total_L() - (L_target-A)) < A /4){// 進んだ距離 < 目標距離 * 1/4　＝ 加速区間
+				M = min_M + ((get_encoder_total_L() - (L_target-A)) / 4);	
+			
+			}else if((get_encoder_total_L() - (L_target-A)) > A * 3/4){// 進んだ距離 < 目標距離 * 3/4 = //減速区間
+				M = min_M + ( (A - (get_encoder_total_L() - (L_target-A))) / 4);	
+			
+			}else{
+				M = max_M;
+			}
+			
+			if(M > max_M)M = max_M;
+			if(M < min_M)M = min_M;
+			*/
 		}else{//行き過ぎた
-			M = (L_target - L) * p   + ((L_target - L) - L_prev) * d;
+			M = (L_target - L) * p   + ((L_target - L) - L_prev) * d;	
 		}
 		 
 		//if(get_encoder_total_L() - (L_target-A) > 20){//5mmくらい進んだ場合はジャイロ有効　
@@ -269,17 +287,18 @@ void ESmotor(int A, int max_M,char non_stop,char w_flag){
 		//delay(1);
 		L_prev = (L_target - L);
 		L = get_encoder_total_L();
-	
+		
 		if(non_stop != 0){
 			if(L_target - L < 12)break; 
 		}else{
-			if(abs(L-L_target) < 10)cnt++;
-			else cnt = 0;
-
+			if(abs(L-L_target) < 20){
+				cnt++;	
+			}else{
+				cnt = 0;
+			}
 			if(cnt > 100)break;
 		}
 	}
-
 
 	motor(0,0);
 //	GyroSum_reset();
