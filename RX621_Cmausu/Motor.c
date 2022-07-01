@@ -134,11 +134,11 @@ void Smotor(int M,char w_flag){
 	if(w_flag){
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
 
-			if(((get_IR(IR_FL) < 70) || (get_IR(IR_FR) < 70)) && abs(GyroSum_get()) < 6000){
+			if(((get_IR(IR_FL) < 75) || (get_IR(IR_FR) < 70)) && abs(GyroSum_get()) < 6000){
 				
 				
-				if((get_IR(IR_R) > 75 )//){ //右壁近い
-			 	|| (get_IR(IR_R) < 15 && get_IR(IR_L) > 15 && get_IR(IR_L) < 60)){ // 右壁なし　左壁あり　左壁遠い
+				if((get_IR(IR_R) > 80 )//){ //右壁近い
+			 	|| (get_IR(IR_R) < 10 && get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
 					if(cnt1 > 5){
 						cnt1 = 0;
@@ -148,8 +148,8 @@ void Smotor(int M,char w_flag){
 					}
 				}else cnt1 = 0;
 			
-				if((get_IR(IR_L) > 75 )//){ //左壁近い
-			 	|| (get_IR(IR_L) < 15 && get_IR(IR_R) > 15 && get_IR(IR_R) < 60)){ //左壁なし　右壁あり　右壁遠い
+				if((get_IR(IR_L) > 80 )//){ //左壁近い
+			 	|| (get_IR(IR_L) < 10 && get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
 					if(cnt2 > 5 ){
 						cnt2 = 0;
@@ -192,7 +192,7 @@ void Smotor(int M,char w_flag){
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
 				if(abs(diff) < 15){
 					cnt5++;
-					if(cnt5 > 10){
+					if(cnt5 > 15){
 						cnt5 = 0;
 						long long n = diff * get_encoder_L();
 						if(n > 1)n = 1;
