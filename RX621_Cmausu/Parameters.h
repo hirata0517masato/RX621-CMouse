@@ -23,7 +23,7 @@
 #define s1 (735)		//1マス直進
 #define s45 (550)		//45度１マス直進
 #define h1 (340)		//半マス直進
-#define rsls90 (657)	//スラローム
+#define rsls90 (647)	//スラローム
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 

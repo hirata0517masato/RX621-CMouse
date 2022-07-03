@@ -55,32 +55,39 @@ void ir_update(){
 	static int num = 0;
 	static int s[4] = {0,0,0,0};
 	
-	//AD_update();
+	AD_update();
 	
 	switch(num){
-		case 0:	//front
-			S[0] = AD_1 - s[0];
-			S[3] = AD_0 - s[3];
+		case 0:	//FL R
+			S[0] = -(AD_1 - s[0]);//なぜマイナスになるか不明
+			S[2] = -(AD_3 - s[2]);
 			
 			s[1] = AD_2;
-			s[2] = AD_3;
+			s[3] = AD_0;
 			
-			ir(9);//0110
 			num = 1;
 			break;
 			
-		case 1://side
-			S[1] = AD_2 - s[1];
-			S[2] = AD_3 - s[2];
-			
+		case 1://L FR
+			S[1] = -(AD_2 - s[1]);
+			S[3] = -(AD_0 - s[3]);
+	
 			s[0] = AD_1;
-			s[3] = AD_0;
+			s[2] = AD_3;
 			
-			ir(6);// 1001
 			num = 0;
 			break;
 	}
-	AD_update();
+	
+	switch(num){
+		case 0:	//FL R
+			ir(5);// 0101
+			break;
+			
+		case 1://L FR
+			ir(10);//1010
+			break;
+	}
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */

@@ -129,18 +129,18 @@ void Smotor(int M,char w_flag){
 
 	static int cnt1 = 0,cnt2 = 0;
 	//static int cnt3 = 0,cnt4 = 0;
-	//static int cnt5 = 0;
+	static int cnt5 = 0;
 	
 	if(w_flag){
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
 
-			if(((get_IR(IR_FL) < 75) || (get_IR(IR_FR) < 70)) && abs(GyroSum_get()) < 6000){
+			if(((get_IR(IR_FL) < 50) || (get_IR(IR_FR) < 50)) && abs(GyroSum_get()) < 6000){
 				
 				
-				if((get_IR(IR_R) > 80 )//){ //右壁近い
-			 	|| (get_IR(IR_R) < 10 && get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){ // 右壁なし　左壁あり　左壁遠い
+				if((get_IR(IR_R) > 70 )//){ //右壁近い
+			 	|| (get_IR(IR_R) < 10 && get_IR(IR_L) > 15 && get_IR(IR_L) < 65)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if(cnt1 > 5){
+					if(cnt1 > 10){
 						cnt1 = 0;
 						long long n = (long long)-1 * get_encoder_L();
 						if(n < -1)n = -1;
@@ -148,10 +148,10 @@ void Smotor(int M,char w_flag){
 					}
 				}else cnt1 = 0;
 			
-				if((get_IR(IR_L) > 80 )//){ //左壁近い
-			 	|| (get_IR(IR_L) < 10 && get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){ //左壁なし　右壁あり　右壁遠い
+				if((get_IR(IR_L) > 70 )//){ //左壁近い
+			 	|| (get_IR(IR_L) < 10 && get_IR(IR_R) > 15 && get_IR(IR_R) < 65)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if(cnt2 > 5 ){
+					if(cnt2 > 10 ){
 						cnt2 = 0;
 						long long n = (long long)1 * get_encoder_L();
 						if(n > 1)n = 1;
@@ -164,35 +164,34 @@ void Smotor(int M,char w_flag){
 			}
 		}
 	
-				/*
+		/*		
 		//斜め対策
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
-			if(get_IR(IR_FL) > 10 && get_IR(IR_L) < 10 && get_IR(IR_R) < 10 && get_IR(IR_FR) < 10){//左前のみ
+			if(get_IR(IR_FL) > 15 && get_IR(IR_L) < 15 && get_IR(IR_R) < 15 && get_IR(IR_FR) < 15){//左前のみ
 				cnt3++;
-				if(cnt3 > 2){
+				if(cnt3 > 5){
 					cnt3 = 0;
 					GyroSum_add(1);
 				}	
 			}else cnt3 = 0;
 			
-			if(get_IR(IR_FL) < 10 && get_IR(IR_L) < 10 && get_IR(IR_R) < 10 && get_IR(IR_FR) > 10){//右前のみ
+			if(get_IR(IR_FL) < 15 && get_IR(IR_L) < 15 && get_IR(IR_R) < 15 && get_IR(IR_FR) > 15){//右前のみ
 				cnt4++;
-				if(cnt4 > 2){
+				if(cnt4 > 5){
 					cnt4 = 0;
 					GyroSum_add(-1);
 				}	
 			}else cnt4 = 0;
-		}
-		*/
+		}*/
+		
 		
 		 //前壁補正　
-		 /*
 		if(get_encoder_L() > 0 || get_encoder_R() > 0){
 			if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15){//前壁あり
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
-				if(abs(diff) < 15){
+				if(abs(diff) < 10){
 					cnt5++;
-					if(cnt5 > 15){
+					if(cnt5 > 5){
 						cnt5 = 0;
 						long long n = diff * get_encoder_L();
 						if(n > 1)n = 1;
@@ -201,10 +200,10 @@ void Smotor(int M,char w_flag){
 					}
 				}else cnt5 = 0;	
 			}else cnt5 = 0;
-		}*/
+		}
 	}
-	int powor_max = 20;
-	int powor = gyro_powor_L();
+	int powor_max = 30;
+	int powor = gyro_powor_L() + (get_encoder_L() + get_encoder_R())/20;
 	if(powor > powor_max)powor = powor_max;
 	else if(-powor_max > powor)powor = -powor_max; 
 	
@@ -223,27 +222,55 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	long long L_prev = A;				//残り距離
 	int cnt = 0;
 	
-	int p = 5,d = 0,min_M = 5,M = 5;
-	int max_FL = 90,Eb = 20,Ebf = 0;
+	int p = 5,d = 0,min_M = 3,M = 3;
+//	int max_FL = 75,Eb = 20,Ebf = 0;
 	
-	int non_stop_min_M = 15;
+	int non_stop_min_M = 13;
+	int min_M_use = 0;
 	
 	GyroSum_reset();
 	
 	while(1){
-		if(get_IR(IR_FL) > max_FL && Ebf == 0){
+		/*if(get_IR(IR_FL) > max_FL && Ebf == 0){
 			L_target -= Eb;
 			Ebf = 1;
-		}
+		}*/
 		
 		if((L_target - L) >= 0){//目標地点まで移動中	
-			
+			/*
 			if(get_encoder_total_L() - (L_target-A) < A*2/3){// 進んだ距離 < A*2/3　＝ 加速区間
 				M += (get_encoder_total_L() - (L_target-A)) / 15;	
 			}else{
 				M = (L_target - get_encoder_total_L())/10;//減速区間
 			}
 
+		
+			*/
+			
+			if(non_stop == 1){
+				min_M_use = non_stop_min_M;
+				
+			}else if(non_stop == 3){//加速ゆっくり　減速すくなめ
+				if(get_encoder_total_L() - (L_target-A) < A/2){// 進んだ距離 < A/2
+					min_M_use = min_M;
+				}else{
+					min_M_use = non_stop_min_M;
+				}
+			}else{
+				min_M_use = min_M;
+			}
+			
+			if((get_encoder_total_L() - (L_target-A)) < A /4){// 進んだ距離 < 目標距離 * 1/4　＝ 加速区間
+				M = min_M_use + ((get_encoder_total_L() - (L_target-A)) / 5);	
+			
+			}else if((get_encoder_total_L() - (L_target-A)) > A * 3/4){// 進んだ距離 < 目標距離 * 3/4 = //減速区間
+				M = min_M_use + ( (A - (get_encoder_total_L() - (L_target-A))) / 4);	
+			
+			}else{
+				M = max_M;
+			}
+			
+			
 			if(max_M < M)M = max_M;
 
 			if(non_stop == 1){
@@ -260,20 +287,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 					M = min_M;
 				}
 			}
-			/*
-			if((get_encoder_total_L() - (L_target-A)) < A /4){// 進んだ距離 < 目標距離 * 1/4　＝ 加速区間
-				M = min_M + ((get_encoder_total_L() - (L_target-A)) / 4);	
 			
-			}else if((get_encoder_total_L() - (L_target-A)) > A * 3/4){// 進んだ距離 < 目標距離 * 3/4 = //減速区間
-				M = min_M + ( (A - (get_encoder_total_L() - (L_target-A))) / 4);	
-			
-			}else{
-				M = max_M;
-			}
-			
-			if(M > max_M)M = max_M;
-			if(M < min_M)M = min_M;
-			*/
 		}else{//行き過ぎた
 			M = (L_target - L) * p   + ((L_target - L) - L_prev) * d;	
 		}
@@ -291,12 +305,12 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		if(non_stop != 0){
 			if(L_target - L < 12)break; 
 		}else{
-			if(abs(L-L_target) < 20){
+			if(abs(L-L_target) < 15){
 				cnt++;	
 			}else{
 				cnt = 0;
 			}
-			if(cnt > 100)break;
+			if(cnt > 2000)break;
 		}
 	}
 
@@ -412,7 +426,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	int i = 0;
 
 
-	ESmotor(55,M,true,false);
+	ESmotor(60,M,true,false);
 	
 	while(1){
 		
@@ -462,7 +476,7 @@ void ETmotor(long long A, long long E, char non_stop){
 		if(E - E_sum < 0)break;
 	}
 
-	ESmotor(55,M,true,false);
+	ESmotor(60,M,true,false);
 	
 	//motor(0,0);
 	//GyroSum_reset();
