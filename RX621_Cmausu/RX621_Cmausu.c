@@ -541,13 +541,13 @@ void maze_update(char x,char y,char angle, char type){
       
       switch(i){
         case -1://L
-          if(get_IR(IR_L) > 20)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_L) > 15)maze_w[y][x] |= 1 << ii;
           break;
         case 0://S
           if(get_IR(IR_FL) > 15 || get_IR(IR_FR) > 15)maze_w[y][x] |= 1 << ii;
           break;
         case 1://R
-          if(get_IR(IR_R) > 20)maze_w[y][x] |= 1 << ii; 
+          if(get_IR(IR_R) > 15)maze_w[y][x] |= 1 << ii; 
           break;
       }
       if((0 <= nx && nx < W) && (0 <= ny && ny < H)){
@@ -587,7 +587,7 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 
   	int cnt2 = 0;
 
-  	if(!non_stop && kabe){
+  	if(!non_stop && kabe == 1){
    		// GyroSum_reset();
     	if(13 < get_IR(IR_FL) && 13 < get_IR(IR_FR) ){
 	 		while(1){
@@ -1286,7 +1286,7 @@ void shortest_path_search_fin(){
 /* –ß  ‚è   ’lF ‚È‚µ										    									*/
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void remake_shortest_path_list_naname(){
-  enqueue(99);
+  enqueue(99);//–Úˆó
   enqueue(99);
   int naname_cnt = 0,lr = 0;
   
@@ -1405,7 +1405,7 @@ void run_shortest_path_fin(	char naname){
         //my_y = ny;
         break;
       case 10://Snaname
-        S_run(s45 * (long long)path_num ,20,false,false);
+        S_run(s45 * (long long)path_num ,30,false,3); // w_flag = 3 ŽÎ‚ß‚Ì•Ç•â³‚ ‚è
 
          non_stop = 0;
         //my_x = nx;
