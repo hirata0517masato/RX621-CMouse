@@ -936,6 +936,8 @@ void make_shortest_path_list(short target_x,short target_y){
 					//enqueue(0);
           			enqueue(s_path);
           			s_path = 0;
+					
+					if(unknown_flag == 1)return;//未確定の直線のあとはルートを作成してはいけない
         		}
 
         		enqueue(-1);
@@ -955,6 +957,8 @@ void make_shortest_path_list(short target_x,short target_y){
           			enqueue(10);
           			enqueue(s_path);
           			s_path = 0;
+					
+					return;//未確定の直線のあとはルートを作成してはいけない
         		}
 				
 		        s_path +=1;
@@ -980,6 +984,8 @@ void make_shortest_path_list(short target_x,short target_y){
 					//enqueue(0);
 			        enqueue(s_path);
 			        s_path = 0;
+					
+					if(unknown_flag == 1)return;//未確定の直線のあとはルートを作成してはいけない
 		        }
         
 		        enqueue(1);
@@ -999,6 +1005,8 @@ void make_shortest_path_list(short target_x,short target_y){
 					//enqueue(0);
           			enqueue(s_path);
           			s_path = 0;
+					
+					if(unknown_flag == 1)return;//未確定の直線のあとはルートを作成してはいけない
         		}
         
         		enqueue(2);
