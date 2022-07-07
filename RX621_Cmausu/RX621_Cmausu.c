@@ -554,8 +554,7 @@ void maze_update(char x,char y,char angle, char type){
         maze_w[ny][nx] |= 1 << (4+(ii+2)%4);
         if((maze_w[y][x] & (1 << ii)) != 0)maze_w[ny][nx] |= 1 << ((ii+2)%4);
       }
-   //
-   }
+   //}
   }
 }
 
