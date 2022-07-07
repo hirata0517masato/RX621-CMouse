@@ -626,3 +626,58 @@ void ETmotor(long long A, long long E, char non_stop){
 	//Encoder_reset();
 }
 
+void Tmotor_naname(long long A){
+	GyroSum_reset();
+	GyroSum_add(A);
+	Encoder_reset();
+
+	int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
+	int MA = 5,min_M = 15;
+	
+	int powor_max = 10;
+	int powor;
+
+	while(1){
+		powor = gyro_powor_L();
+		
+		if(powor > powor_max)powor = powor_max;
+		else if(-powor_max > powor)powor = -powor_max;
+		
+		
+		LM = powor;
+		RM = -powor;
+		
+
+		if(LM_prev + MA < LM)LM = LM_prev + MA;
+		if(LM_prev - MA > LM)LM = LM_prev - MA;
+		
+		if(RM_prev + MA < RM)RM = RM_prev + MA;
+		if(RM_prev - MA > RM)RM = RM_prev - MA;
+		
+		if(0 < LM && LM < min_M)LM = min_M;
+		if(0 > LM && LM > -min_M)LM = -min_M;
+
+		if(0 < RM && RM < min_M)RM = min_M;
+		if(0 > RM && RM > -min_M)RM = -min_M;
+		 
+		if(A > 0){//R
+			motor(LM ,0);
+		}else{//L
+			motor(0 ,RM);
+		}
+
+		LM_prev = LM;
+		RM_prev = RM;
+		
+		if(A > 0){//R
+			if(GyroSum_get() < 0)break;
+		}else{//L
+			if(GyroSum_get() > 0)break;
+		}
+	}
+
+
+	motor(0,0);
+	GyroSum_reset();
+	Encoder_reset();
+}

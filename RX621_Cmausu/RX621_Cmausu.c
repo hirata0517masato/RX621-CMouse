@@ -536,7 +536,7 @@ void maze_update(char x,char y,char angle, char type){
     short ii = (4 + angle+i)%4;
     int nx = x+dx[ii], ny = y+dy[ii];
 
-    if((maze_w[y][x] & (1 << (4+ii))) == 0 ){
+   // if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
       maze_w[y][x] |= 1 << (4+ii);
       
       switch(i){
@@ -554,7 +554,8 @@ void maze_update(char x,char y,char angle, char type){
         maze_w[ny][nx] |= 1 << (4+(ii+2)%4);
         if((maze_w[y][x] & (1 << ii)) != 0)maze_w[ny][nx] |= 1 << ((ii+2)%4);
       }
-    }
+   //
+   }
   }
 }
 
@@ -578,6 +579,16 @@ void L_curve(long long a,char flag){
 void R_curve(long long a ,char flag ){
   ETmotor(a,rsls90,flag);
   
+  my_angle = (4+my_angle+1)%4;
+}
+
+void L_rotate_naname(long long a){
+  Tmotor_naname(-a);
+  my_angle = (4+my_angle-1)%4;
+}
+
+void R_rotate_naname(long long a){
+  Tmotor_naname(a);
   my_angle = (4+my_angle+1)%4;
 }
 
@@ -1288,7 +1299,7 @@ void shortest_path_search_fin(){
 void remake_shortest_path_list_naname(){
   enqueue(99);//目印
   enqueue(99);
-  int naname_cnt = 0,lr = 0;
+  int naname_cnt = 0,lr = 0,first_lr = 0;
   
   while(1){
     short mode = dequeue(),num = dequeue();
@@ -1296,30 +1307,70 @@ void remake_shortest_path_list_naname(){
 
     switch(mode){
       case -1://L
-        if(naname_cnt == 0){
-          enqueue(-11);
-          enqueue(1);
+       if(naname_cnt == 0){
           naname_cnt = 1;
           lr = -1;
-        }else{
+		  first_lr = -1;
+        }else if(naname_cnt == 1 && lr == -1){//Uターン
+			enqueue(-1);
+            enqueue(1);
+			
+			enqueue(-1);
+            enqueue(1);
+			
+			naname_cnt = 0;
+          	lr = 0;
+		}else{
           if(lr == 1){
             lr = -1;
             naname_cnt++;
-          }else{
+          }else{//斜め中のVターン
+			if(first_lr == -1){
+				enqueue(-11);
+         		enqueue(1);
+			}else if(first_lr == 1){
+				enqueue(11);
+         		enqueue(1);
+			}
+			first_lr = 0;
+			
             enqueue(10);
             enqueue(naname_cnt);
             naname_cnt = 1;
-            enqueue(-1);
+         
+		    enqueue(-11);
             enqueue(1);
             lr = -1;
+			first_lr = -1;
+			
           }
         }
         break;
        case 0://S
-        if(naname_cnt > 0){
+	    if(naname_cnt == 1){//斜めが1マスのときはスラロームにする
+			if(lr == 1){
+				enqueue(1);
+            	enqueue(1);
+			}else{
+				enqueue(-1);
+            	enqueue(1);
+			}
+			naname_cnt = 0;
+            lr = 0;
+		}else if(naname_cnt > 1){
+		  if(first_lr == 1){
+			enqueue(11);
+         	enqueue(1);
+		  }else if(first_lr == -1){
+			enqueue(-11);
+         	enqueue(1);
+		  }
+		  first_lr = 0;
+		  
           if(lr == 1){
             enqueue(10);
             enqueue(naname_cnt);
+			
             enqueue(11);
             enqueue(1);
             naname_cnt = 0;
@@ -1327,6 +1378,7 @@ void remake_shortest_path_list_naname(){
           }else{
             enqueue(10);
             enqueue(naname_cnt);
+			
             enqueue(-11);
             enqueue(1);
             naname_cnt = 0;
@@ -1338,21 +1390,41 @@ void remake_shortest_path_list_naname(){
         break;
        case 1://R
         if(naname_cnt == 0){
-          enqueue(11);
-          enqueue(1);
           naname_cnt = 1;
           lr = 1;
-        }else{
+		  first_lr = 1;
+        }else if(naname_cnt == 1 && lr == 1){//Uターン
+			enqueue(1);
+            enqueue(1);
+			
+			enqueue(1);
+            enqueue(1);
+			
+			naname_cnt = 0;
+          	lr = 0;
+		}else{
           if(lr == -1){
             lr = 1;
             naname_cnt++;
-          }else{
+          }else{//斜め中のVターン
+			if(first_lr == 1){
+				enqueue(11);
+         		enqueue(1);
+			}else if(first_lr == -1){
+				enqueue(-11);
+         		enqueue(1);
+			}
+			first_lr = 0;
+			
             enqueue(10);
             enqueue(naname_cnt);
             naname_cnt = 1;
-            enqueue(1);
+         
+		    enqueue(11);
             enqueue(1);
             lr = 1;
+			first_lr = 1;
+			
           }
         }
         break;
@@ -1371,7 +1443,6 @@ void run_shortest_path_fin(	char naname){
   Encoder_reset();
   
   my_x = Start_x;my_y = Start_y;my_angle = 1;
-  char non_stop = 0;
   int comand ,path_num;
   int first_flag = 0; //0:まだ走行してない 1:走行中
   
@@ -1379,13 +1450,12 @@ void run_shortest_path_fin(	char naname){
     comand = dequeue();path_num = dequeue();
     switch(comand){
       case -1://L
-        if(naname)L_rotate(l90);
-        else L_curve(sl90,non_stop);
-        non_stop = 1;
+        L_curve(sl90,true);
+  
         break;
       case -11://L45
-        L_rotate(l45);
-        non_stop = 1;
+        L_rotate_naname(l45 * path_num);
+     
         break;
       case 0://S
         if(queue_empty()){
@@ -1400,25 +1470,22 @@ void run_shortest_path_fin(	char naname){
           S_run_kabe(25,true);
         }
 
-         non_stop = 0;
         //my_x = nx;
         //my_y = ny;
         break;
       case 10://Snaname
-        S_run(s45 * (long long)path_num ,30,false,3); // w_flag = 3 斜めの壁補正あり
+        S_run(s45 * (long long)path_num - 250,30,true,3); // w_flag = 3 斜めの壁補正あり
 
-         non_stop = 0;
         //my_x = nx;
         //my_y = ny;
         break;
       case 1://R
-        if(naname)R_rotate(r90);
-        else R_curve(sr90,non_stop);
-        non_stop = 1;
+        R_curve(sr90,true);
+
         break;
       case 11://R45
-        R_rotate(r45);
-        non_stop = 1;
+        R_rotate_naname(r45 * path_num);
+  
         break;
     }
 	first_flag = 1;
