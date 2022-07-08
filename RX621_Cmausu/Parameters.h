@@ -7,8 +7,9 @@
 #define W	16
 #define Start_x  0
 #define Start_y  0
-#define Goal_x  0
-#define Goal_y  2
+
+#define Goal_x  4
+#define Goal_y  0
 
 //ジャイロ関連
 #define r45  (10000)	//45度 右回転

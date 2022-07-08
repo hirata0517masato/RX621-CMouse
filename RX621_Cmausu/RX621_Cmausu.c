@@ -544,7 +544,7 @@ void maze_update(char x,char y,char angle, char type){
           if(get_IR(IR_L) > 15)maze_w[y][x] |= 1 << ii;
           break;
         case 0://S
-          if(get_IR(IR_FL) > 15 || get_IR(IR_FR) > 15)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15)maze_w[y][x] |= 1 << ii;
           break;
         case 1://R
           if(get_IR(IR_R) > 15)maze_w[y][x] |= 1 << ii; 
@@ -641,7 +641,7 @@ void S_run_kabe(int powor, char flag){//壁切れまで走行
     Smotor(powor,flag);
   }
  
-  ESmotor(160,powor,true,false);
+  ESmotor(130,powor,true,false);
 }
 
 void S_run_maze_search(int path,int powor){
@@ -657,7 +657,9 @@ void S_run_maze_search(int path,int powor){
 	
 	int ir_L_old = 0,ir_R_old = 0;
 	int ir_L_now = 0,ir_R_now = 0;
-	int path_cnt_save = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
+	int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
+	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
+	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
 	
 	GyroSum_reset();
 	
@@ -784,18 +786,51 @@ void S_run_maze_search(int path,int powor){
 		//壁切れの距離補正
 		ir_L_now = get_IR(IR_L);
 		ir_R_now = get_IR(IR_R);
-		if(path_cnt_save !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-			if( (ir_L_old >= 15 && ir_L_now < 15) || (ir_R_old >= 15 && ir_R_now < 15) ){ //メモ：数値は同じにしておくこと（左右は異なってよい）
+		if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
+			if( (ir_L_old >= 15 && ir_L_now < 15)  ){ //メモ：数値は同じにしておくこと
 			
-				if((enc_now % s1) < s1 / 2){//マスの半分より手前で壁切れした場合
-					enc_base += (enc_now % s1) - 200;
+				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
+				
+					if(path_cnt == path_cnt_save_R){//左より先に右が壁切れ補正していた場合
+						enc_base -= hosei_kyori_R;//右での補正を無かったことにする
+						enc_now = get_encoder_total_L() - enc_base;
+						
+						hosei_kyori_L = (enc_now % s1) - 200;
+						
+						hosei_kyori_L = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
+					}else{
+						hosei_kyori_L = (enc_now % s1) - 200;
+					}
 					
-				}else{//後半で壁切れした場合
-					enc_base -= 200;
+					enc_base += hosei_kyori_L;
+					
 				}
-				path_cnt_save = path_cnt;
+				path_cnt_save_L = path_cnt;
 			}
 		}
+		
+		if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
+			if((ir_R_old >= 15 && ir_R_now < 15) ){ //メモ：数値は同じにしておくこと
+			
+				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
+				
+					if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
+						enc_base -= hosei_kyori_L;//左での補正を無かったことにする
+						enc_now = get_encoder_total_L() - enc_base;
+						hosei_kyori_R = (enc_now % s1) - 200;
+						
+						hosei_kyori_R = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
+					}else{
+						hosei_kyori_R = (enc_now % s1) - 200;
+					}
+					
+					enc_base += hosei_kyori_R;
+					
+				}
+				path_cnt_save_R = path_cnt;
+			}
+		}
+		
 		ir_L_old = ir_L_now;
 		ir_R_old = ir_R_now;
 		
@@ -1056,7 +1091,7 @@ void run_shortest_path(){
 		delay(time);
         break;
       case 0://S
-        if(path_num == 1){//////////////////////////////////////壁切れ入れたい
+        if(path_num == 1){
 	  		S_run(s1,20,false,true);
 			
 		}else{
@@ -1084,10 +1119,10 @@ void run_shortest_path(){
 	  case 10://S 未確定の直線
         if(path_num == 1){
 	  		
-			S_run_maze_search(path_num,17);
+			S_run_maze_search(path_num,20);
 			
 		}else{
-			S_run_maze_search(path_num,17);
+			S_run_maze_search(path_num,18);
 		}
 		
         break;
@@ -1466,13 +1501,13 @@ void run_shortest_path_fin(	char naname){
         break;
       case 0://S
         if(queue_empty()){
-			S_run(h1 * (long long)path_num + (h1/2),45,false,true);
+			S_run(h1 * (long long)path_num + (h1/2),40,false,true);
 
 		}else {
           path_num--;
           if(path_num > 0){
-			  if(first_flag == 0)S_run(h1 *(long long) path_num ,45,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
-		  	  else S_run(h1 * (long long)path_num ,45,true,true);
+			  if(first_flag == 0)S_run(h1 *(long long) path_num ,40,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
+		  	  else S_run(h1 * (long long)path_num ,40,true,true);
 		  }
           S_run_kabe(25,true);
         }
@@ -1522,10 +1557,12 @@ void Excep_CMT0_CMI0(void)
 	
 	Gyro_update();
 		
-	if(abs(Gyro()) > 250){
-    	motor_stop_cnt++;
-    	if(motor_stop_cnt > 20)motor_stop();
-  	}else motor_stop_cnt = 0;
+	if(ir_flag == 1){//赤外線有効時=走行時にジャイロによる安全停止チェックを行う
+		if(abs(Gyro()) > 250){
+    		motor_stop_cnt++;
+    		if(motor_stop_cnt > 20)motor_stop();
+  		}else motor_stop_cnt = 0;
+	}
 	
 	switch(task) {                         			
 	case 0:

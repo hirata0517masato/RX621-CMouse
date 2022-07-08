@@ -219,7 +219,7 @@ void Smotor(int M,char w_flag){
 }
 
 
-/*
+
 void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	Encoder_reset();
 	
@@ -229,15 +229,24 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 
 	int cnt = 0;
 	
+	int path_cnt = 0;
 	int ir_L_old = 0,ir_R_old = 0;
 	int ir_L_now = 0,ir_R_now = 0;
-	int path_cnt = 0;
-	int path_cnt_save = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
+	int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
+	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
+	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
+	int kame_hosei = 0;
 	
 	int p = 5,min_M = 3,M = 3;
 	
 	int non_stop_min_M = 13;
 	int min_M_use = 0;
+	
+	if(non_stop == 1){
+		kame_hosei = 520;
+	}else{
+		kame_hosei = 200;
+	}
 	
 	GyroSum_reset();
 	
@@ -298,25 +307,62 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			path_cnt++;
 		}
 		
-		//壁切れの距離補正
-		ir_L_now = get_IR(IR_L);
-		ir_R_now = get_IR(IR_R);
-		if(path_cnt_save !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-			if( (ir_L_old >= 15 && ir_L_now < 15) || (ir_R_old >= 15 && ir_R_now < 15) ){ //メモ：数値は同じにしておくこと（左右は異なってよい）
-			
-				if((enc_now % s1) < s1 / 2){//マスの半分より手前で壁切れした場合
-		//			enc_base += (enc_now % s1) - 200;
+		if(w_flag == 1 && A > s1-100){//壁補正あり　ななめでもない && １マス以上進む時
+			//壁切れの距離補正
+			ir_L_now = get_IR(IR_L);
+			ir_R_now = get_IR(IR_R);
+			if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
+				if( (ir_L_old >= 15 && ir_L_now < 15)  ){ //メモ：数値は同じにしておくこと
+				
+					if( (non_stop == 0 && (enc_now % s1) < s1 * 2 / 3) || 
+						(non_stop == 1 && (enc_now % s1) > s1 * 1 / 3)	){
 					
-				}else{//後半で壁切れした場合
-		//			enc_base -= 200;
+						if(path_cnt == path_cnt_save_R){//左より先に右が壁切れ補正していた場合
+							enc_base -= hosei_kyori_R;//右での補正を無かったことにする
+							enc_now = get_encoder_total_L() - enc_base;
+							
+							hosei_kyori_L = (enc_now % s1) - kame_hosei;
+							
+							hosei_kyori_L = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
+						}else{
+							hosei_kyori_L = (enc_now % s1) - kame_hosei;
+						}
+						
+						enc_base += hosei_kyori_L;
+						
+					}
+					path_cnt_save_L = path_cnt;
 				}
-				path_cnt_save = path_cnt;
 			}
+			
+			if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
+				if((ir_R_old >= 15 && ir_R_now < 15) ){ //メモ：数値は同じにしておくこと
+				
+					if( (non_stop == 0 && (enc_now % s1) < s1 * 2 / 3) || 
+						(non_stop == 1 && (enc_now % s1) > s1 * 1 / 3)	){
+					
+						if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
+							enc_base -= hosei_kyori_L;//左での補正を無かったことにする
+							enc_now = get_encoder_total_L() - enc_base;
+							
+							hosei_kyori_R = (enc_now % s1) - kame_hosei;
+							
+							hosei_kyori_R = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
+						}else{
+							hosei_kyori_R = (enc_now % s1) - kame_hosei;
+						}
+						
+						enc_base += hosei_kyori_R;
+						
+					}
+					path_cnt_save_R = path_cnt;
+				}
+			}
+			
+			ir_L_old = ir_L_now;
+			ir_R_old = ir_R_now;
 		}
-		ir_L_old = ir_L_now;
-		ir_R_old = ir_R_now;
-		
-		
+			
 		
 		
 		if(non_stop != 0){
@@ -337,8 +383,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 //	GyroSum_reset();
 	Encoder_reset();
 }
-*/
 
+
+/*
 void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	Encoder_reset();
 	
@@ -348,7 +395,6 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	int cnt = 0;
 	
 	int p = 5,d = 0,min_M = 3,M = 3;
-//	int max_FL = 75,Eb = 20,Ebf = 0;
 	
 	int non_stop_min_M = 13;
 	int min_M_use = 0;
@@ -356,21 +402,8 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	GyroSum_reset();
 	
 	while(1){
-		/*if(get_IR(IR_FL) > max_FL && Ebf == 0){
-			L_target -= Eb;
-			Ebf = 1;
-		}*/
-		
+	
 		if((L_target - L) >= 0){//目標地点まで移動中	
-			/*
-			if(get_encoder_total_L() - (L_target-A) < A*2/3){// 進んだ距離 < A*2/3　＝ 加速区間
-				M += (get_encoder_total_L() - (L_target-A)) / 15;	
-			}else{
-				M = (L_target - get_encoder_total_L())/10;//減速区間
-			}
-
-		
-			*/
 			
 			if(non_stop == 1){
 				min_M_use = non_stop_min_M;
@@ -442,7 +475,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	motor(0,0);
 //	GyroSum_reset();
 	Encoder_reset();
-}
+}*/
 
 void Tmotor(long long A){
 	GyroSum_reset();
@@ -519,17 +552,17 @@ void ETmotor(long long A, long long E, char non_stop){
 	
 	//壁切れ
 	if(A > 0){//R
-		while(get_IR(IR_R) > 15){
+		while(get_IR(IR_R) > 20){
 			Smotor(M,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(160,M,true,false);
+		if(flag)ESmotor(130,M,true,false);
 	}else{//L
-		while(get_IR(IR_L) > 15){
+		while(get_IR(IR_L) > 20){
 			Smotor(M,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(160,M,true,false);
+		if(flag)ESmotor(130,M,true,false);
 	}
 
 //	GyroSum_reset();
@@ -554,12 +587,12 @@ void ETmotor(long long A, long long E, char non_stop){
 
 	static int cnt1 = 0;
 	
-	ESmotor(60,M,true,false);
+	ESmotor(50,M,true,true);
 	
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 90 ){ //左壁近い
+			if(get_IR(IR_L) > 70 ){ //左壁近い
 				cnt1++;
 				if(cnt1 > 10){
 					cnt1 = 0;
@@ -571,7 +604,7 @@ void ETmotor(long long A, long long E, char non_stop){
 			E_sum += (L - L_prev);
 			
 		}else{//L
-			if(get_IR(IR_R) > 90 ){ //右壁近い
+			if(get_IR(IR_R) > 70 ){ //右壁近い
 				cnt1++;
 				if(cnt1 > 10){
 					cnt1 = 0;
@@ -619,7 +652,7 @@ void ETmotor(long long A, long long E, char non_stop){
 		if(E - E_sum < 0)break;
 	}
 
-	ESmotor(60,M,true,false);
+	ESmotor(50,M,true,true);
 	
 	//motor(0,0);
 	//GyroSum_reset();
