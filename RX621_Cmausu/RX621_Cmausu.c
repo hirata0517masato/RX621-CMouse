@@ -599,7 +599,7 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 
   	if(!non_stop && kabe == 1){
    		// GyroSum_reset();
-    	if(13 < get_IR(IR_FL) && 13 < get_IR(IR_FR) ){
+    	if(15 < get_IR(IR_FL) && 15 < get_IR(IR_FR) ){
 	 		while(1){
       			if(get_IR(IR_FL) > 55){
         			Smotor(-7,true);
@@ -641,7 +641,7 @@ void S_run_kabe(int powor, char flag){//壁切れまで走行
     Smotor(powor,flag);
   }
  
-  ESmotor(130,powor,true,false);
+  ESmotor(150,powor,true,false);
 }
 
 void S_run_maze_search(int path,int powor){
@@ -673,7 +673,7 @@ void S_run_maze_search(int path,int powor){
 				enc_now = get_encoder_total_L() - enc_base;
 			}
 			
-			if(get_IR(IR_FL) > 25 && get_IR(IR_FR) > 25){//前壁があった場合は
+			if(get_IR(IR_FL) > 20 && get_IR(IR_FR) > 20){//前壁があった場合は
 				while(1){//前壁補正
       				if(get_IR(IR_FL) > 55){
         				Smotor(-7,true);
@@ -695,7 +695,7 @@ void S_run_maze_search(int path,int powor){
 			my_x += dx[my_angle];
 			my_y += dy[my_angle];
 			
-			//maze_update(my_x,my_y,my_angle);//迷路情報の更新
+			maze_update(my_x,my_y,my_angle,3);//迷路情報の更新
 			
 			break;
 		}
@@ -731,7 +731,7 @@ void S_run_maze_search(int path,int powor){
 			my_x += dx[my_angle];
 			my_y += dy[my_angle];
 			
-			//maze_update(my_x,my_y,my_angle);//迷路情報の更新
+			maze_update(my_x,my_y,my_angle,3);//迷路情報の更新
 			maza_update_flag = 0;
 			
 			break;
@@ -758,9 +758,7 @@ void S_run_maze_search(int path,int powor){
 				maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,2);//迷路情報の更新
 				maza_update_flag = 1;
 			}
-		}
-		
-		if(maza_update_flag == 1){//まだ前壁の更新をしていなければ
+		}else if(maza_update_flag == 1){//まだ前壁の更新をしていなければ
 			if(enc_now - ((long long)s1 * path_cnt ) > s1 - 50){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
 				maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,1);//迷路情報の更新
 				maza_update_flag = 2;
@@ -783,11 +781,12 @@ void S_run_maze_search(int path,int powor){
 		
 		Smotor(M_pwm,true);
 		
+		
 		//壁切れの距離補正
 		ir_L_now = get_IR(IR_L);
 		ir_R_now = get_IR(IR_R);
 		if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-			if( (ir_L_old >= 15 && ir_L_now < 15)  ){ //メモ：数値は同じにしておくこと
+			if( (ir_L_old >= 20 && ir_L_now < 20)  ){ //メモ：数値は同じにしておくこと
 			
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
@@ -810,7 +809,7 @@ void S_run_maze_search(int path,int powor){
 		}
 		
 		if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-			if((ir_R_old >= 15 && ir_R_now < 15) ){ //メモ：数値は同じにしておくこと
+			if((ir_R_old >= 20 && ir_R_now < 20) ){ //メモ：数値は同じにしておくこと
 			
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
@@ -1119,7 +1118,7 @@ void run_shortest_path(){
 	  case 10://S 未確定の直線
         if(path_num == 1){
 	  		
-			S_run_maze_search(path_num,20);
+			S_run_maze_search(path_num,18);
 			
 		}else{
 			S_run_maze_search(path_num,18);
