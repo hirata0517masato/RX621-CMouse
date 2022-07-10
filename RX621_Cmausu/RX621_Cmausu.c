@@ -100,10 +100,13 @@ void main(void)
 		motor(0,0);
 
 		printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
-		//printf2("%ld\n",get_encoder_total_L());
+		printf2("%ld\n",get_encoder_total_L());
+		if(get_sw() == 1){
+			Encoder_reset();
+		}
 		delay(1000);
-	}*/
-		
+	}
+*/		
 	while(1){
 		Encoder_reset();
 		
@@ -541,18 +544,30 @@ void maze_update(char x,char y,char angle, char type){
       
       switch(i){
         case -1://L
-          if(get_IR(IR_L) > 15)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_L) > 15){
+			maze_w[y][x] &= ~(1 << ii);
+			maze_w[y][x] |= 1 << ii;
+		  }
           break;
         case 0://S
-          if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15)maze_w[y][x] |= 1 << ii;
+          if(get_IR(IR_FL) > 25 && get_IR(IR_FR) > 18){
+			maze_w[y][x] &= ~(1 << ii);
+			maze_w[y][x] |= 1 << ii; //左前だけ値が高い
+		  }
           break;
         case 1://R
-          if(get_IR(IR_R) > 15)maze_w[y][x] |= 1 << ii; 
+          if(get_IR(IR_R) > 15){
+			maze_w[y][x] &= ~(1 << ii);
+		  	maze_w[y][x] |= 1 << ii; 
+		  }
           break;
       }
       if((0 <= nx && nx < W) && (0 <= ny && ny < H)){
         maze_w[ny][nx] |= 1 << (4+(ii+2)%4);
-        if((maze_w[y][x] & (1 << ii)) != 0)maze_w[ny][nx] |= 1 << ((ii+2)%4);
+        if((maze_w[y][x] & (1 << ii)) != 0){
+			maze_w[ny][nx] &= ~(1 << ((ii+2)%4));
+			maze_w[ny][nx] |= 1 << ((ii+2)%4);
+		}
       }
    //}
   }
@@ -601,11 +616,11 @@ void S_run(long long path,int powor, char non_stop,char kabe){
    		// GyroSum_reset();
     	if(15 < get_IR(IR_FL) && 15 < get_IR(IR_FR) ){
 	 		while(1){
-      			if(get_IR(IR_FL) > 55){
+      			if(get_IR(IR_FL) > 65){
         			Smotor(-7,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 50){
+      			}else if(get_IR(IR_FL) < 60){
        	 			Smotor(+7,true);
        				
         			cnt2 = 0;
@@ -660,6 +675,9 @@ void S_run_maze_search(int path,int powor){
 	int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
+	long long enc_kabe_L,enc_kabe_R;
+	
+	int kame_hosei = 200;//170
 	
 	GyroSum_reset();
 	
@@ -673,13 +691,13 @@ void S_run_maze_search(int path,int powor){
 				enc_now = get_encoder_total_L() - enc_base;
 			}
 			
-			if(get_IR(IR_FL) > 20 && get_IR(IR_FR) > 20){//前壁があった場合は
+			if(get_IR(IR_FL) > 20 && get_IR(IR_FR) > 15){//前壁があった場合は
 				while(1){//前壁補正
-      				if(get_IR(IR_FL) > 55){
+      				if(get_IR(IR_FL) > 65){
         				Smotor(-7,true);
 
 	        			cnt2 = 0;
-	      			}else if(get_IR(IR_FL) < 50){
+	      			}else if(get_IR(IR_FL) < 60){
 	       	 			Smotor(+7,true);
 	       
 	        			cnt2 = 0;
@@ -700,19 +718,19 @@ void S_run_maze_search(int path,int powor){
 			break;
 		}
 		
-		if( path_cnt < path-1 && get_IR(IR_FL) > 13 && get_IR(IR_FR) > 13){//目標まで１マス以上残ってる　＆＆　前壁が出現
+		if( path_cnt < path-1 && get_IR(IR_FL) > 18 && get_IR(IR_FR) > 18){//目標まで１マス以上残ってる　＆＆　前壁が出現
 			//マスの中心まで移動
-			while(enc_now - ((long long)s1 * path_cnt ) < s1){
+			while(enc_now - ((long long)s1 * path_cnt ) < s1 && get_IR(IR_FL) < 50){
 				Smotor(+10,true);
 				enc_now = get_encoder_total_L() - enc_base;
 			}
 		
 			while(1){//前壁補正
-      			if(get_IR(IR_FL) > 55){
+      			if(get_IR(IR_FL) > 65){
         			Smotor(-7,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 50){
+      			}else if(get_IR(IR_FL) < 60){
        	 			Smotor(+7,true);
        
         			cnt2 = 0;
@@ -759,7 +777,7 @@ void S_run_maze_search(int path,int powor){
 				maza_update_flag = 1;
 			}
 		}else if(maza_update_flag == 1){//まだ前壁の更新をしていなければ
-			if(enc_now - ((long long)s1 * path_cnt ) > s1 - 50){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
+			if(enc_now - ((long long)s1 * path_cnt ) > s1 - 0){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
 				maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,1);//迷路情報の更新
 				maza_update_flag = 2;
 			}
@@ -794,11 +812,18 @@ void S_run_maze_search(int path,int powor){
 						enc_base -= hosei_kyori_R;//右での補正を無かったことにする
 						enc_now = get_encoder_total_L() - enc_base;
 						
-						hosei_kyori_L = (enc_now % s1) - 200;
+						hosei_kyori_L = (enc_now % s1) - kame_hosei;
 						
 						hosei_kyori_L = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
+						
+						//壁切れタイミングの違いで角度補正
+						enc_kabe_L = get_encoder_total_L();
+						if(abs( (enc_kabe_L - enc_kabe_R) ) < 150){
+							GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
+						}
 					}else{
-						hosei_kyori_L = (enc_now % s1) - 200;
+						hosei_kyori_L = (enc_now % s1) - kame_hosei;
+						enc_kabe_L = get_encoder_total_L();
 					}
 					
 					enc_base += hosei_kyori_L;
@@ -816,11 +841,18 @@ void S_run_maze_search(int path,int powor){
 					if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
 						enc_base -= hosei_kyori_L;//左での補正を無かったことにする
 						enc_now = get_encoder_total_L() - enc_base;
-						hosei_kyori_R = (enc_now % s1) - 200;
+						hosei_kyori_R = (enc_now % s1) - kame_hosei;
 						
 						hosei_kyori_R = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
+						
+						//壁切れタイミングの違いで角度補正
+						enc_kabe_R = get_encoder_total_L();
+						if(abs( (enc_kabe_L - enc_kabe_R) ) < 150){
+							GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
+						}
 					}else{
-						hosei_kyori_R = (enc_now % s1) - 200;
+						hosei_kyori_R = (enc_now % s1) - kame_hosei;
+						enc_kabe_R = get_encoder_total_L();
 					}
 					
 					enc_base += hosei_kyori_R;
@@ -1234,12 +1266,6 @@ void shortest_path_search_fin(){
       }
     }
   }
-  
-  for(int i = 1;i <= 8; i*= 2){
-	led(i);
-	delay(100);
-  }
-  led(0);
  
   //run_list
   queue_reset();

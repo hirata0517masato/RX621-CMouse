@@ -8,7 +8,7 @@
 #define Start_x  0
 #define Start_y  0
 
-#define Goal_x  4
+#define Goal_x  6
 #define Goal_y  0
 
 //ジャイロ関連
@@ -18,12 +18,12 @@
 #define l90  (21500)	//90度 左回転
 #define r180  (-43000)	//180度 右回転
 #define sr90  (23000)	//スラローム
-#define sl90  (24000)	//スラローム
+#define sl90  (23500)	//スラローム
 
-//エンコーダ関連　memo : 1mm = 4
-#define s1 (735)		//1マス直進
-#define s45 (520)		//45度１マス直進
-#define h1 (340)		//半マス直進
+//エンコーダ関連　memo : 1mm = 4 //壁切れ170
+#define s1 (700)		//1マス直進 700  　735
+#define s45 (500)		//45度１マス直進 500 520
+#define h1 (350)		//半マス直進 350 340
 #define rsls90 (647)	//スラローム
 
 #define r_cost 4		//迷路の重み　90度回転の場合
