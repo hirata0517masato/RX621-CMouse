@@ -7,5 +7,6 @@ char queue_empty(void);
 void queue_reset(void);
 void enqueue(short);
 short dequeue(void);
+short queue_next(void);
 
 #endif

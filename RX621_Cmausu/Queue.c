@@ -28,3 +28,8 @@ short dequeue(){
     queue_num--;
     return r;
 }
+
+short queue_next(){
+    if(queue_empty())return -99;
+    return queue[queue_front];
+}
