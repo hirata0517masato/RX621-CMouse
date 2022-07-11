@@ -672,8 +672,8 @@ void S_run_maze_search(int path,int powor){
 	
 	int cnt2 = 0;
 	
-	int ir_L_old = 0,ir_R_old = 0;
 	int ir_L_now = 0,ir_R_now = 0;
+	int ir_L_flag = 0,ir_R_flag = 0;
 	int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
@@ -770,6 +770,8 @@ void S_run_maze_search(int path,int powor){
 			
 				path_cnt++;
 				maza_update_flag = 0;
+				ir_L_flag = 0;
+				ir_R_flag = 0;
 			}
 		}	
 		
@@ -806,8 +808,11 @@ void S_run_maze_search(int path,int powor){
 		ir_L_now = get_IR(IR_L);
 		ir_R_now = get_IR(IR_R);
 		if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-			if( (ir_L_old >= 20 && ir_L_now < 20)  && ir_R_now < 70){ //メモ：数値は同じにしておくこと
-			
+		
+			if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 70){
+				ir_L_flag = 1;
+				
+			}else if(ir_L_flag == 1 && ir_L_now < 15 && ir_R_now < 70){
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
 					if(path_cnt == path_cnt_save_R){//左より先に右が壁切れ補正していた場合
@@ -831,13 +836,17 @@ void S_run_maze_search(int path,int powor){
 					enc_base += hosei_kyori_L;
 					
 				}
+				ir_L_flag = 0;
 				path_cnt_save_L = path_cnt;
 			}
 		}
 		
 		if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-			if((ir_R_old >= 20 && ir_R_now < 20) && ir_L_now < 70 ){ //メモ：数値は同じにしておくこと
 			
+			if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 70){
+				ir_R_flag = 1;
+				
+			}else if(ir_R_flag == 1 && ir_R_now < 15 && ir_L_now < 70){
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
 					if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
@@ -860,12 +869,10 @@ void S_run_maze_search(int path,int powor){
 					enc_base += hosei_kyori_R;
 					
 				}
+				ir_R_flag = 0;
 				path_cnt_save_R = path_cnt;
 			}
 		}
-		
-		ir_L_old = ir_L_now;
-		ir_R_old = ir_R_now;
 		
 		enc_now = get_encoder_total_L() - enc_base;
 	}
@@ -1536,7 +1543,7 @@ void run_shortest_path_fin(	char naname){
   int first_flag = 0; //0:まだ走行してない 1:走行中
   int cnt = 0;
   
-  int over_run = 0;//速度上げるとオーバーランぎみなので少し手前で止める
+  int over_run = 40;//速度上げるとオーバーランぎみなので少し手前で止める
   
   while(!queue_empty()){
     comand = dequeue();path_num = dequeue();
@@ -1574,7 +1581,7 @@ void run_shortest_path_fin(	char naname){
 			  if(first_flag == 0)S_run(h1 *(long long) path_num - over_run ,48,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
 		  	  else S_run(h1 * (long long)path_num - over_run ,48,true,true);
 		  }
-          S_run_kabe(25,true);
+          S_run_kabe(40,true);
         }
 
         //my_x = nx;

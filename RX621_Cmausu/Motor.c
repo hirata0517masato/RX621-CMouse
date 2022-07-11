@@ -138,10 +138,10 @@ void Smotor(int M,char w_flag){
 			if(((get_IR(IR_FL) < 50) || (get_IR(IR_FR) < 50)) && abs(GyroSum_get()) < 6000){
 				
 				
-				if((get_IR(IR_R) > 65 )//){ //右壁近い
+				if((get_IR(IR_R) > 70 )//){ //右壁近い
 			 	|| (get_IR(IR_R) < 10 && get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if(cnt1 > 10 - (get_encoder_L()/15)){
+					if(cnt1 > 10 - (get_encoder_L()/10)){
 						cnt1 = 0;
 						long long n = (long long)-1 * get_encoder_L();
 						if(n < -1)n = -1;
@@ -149,10 +149,10 @@ void Smotor(int M,char w_flag){
 					}
 				}else cnt1 = 0;
 			
-				if((get_IR(IR_L) > 65 )//){ //左壁近い
+				if((get_IR(IR_L) > 70 )//){ //左壁近い
 			 	|| (get_IR(IR_L) < 10 && get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if(cnt2 > 10 - (get_encoder_L()/15)){
+					if(cnt2 > 10 - (get_encoder_L()/10)){
 						cnt2 = 0;
 						long long n = (long long)1 * get_encoder_L();
 						if(n > 1)n = 1;
@@ -250,8 +250,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	int cnt = 0;
 	
 	int path_cnt = 0;
-	int ir_L_old = 0,ir_R_old = 0;
+	//int ir_L_old = 0,ir_R_old = 0;
 	int ir_L_now = 0,ir_R_now = 0;
+	int ir_L_flag = 0,ir_R_flag = 0;
 	int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
@@ -260,7 +261,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	
 	int p = 5,min_M = 3,M = 3;
 	
-	int non_stop_min_M = 13;
+	int non_stop_min_M = 15;
 	int min_M_use = 0;
 	
 	int M_max_safe = 30;//横壁が近すぎる場合は減速
@@ -299,7 +300,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			
 			if(max_M < M)M = max_M;
 			
-			if(ir_L_now > 110 || ir_R_now > 110){//横壁が近すぎる場合は減速
+			if(ir_L_now > 130 || ir_R_now > 130){//横壁が近すぎる場合は減速
 				 if(M_max_safe < M)M = M_max_safe;
 			}
 
@@ -327,6 +328,8 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		
 		if(enc_now - ((long long)s1 * path_cnt ) > s1){//１マス進んだ
 			path_cnt++;
+			ir_L_flag = 0;
+			ir_R_flag = 0;
 		}
 		
 		
@@ -335,7 +338,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			ir_L_now = get_IR(IR_L);
 			ir_R_now = get_IR(IR_R);
 			if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-				if( (ir_L_old >= 20 && ir_L_now < 20) && ir_R_now < 70 ){ //メモ：数値は同じにしておくこと
+			
+				if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 70){
+					ir_L_flag = 1;
+				
+				}else if(ir_L_flag == 1 && ir_L_now < 15 && ir_R_now < 70){
 				
 					if( (non_stop == 0 && (enc_now % s1) < s1 * 2 / 3) || 
 						(non_stop == 1 && ((enc_now - h1) % s1) < s1 * 2 / 3)	){
@@ -369,13 +376,17 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 						enc_base += hosei_kyori_L;
 						
 					}
+					ir_L_flag = 0;
 					path_cnt_save_L = path_cnt;
 				}
 			}
 			
 			if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
-				if((ir_R_old >= 20 && ir_R_now < 20) && ir_L_now < 70){ //メモ：数値は同じにしておくこと
+			
+				if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 70){
+					ir_R_flag = 1;
 				
+				}else if(ir_R_flag == 1 && ir_R_now < 15 && ir_L_now < 70){
 					if( (non_stop == 0 && (enc_now % s1) < s1 * 2 / 3) || 
 						(non_stop == 1 && ((enc_now - h1) % s1) < s1 * 2 / 3)	){
 					
@@ -410,12 +421,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 						enc_base += hosei_kyori_R;
 						
 					}
+					ir_R_flag = 0;
 					path_cnt_save_R = path_cnt;
 				}
 			}
-			
-			ir_L_old = ir_L_now;
-			ir_R_old = ir_R_now;
 		}
 			
 		
@@ -510,7 +519,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	//Encoder_reset();
 
 	int M = 20;//35
-	int M_kabe = 20;
+	int M_kabe = 40;
 	
 	char flag = 0;
 	
@@ -551,7 +560,7 @@ void ETmotor(long long A, long long E, char non_stop){
 
 	static int cnt1 = 0;
 	
-	ESmotor(60,M_kabe,true,true);
+	ESmotor(65,M_kabe,true,true);
 	
 	while(1){
 		
@@ -616,7 +625,7 @@ void ETmotor(long long A, long long E, char non_stop){
 		if(E - E_sum < 0)break;
 	}
 
-	ESmotor(60,M_kabe,true,true);
+	ESmotor(55,M_kabe,true,true);
 	
 	//motor(0,0);
 	//GyroSum_reset();
