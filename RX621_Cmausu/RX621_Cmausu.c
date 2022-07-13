@@ -49,6 +49,7 @@ void maze_save(void);
 void maze_load(void);
 void maze_update(char,char,char,char);
 void maze_search_adachi(short,short);
+void maze_search_all(void);
 void shortest_path_search_fin(void);
 void remake_shortest_path_list_naname(void);
 void run_shortest_path_fin(char);
@@ -156,6 +157,7 @@ void main(void)
 				
 				break;
 				
+				
 			case 2://最短走行モード
 				shortest_path_search_fin();
 				
@@ -170,8 +172,10 @@ void main(void)
 				
 				break;
 				
+			case 4://最短経路上の未確定マスをすべて探しに行く
+				maze_search_all();
 				
-				
+				break;
 				
 			case 5://迷路情報リセットモード
 				for(int i = 0; i < H;i++)for(int j = 0; j < W; j++)maze_w[i][j] = 0;
@@ -1132,7 +1136,7 @@ void run_shortest_path(){
         break;
       case 0://S
         if(path_num == 1){
-	  		S_run(s1,20,false,true);
+	  		S_run(s1,18,false,true);
 			
 		}else{
 			S_run(s1 * (long long)path_num,25,false,true);
@@ -1216,6 +1220,215 @@ void maze_search_adachi(short target_x,short target_y){
     	shortest_path_search(target_x,target_y);
     	make_shortest_path_list(target_x,target_y);
 		run_shortest_path();
+  	}
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路作成	未確定マスの手前で止まる					  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 目的地のXY座標															    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void make_shortest_path_list_simple(short target_x,short target_y){
+	queue_reset();
+  	short s_path = 0;
+ 	short x = my_x,y = my_y,angle = my_angle;
+	
+	
+  	while(x != target_x || y != target_y){
+    	short num = maze_d[y][x][(angle+2)%4];
+    	short n_num = 0;
+    	char s_flag = 0;
+    	short nx = x+dx[angle],ny = y+dy[angle];
+    	if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) ){//目の前が迷路内　&& 壁がない 
+      		short next = maze_d[ny][nx][(angle+2)%4];
+      		if(num == next+1){//目の前のマスがゴールに近い
+        		n_num = (angle+2)%4;
+        		num = next;
+        		s_flag = true;
+      		}
+    	}
+
+    	if(s_flag == false){//回転する必要がる
+      		for(int i = 0;i < 4;i++){
+        		if(i == (angle+2)%4){
+        		}else{
+          			short next = maze_d[y][x][i];
+          			if(num > next){
+            			n_num = i;
+            			num = next;
+          			}
+        		}
+      		}
+    	}
+    
+    	n_num = (n_num+2)%4;// 0 ~ 4　進みたい方角
+    	short ni = ((4 + n_num - ((4+angle-1)%4))%4) -1;// -1 ~ 2　マシンから見た方角
+
+    	if((maze_w[y][x] & (1 << (4+n_num))) == 0){//未確定の壁
+			break;
+		}
+	
+    	switch(ni){
+      		case -1://L
+        		if(s_path > 0){
+          			enqueue(0);
+          			enqueue(s_path);
+          			s_path = 0;		
+        		}
+
+        		enqueue(-1);
+        		enqueue(1);
+        
+        		angle = (4+angle-1)%4;
+		     
+		        break;
+		    case 0://S
+				
+		        s_path +=1;
+		        x += dx[n_num];
+		        y += dy[n_num];
+				
+		        break;
+				
+      		case 1://R
+		        if(s_path > 0){
+			    	enqueue(0);
+			        enqueue(s_path);
+			        s_path = 0;
+		        }
+        
+		        enqueue(1);
+		        enqueue(1);
+		         
+		        angle = (4+angle+1)%4;
+		     
+		        break;
+      		case 2://B
+        		if(s_path > 0){
+          			enqueue(0);
+          			enqueue(s_path);
+          			s_path = 0;
+        		}
+        
+        		enqueue(2);
+        		enqueue(1);
+				 
+        		angle = (4+angle+2)%4;
+        		break;
+    	}
+  	}
+ 
+  	if(s_path > 0){
+    	enqueue(0);
+    	enqueue(s_path);
+    	s_path = 0;
+  	}
+}
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路上の未確定マスを探す											            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 																				    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void maze_search_unknown(short* target_x,short* target_y){
+ 
+ 	short x = Start_x,y = Start_y,angle = 1;
+	
+	
+  	while(x != Goal_x || y != Goal_y){
+    	short num = maze_d[y][x][(angle+2)%4];
+    	short n_num = 0;
+    	char s_flag = 0;
+    	short nx = x+dx[angle],ny = y+dy[angle];
+    	if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) ){//目の前が迷路内　&& 壁がない 
+      		short next = maze_d[ny][nx][(angle+2)%4];
+      		if(num == next+1){//目の前のマスがゴールに近い
+        		n_num = (angle+2)%4;
+        		num = next;
+        		s_flag = true;
+      		}
+    	}
+
+    	if(s_flag == false){//回転する必要がる
+      		for(int i = 0;i < 4;i++){
+        		if(i == (angle+2)%4){
+        		}else{
+          			short next = maze_d[y][x][i];
+          			if(num > next){
+            			n_num = i;
+            			num = next;
+          			}
+        		}
+      		}
+    	}
+    
+    	n_num = (n_num+2)%4;// 0 ~ 4　進みたい方角
+    	short ni = ((4 + n_num - ((4+angle-1)%4))%4) -1;// -1 ~ 2　マシンから見た方角
+
+    	if((maze_w[y][x] & (1 << (4+n_num))) == 0){//未確定の壁
+			*target_x = x;
+			*target_y = y;
+			return;
+			
+		}
+	
+    	switch(ni){
+      		case -1://L
+        		angle = (4+angle-1)%4;
+		      
+		        break;
+		    case 0://S
+   
+		        x += dx[n_num];
+		        y += dy[n_num];
+	
+		        break;
+				
+      		case 1://R
+		        angle = (4+angle+1)%4;
+		 
+		        break;
+      		case 2://B
+        	
+        		angle = (4+angle+2)%4;
+        		break;
+    	}
+  	}
+	
+	//未確定マスを通らずにゴールまで経路を確認できた。
+	*target_x = Goal_x;
+	*target_y = Goal_y;
+}
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路はすべて確定マスにする  										            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 																				    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void maze_search_all(){
+	GyroSum_reset();
+	Encoder_reset();
+
+	led_down();
+	
+	short target_x,target_y;
+	
+	while(1){
+		maze_update(my_x,my_y,my_angle,3);
+		
+		shortest_path_search(Goal_x,Goal_y);
+		maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
+		
+    	shortest_path_search(target_x,target_y);
+    	make_shortest_path_list_simple(target_x,target_y);
+		run_shortest_path();
+  	
+		if(my_x == Goal_x && my_y == Goal_y){//最短経路上に未確定マスがなければ終了
+			led_down();
+			led_up();
+			break;
+		}
   	}
 }
 
