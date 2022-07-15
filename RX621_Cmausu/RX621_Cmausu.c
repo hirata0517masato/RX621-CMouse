@@ -104,7 +104,7 @@ void main(void)
 		motor(0,0);
 
 		printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
-		printf2("%ld\n",get_encoder_total_L());
+		//printf2("%ld\n",get_encoder_total_L());
 		if(get_sw() == 1){
 			Encoder_reset();
 		}
@@ -598,37 +598,47 @@ void maze_update(char x,char y,char angle, char type){
     short ii = (4 + angle+i)%4;
     int nx = x+dx[ii], ny = y+dy[ii];
 
-   // if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
+ //   if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
       maze_w[y][x] |= 1 << (4+ii);
       
       switch(i){
         case -1://L
-          if(get_IR(IR_L) > 15){
-			maze_w[y][x] &= ~(1 << ii);
-			maze_w[y][x] |= 1 << ii;
-		  }
-          break;
+			//if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
+          		if(get_IR(IR_L) > 20){
+					maze_w[y][x] |= 1 << ii;
+		  		}else{
+					maze_w[y][x] &= ~(1 << ii);  
+		  		}
+			//}
+         	break;
         case 0://S
-          if(get_IR(IR_FL) > 25 && get_IR(IR_FR) > 18){
-			maze_w[y][x] &= ~(1 << ii);
-			maze_w[y][x] |= 1 << ii; //左前だけ値が高い
-		  }
-          break;
+			//if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
+          		if(get_IR(IR_FL) > 13 || get_IR(IR_FR) > 13){
+					maze_w[y][x] |= 1 << ii; //左前だけ値が高い?
+		  		}else{
+					maze_w[y][x] &= ~(1 << ii);
+		  		}
+			// }
+         	 break;
         case 1://R
-          if(get_IR(IR_R) > 15){
-			maze_w[y][x] &= ~(1 << ii);
-		  	maze_w[y][x] |= 1 << ii; 
-		  }
-          break;
+			//if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
+          		if(get_IR(IR_R) > 20){
+		  			maze_w[y][x] |= 1 << ii; 
+		  		}else{
+					maze_w[y][x] &= ~(1 << ii);
+		  		}
+			//}
+          	break;
       }
       if((0 <= nx && nx < W) && (0 <= ny && ny < H)){
         maze_w[ny][nx] |= 1 << (4+(ii+2)%4);
-        if((maze_w[y][x] & (1 << ii)) != 0){
-			maze_w[ny][nx] &= ~(1 << ((ii+2)%4));
+		maze_w[ny][nx] &= ~(1 << ((ii+2)%4));
+		
+       	if((maze_w[y][x] & (1 << ii)) != 0){	
 			maze_w[ny][nx] |= 1 << ((ii+2)%4);
 		}
       }
-   //}
+ //  }
   }
 }
 
@@ -675,11 +685,11 @@ void S_run(long long path,int powor, char non_stop,char kabe){
    		// GyroSum_reset();
     	if(15 < get_IR(IR_FL) && 15 < get_IR(IR_FR) ){
 	 		while(1){
-      			if(get_IR(IR_FL) > 68){
+      			if(get_IR(IR_FL) > 60){
         			Smotor(-7,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 63){
+      			}else if(get_IR(IR_FL) < 55){
        	 			Smotor(+7,true);
        				
         			cnt2 = 0;
@@ -696,21 +706,25 @@ void S_run(long long path,int powor, char non_stop,char kabe){
   //GyroSum_reset();
 }
 
-void S_run_kabe(int powor, char flag){//壁切れまで走行
+void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
   int Lflag = 0,Rflag = 0;
  
   while(1){
-    if(Lflag == 0){
-      if(get_IR(IR_L) > 20)Lflag = 1;
-    }else if(Lflag == 1){
-      if(get_IR(IR_L) < 15)break;
-    }
+	if(LR == 3 || LR == 1){
+    	if(Lflag == 0){
+      		if(get_IR(IR_L) > 20)Lflag = 1;
+    	}else if(Lflag == 1){
+      		if(get_IR(IR_L) < 15)break;
+    	}
+	}
 
-    if(Rflag == 0){
-      if(get_IR(IR_R) > 20)Rflag = 1;
-    }else if(Rflag == 1){
-      if(get_IR(IR_R) < 15)break;
-    }
+	if(LR == 3 || LR == 2){
+    	if(Rflag == 0){
+      		if(get_IR(IR_R) > 20)Rflag = 1;
+    	}else if(Rflag == 1){
+      		if(get_IR(IR_R) < 15)break;
+    	}
+	}
     
     Smotor(powor,flag);
   }
@@ -833,12 +847,12 @@ void S_run_maze_search(int path,int powor){
 		}	
 		
 		if(maza_update_flag == 0){//まだ横壁の更新をしていなければ
-			if(enc_now - ((long long)s1 * path_cnt ) > s1 - 300){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
+			if(enc_now - ((long long)s1 * path_cnt ) > s1 - 350){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
 				maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,2);//迷路情報の更新
 				maza_update_flag = 1;
 			}
 		}else if(maza_update_flag == 1){//まだ前壁の更新をしていなければ
-			if(enc_now - ((long long)s1 * path_cnt ) > s1 - 0){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
+			if(enc_now - ((long long)s1 * path_cnt ) > s1 - 50){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
 				maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,1);//迷路情報の更新
 				maza_update_flag = 2;
 			}
@@ -1847,15 +1861,26 @@ void run_shortest_path_fin(	char naname){
 			  if(first_flag == 0)S_run(h1 *(long long) path_num - over_run ,48 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
 		  	  else S_run(h1 * (long long)path_num - over_run ,48 + run_fin_speed_offset,true,true);
 		  }
-          S_run_kabe(40 + run_fin_speed_offset,true);
+		  
+		  if(queue_next() < 0){//次　左
+          	  S_run_kabe(40 + run_fin_speed_offset,true,1);
+			
+		  }else if(queue_next() > 0){//次　右
+			  S_run_kabe(40 + run_fin_speed_offset,true,2);
+		  }else{
+			  S_run_kabe(40 + run_fin_speed_offset,true,3);
+		  }
         }
 
         //my_x = nx;
         //my_y = ny;
         break;
       case 10://Snaname
-        S_run(s45 * (long long)path_num - 120,35 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
-
+	    if(path_num <= 2){
+        	S_run(s45 * (long long)path_num - 160,25 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+		}else{
+			S_run(s45 * (long long)path_num - 160,35 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+		}
         //my_x = nx;
         //my_y = ny;
         break;

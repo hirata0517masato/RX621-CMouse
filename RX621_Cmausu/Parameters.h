@@ -1,6 +1,10 @@
 #ifndef PARAM_H
 #define PARAM_H
 
+/*
+中央に置いたとき
+横壁は60　前壁は50 くらい
+*/
 
 #define maze_d_max	9999
 #define H	16
@@ -14,16 +18,16 @@
 #define Goal_y  0
 #define Goal_angle 0
 
-#define Pickup_x  5
+#define Pickup_x  4
 #define Pickup_y  0
 
 //ジャイロ関連
-#define r45  (12000)	//45度 右回転
-#define l45  (12500)	//45度 左回転
-#define r90  (20500) 	//90度 右回転
-#define l90  (21000)	//90度 左回転
-#define r180  (-43000)	//180度 右回転
-#define sr90  (23000)	//スラローム
+#define r45  (11000)	//45度 右回転
+#define l45  (11500)	//45度 左回転
+#define r90  (21000) 	//90度 右回転
+#define l90  (21500)	//90度 左回転
+#define r180  (-44000)	//180度 右回転
+#define sr90  (22500)	//スラローム
 #define sl90  (23500)	//スラローム
 
 //エンコーダ関連　memo : 1mm = 4 //壁切れ170
