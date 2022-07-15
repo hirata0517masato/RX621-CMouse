@@ -5,11 +5,17 @@
 #define maze_d_max	9999
 #define H	16
 #define W	16
+
 #define Start_x  0
 #define Start_y  0
+#define Start_angle 1
 
 #define Goal_x  6
 #define Goal_y  0
+#define Goal_angle 0
+
+#define Pickup_x  5
+#define Pickup_y  0
 
 //ジャイロ関連
 #define r45  (12000)	//45度 右回転

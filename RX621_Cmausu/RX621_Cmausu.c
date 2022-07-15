@@ -70,9 +70,12 @@ short maze_d[H][W][4] = {0};	//4方向分の重み
 
 short dx[4] = {0,1,0,-1},dy[4] = {-1,0,1,0};
 
-char my_x = Start_x,my_y = Start_y,my_angle = 1;//0:up 1:right 2:down 3:left
+char my_x = Start_x,my_y = Start_y,my_angle = Start_angle;//0:up 1:right 2:down 3:left
 
 int ir_flag = 0; // 0:赤外線OFF 1:赤外線ON
+
+int run_fin_speed_offset = 0;
+
 /***********************************************************************/
 /* メインプログラム                                                    */
 /***********************************************************************/
@@ -128,11 +131,11 @@ void main(void)
 		
 		my_x = Start_x;
 		my_y = Start_y;
-		my_angle = 1;
-		 
-		ir_flag = 1;//赤外線ON
+		my_angle = Start_angle;
 		
-		if(mode != 5){//迷路情報のリセットでなければ
+		if(mode != 5 && mode != 6){//速度調整モードではない　＆＆　迷路情報のリセットでなければ
+			ir_flag = 1;//赤外線ON
+			
 			led(6);
 			//スイッチ入力待ち
 			while(get_sw() == 0) nop();
@@ -163,6 +166,16 @@ void main(void)
 				
 				run_shortest_path_fin(false);
 				
+				led(9);
+				delay(500);
+				led_up();
+				
+				my_x = Goal_x;
+				my_y = Goal_y;
+				my_angle = Goal_angle;
+				
+				maze_search_adachi(Pickup_x,Pickup_y);//拾いやすいところまで移動する
+				
 				break;
 			case 3://最短走行（斜めあり）モード
 				shortest_path_search_fin();
@@ -170,14 +183,54 @@ void main(void)
 				
 				run_shortest_path_fin(true);
 				
+				led(9);
+				delay(500);
+				led_up();
+				
+				my_x = Goal_x;
+				my_y = Goal_y;
+				my_angle = Goal_angle;
+				
+				maze_search_adachi(Pickup_x,Pickup_y);//拾いやすいところまで移動する
+				
 				break;
 				
 			case 4://最短経路上の未確定マスをすべて探しに行く
 				maze_search_all();
 				
+				led(9);
+				delay(500);
+				led_up();
+				
+				my_x = Goal_x;
+				my_y = Goal_y;
+				my_angle = Goal_angle;
+				
+				maze_search_adachi(Pickup_x,Pickup_y);//拾いやすいところまで移動する
+				
 				break;
 				
-			case 5://迷路情報リセットモード
+			case 5://速度調整モード（調整値は保存しない、本番での微調整用）
+				Encoder_reset();
+		
+				led(6);
+				delay(1000);
+				
+				//モード選択
+				while(1){
+					led(run_fin_speed_offset);
+			
+					run_fin_speed_offset = get_encoder_total_R() / 50;
+			
+					if(get_sw() == 1){
+						led_up();
+						while(get_sw() == 1)nop();
+						break;
+					}
+				}
+		
+				break;
+			case 6://迷路情報リセットモード
 				for(int i = 0; i < H;i++)for(int j = 0; j < W; j++)maze_w[i][j] = 0;
 				
 				//迷路の外周の確定壁を設定
@@ -622,11 +675,11 @@ void S_run(long long path,int powor, char non_stop,char kabe){
    		// GyroSum_reset();
     	if(15 < get_IR(IR_FL) && 15 < get_IR(IR_FR) ){
 	 		while(1){
-      			if(get_IR(IR_FL) > 65){
+      			if(get_IR(IR_FL) > 68){
         			Smotor(-7,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 60){
+      			}else if(get_IR(IR_FL) < 63){
        	 			Smotor(+7,true);
        				
         			cnt2 = 0;
@@ -699,11 +752,11 @@ void S_run_maze_search(int path,int powor){
 			
 			if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15){//前壁があった場合は
 				while(1){//前壁補正
-      				if(get_IR(IR_FL) > 65){
+      				if(get_IR(IR_FL) > 60){
         				Smotor(-7,true);
 
 	        			cnt2 = 0;
-	      			}else if(get_IR(IR_FL) < 60){
+	      			}else if(get_IR(IR_FL) < 55){
 	       	 			Smotor(+7,true);
 	       
 	        			cnt2 = 0;
@@ -732,11 +785,11 @@ void S_run_maze_search(int path,int powor){
 			}
 		
 			while(1){//前壁補正
-      			if(get_IR(IR_FL) > 65){
+      			if(get_IR(IR_FL) > 60){
         			Smotor(-7,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 60){
+      			}else if(get_IR(IR_FL) < 55){
        	 			Smotor(+7,true);
        
         			cnt2 = 0;
@@ -916,7 +969,7 @@ void shortest_path_search(short target_x,short target_y){
     for(char i =0;i<4;i++){
       char update_flag = 0;
       short nx = x+dx[i],ny = y+dy[i];
-      if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) ){
+      if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) ){//未確定の場合は壁無しとして考える
 
         short num = maze_d[y][x][i];
         for(int k = 0; k < 4; k++){
@@ -1203,9 +1256,9 @@ void maze_search_adachi(short target_x,short target_y){
 	
 	while(1){
     	maze_update(my_x,my_y,my_angle,3);
-    	if((target_x != Goal_x || target_y != Goal_y) && (target_x != Start_x || target_y != Start_y)){//スタート地点、ゴール地点以外が目標地点のとき
+    	/*if((target_x != Goal_x || target_y != Goal_y) && (target_x != Start_x || target_y != Start_y)){//スタート地点、ゴール地点以外が目標地点のとき
       		if((maze_w[target_y][target_x] & 0xf0) == 0xf0)break;    //目標地点の壁がすべて確定したら探索完了  
-    	}
+    	}*/
 		
     	if(target_x == my_x && target_y == my_y){//ゴール
 			led_up();
@@ -1333,7 +1386,7 @@ void make_shortest_path_list_simple(short target_x,short target_y){
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void maze_search_unknown(short* target_x,short* target_y){
  
- 	short x = Start_x,y = Start_y,angle = 1;
+ 	short x = Start_x,y = Start_y,angle = Start_angle;
 	
 	
   	while(x != Goal_x || y != Goal_y){
@@ -1376,7 +1429,7 @@ void maze_search_unknown(short* target_x,short* target_y){
     	switch(ni){
       		case -1://L
         		angle = (4+angle-1)%4;
-		      
+				
 		        break;
 		    case 0://S
    
@@ -1387,9 +1440,9 @@ void maze_search_unknown(short* target_x,short* target_y){
 				
       		case 1://R
 		        angle = (4+angle+1)%4;
-		 
+			
 		        break;
-      		case 2://B
+      		case 2://B 不要のはず
         	
         		angle = (4+angle+2)%4;
         		break;
@@ -1462,7 +1515,7 @@ void shortest_path_search_fin(){
     for(char i =0;i<4;i++){
       char update_flag = 0;
       short nx = x+dx[i],ny = y+dy[i];
-      if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){
+      if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){//未確定の壁は通過しない
 
         short num = maze_d[y][x][i];
         for(int k = 0; k < 4; k++){
@@ -1492,7 +1545,7 @@ void shortest_path_search_fin(){
   //run_list
   queue_reset();
   short h_path = 0;
-  my_x = Start_x;my_y = Start_y;my_angle = 1;
+  my_x = Start_x;my_y = Start_y;my_angle = Start_angle;
  
   while(my_x != Goal_x || my_y != Goal_y){
 
@@ -1771,7 +1824,7 @@ void run_shortest_path_fin(	char naname){
         break;
       case 0://S
         if(queue_empty()){
-			S_run(h1 * (long long)path_num + (h1*2/3),48,false,true);
+			S_run(h1 * (long long)path_num + (h1*2/3),48 + run_fin_speed_offset,false,true);
 			
 			while(1){//ゴールの奥まで進む
       			if(get_IR(IR_FL) > 65){
@@ -1791,17 +1844,17 @@ void run_shortest_path_fin(	char naname){
 		}else {
           path_num--;
           if(path_num > 0){
-			  if(first_flag == 0)S_run(h1 *(long long) path_num - over_run ,48,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
-		  	  else S_run(h1 * (long long)path_num - over_run ,48,true,true);
+			  if(first_flag == 0)S_run(h1 *(long long) path_num - over_run ,48 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
+		  	  else S_run(h1 * (long long)path_num - over_run ,48 + run_fin_speed_offset,true,true);
 		  }
-          S_run_kabe(40,true);
+          S_run_kabe(40 + run_fin_speed_offset,true);
         }
 
         //my_x = nx;
         //my_y = ny;
         break;
       case 10://Snaname
-        S_run(s45 * (long long)path_num - 120,35,true,3); // w_flag = 3 斜めの壁補正あり
+        S_run(s45 * (long long)path_num - 120,35 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 
         //my_x = nx;
         //my_y = ny;

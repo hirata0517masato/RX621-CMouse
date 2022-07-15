@@ -333,7 +333,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		}
 		
 		
-		if(w_flag == 1 && A > s1-100){//壁補正あり　ななめでもない && １マス以上進む時
+		if(w_flag == 1 && A > s1+100){//壁補正あり　ななめでもない && １マス以上進む時
 			//壁切れの距離補正
 			ir_L_now = get_IR(IR_L);
 			ir_R_now = get_IR(IR_R);
