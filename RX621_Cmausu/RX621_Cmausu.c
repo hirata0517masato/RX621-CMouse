@@ -76,6 +76,8 @@ int ir_flag = 0; // 0:赤外線OFF 1:赤外線ON
 
 int run_fin_speed_offset = 0;
 
+long long time_limit = -1;
+
 /***********************************************************************/
 /* メインプログラム                                                    */
 /***********************************************************************/
@@ -654,13 +656,13 @@ void R_rotate(long long a){
 }
 
 void L_curve(long long a,char flag){
-  ETmotor(-a,rsls90,flag);
+  ETmotor(-a,rslsl90,flag);
  
   my_angle = (4+my_angle-1)%4;
 }
 
 void R_curve(long long a ,char flag ){
-  ETmotor(a,rsls90,flag);
+  ETmotor(a,rslsr90,flag);
   
   my_angle = (4+my_angle+1)%4;
 }
@@ -880,31 +882,31 @@ void S_run_maze_search(int path,int powor){
 		ir_R_now = get_IR(IR_R);
 		if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 		
-			if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 70){
+			if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 90){
 				ir_L_flag = 1;
 				
-			}else if(ir_L_flag == 1 && ir_L_now < 15 && ir_R_now < 70){
+			}else if(ir_L_flag == 1 && ir_L_now < 15 && ir_R_now < 90){
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
 					if(path_cnt == path_cnt_save_R){//左より先に右が壁切れ補正していた場合
-						enc_base -= hosei_kyori_R;//右での補正を無かったことにする
+/*						enc_base -= hosei_kyori_R;//右での補正を無かったことにする
 						enc_now = get_encoder_total_L() - enc_base;
 						
 						hosei_kyori_L = (enc_now % s1) - kame_hosei;
 						
 						hosei_kyori_L = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
-						
+*/						
 						//壁切れタイミングの違いで角度補正
 						enc_kabe_L = get_encoder_total_L();
 						if(abs( (enc_kabe_L - enc_kabe_R) ) < 150){
 							GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
 						}
 					}else{
-						hosei_kyori_L = (enc_now % s1) - kame_hosei;
+//						hosei_kyori_L = (enc_now % s1) - kame_hosei;
 						enc_kabe_L = get_encoder_total_L();
 					}
 					
-					enc_base += hosei_kyori_L;
+//					enc_base += hosei_kyori_L;
 					
 				}
 				ir_L_flag = 0;
@@ -914,30 +916,30 @@ void S_run_maze_search(int path,int powor){
 		
 		if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-			if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 70){
+			if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 90){
 				ir_R_flag = 1;
 				
-			}else if(ir_R_flag == 1 && ir_R_now < 15 && ir_L_now < 70){
+			}else if(ir_R_flag == 1 && ir_R_now < 15 && ir_L_now < 90){
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
 					if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
-						enc_base -= hosei_kyori_L;//左での補正を無かったことにする
+/*						enc_base -= hosei_kyori_L;//左での補正を無かったことにする
 						enc_now = get_encoder_total_L() - enc_base;
 						hosei_kyori_R = (enc_now % s1) - kame_hosei;
 						
 						hosei_kyori_R = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
-						
+	*/					
 						//壁切れタイミングの違いで角度補正
 						enc_kabe_R = get_encoder_total_L();
 						if(abs( (enc_kabe_L - enc_kabe_R) ) < 150){
 							GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
 						}
 					}else{
-						hosei_kyori_R = (enc_now % s1) - kame_hosei;
+//						hosei_kyori_R = (enc_now % s1) - kame_hosei;
 						enc_kabe_R = get_encoder_total_L();
 					}
 					
-					enc_base += hosei_kyori_R;
+//					enc_base += hosei_kyori_R;
 					
 				}
 				ir_R_flag = 0;
@@ -1202,14 +1204,43 @@ void run_shortest_path(){
 		delay(time);
         break;
       case 0://S
-        if(path_num == 1){
-	  		S_run(s1,18,false,true);
-			
-		}else{
-			S_run(s1 * (long long)path_num,25,false,true);
-			
+//	  	if(queue_empty()){
+			if(path_num == 1){
+	  			S_run(s1,18,false,true);
+			}else{
+				S_run(s1 * (long long)path_num,25,false,true);
+			}
+/*		}else{
+        	if(path_num == 1){
+	  			//S_run(s1,18,false,true);
+				
+				if(queue_next() < 0){//次　左
+	          	  S_run_kabe(18,true,1);
+				
+			  	}else if(queue_next() > 0){//次　右
+				  S_run_kabe(18,true,2);
+			  	}else{
+				  S_run_kabe(18,true,3);
+			  	}
+				
+				S_run(h1,18,false,true);
+				
+			}else{
+				S_run(s1 * ((long long)path_num - 1),25,false,true);
+				
+				if(queue_next() < 0){//次　左
+	          	  S_run_kabe(25,true,1);
+				
+			  	}else if(queue_next() > 0){//次　右
+				  S_run_kabe(25,true,2);
+			  	}else{
+				  S_run_kabe(25,true,3);
+			  	}
+				
+				S_run(h1,25,false,true);
+			}
 		}
-		
+*/		
         switch(my_angle){
           case 0:
             my_y -= path_num;
@@ -1481,7 +1512,10 @@ void maze_search_all(){
 	
 	short target_x,target_y;
 	
-	while(1){
+	time_limit = 60000;//60秒
+	
+	while(time_limit > 0){//制限時間の間走行可能
+	
 		maze_update(my_x,my_y,my_angle,3);
 		
 		shortest_path_search(Goal_x,Goal_y);
@@ -1497,6 +1531,10 @@ void maze_search_all(){
 			break;
 		}
   	}
+	
+	if(time_limit <= 0){//　制限時間内に探索できなかった　ゴールまで向かう
+		maze_search_adachi(Goal_x,Goal_y);
+	}
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -1823,7 +1861,7 @@ void run_shortest_path_fin(	char naname){
   int first_flag = 0; //0:まだ走行してない 1:走行中
   int cnt = 0;
   
-  int over_run = 40;//速度上げるとオーバーランぎみなので少し手前で止める
+  int over_run = 0;//速度上げるとオーバーランぎみなので少し手前で止める
   
   while(!queue_empty()){
     comand = dequeue();path_num = dequeue();
@@ -1838,14 +1876,14 @@ void run_shortest_path_fin(	char naname){
         break;
       case 0://S
         if(queue_empty()){
-			S_run(h1 * (long long)path_num + (h1*2/3),48 + run_fin_speed_offset,false,true);
+			S_run(h1 * (long long)path_num ,48 + run_fin_speed_offset,false,true);
 			
 			while(1){//ゴールの奥まで進む
-      			if(get_IR(IR_FL) > 65){
+      			if(get_IR(IR_FL) > 60){
         			Smotor(-7,true);
 
         			cnt = 0;
-      			}else if(get_IR(IR_FL) < 60){
+      			}else if(get_IR(IR_FL) < 55){
        	 			Smotor(+7,true);
        				
         			cnt = 0;
@@ -1858,8 +1896,8 @@ void run_shortest_path_fin(	char naname){
 		}else {
           path_num--;
           if(path_num > 0){
-			  if(first_flag == 0)S_run(h1 *(long long) path_num - over_run ,48 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
-		  	  else S_run(h1 * (long long)path_num - over_run ,48 + run_fin_speed_offset,true,true);
+			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,48 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
+		  	  else S_run((h1 * (long long)path_num)  - over_run ,48 + run_fin_speed_offset,true,true);
 		  }
 		  
 		  if(queue_next() < 0){//次　左
@@ -1921,10 +1959,14 @@ void Excep_CMT0_CMI0(void)
 	Gyro_update();
 		
 	if(ir_flag == 1){//赤外線有効時=走行時にジャイロによる安全停止チェックを行う
-		if(abs(Gyro()) > 250){
+		if(abs(Gyro()) > 300){
     		motor_stop_cnt++;
     		if(motor_stop_cnt > 20)motor_stop();
   		}else motor_stop_cnt = 0;
+	}
+	
+	if(time_limit > 0){
+		time_limit--;	
 	}
 	
 	switch(task) {                         			
