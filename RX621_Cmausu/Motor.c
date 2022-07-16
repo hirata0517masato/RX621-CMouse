@@ -141,7 +141,7 @@ void Smotor(int M,char w_flag){
 				if((get_IR(IR_R) > 75 )//){ //右壁近い
 			 	|| (get_IR(IR_R) < 10 && get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if(cnt1 > 10 - (get_encoder_L()/10)){
+					if(cnt1 > 10 - (get_encoder_L()/20)){
 						cnt1 = 0;
 						long long n = (long long)-1 * get_encoder_L();
 						if(n < -1)n = -1;
@@ -152,7 +152,7 @@ void Smotor(int M,char w_flag){
 				if((get_IR(IR_L) > 75 )//){ //左壁近い
 			 	|| (get_IR(IR_L) < 10 && get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if(cnt2 > 10 - (get_encoder_L()/10)){
+					if(cnt2 > 10 - (get_encoder_L()/20)){
 						cnt2 = 0;
 						long long n = (long long)1 * get_encoder_L();
 						if(n > 1)n = 1;

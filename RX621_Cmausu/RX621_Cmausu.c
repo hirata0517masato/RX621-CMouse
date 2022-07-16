@@ -606,7 +606,7 @@ void maze_update(char x,char y,char angle, char type){
       switch(i){
         case -1://L
 			//if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
-          		if(get_IR(IR_L) > 20){
+          		if(get_IR(IR_L) > 17){
 					maze_w[y][x] |= 1 << ii;
 		  		}else{
 					maze_w[y][x] &= ~(1 << ii);  
@@ -624,7 +624,7 @@ void maze_update(char x,char y,char angle, char type){
          	 break;
         case 1://R
 			//if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
-          		if(get_IR(IR_R) > 20){
+          		if(get_IR(IR_R) > 17){
 		  			maze_w[y][x] |= 1 << ii; 
 		  		}else{
 					maze_w[y][x] &= ~(1 << ii);
@@ -687,11 +687,11 @@ void S_run(long long path,int powor, char non_stop,char kabe){
    		// GyroSum_reset();
     	if(15 < get_IR(IR_FL) && 15 < get_IR(IR_FR) ){
 	 		while(1){
-      			if(get_IR(IR_FL) > 60){
+      			if(get_IR(IR_FL) > 55){
         			Smotor(-7,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 55){
+      			}else if(get_IR(IR_FL) < 50){
        	 			Smotor(+7,true);
        				
         			cnt2 = 0;
@@ -768,11 +768,11 @@ void S_run_maze_search(int path,int powor){
 			
 			if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15){//前壁があった場合は
 				while(1){//前壁補正
-      				if(get_IR(IR_FL) > 60){
+      				if(get_IR(IR_FL) > 55){
         				Smotor(-7,true);
 
 	        			cnt2 = 0;
-	      			}else if(get_IR(IR_FL) < 55){
+	      			}else if(get_IR(IR_FL) < 50){
 	       	 			Smotor(+7,true);
 	       
 	        			cnt2 = 0;
@@ -801,11 +801,11 @@ void S_run_maze_search(int path,int powor){
 			}
 		
 			while(1){//前壁補正
-      			if(get_IR(IR_FL) > 60){
+      			if(get_IR(IR_FL) > 55){
         			Smotor(-7,true);
 
         			cnt2 = 0;
-      			}else if(get_IR(IR_FL) < 55){
+      			}else if(get_IR(IR_FL) < 50){
        	 			Smotor(+7,true);
        
         			cnt2 = 0;
@@ -939,7 +939,8 @@ void S_run_maze_search(int path,int powor){
 						enc_kabe_R = get_encoder_total_L();
 					}
 					
-//					enc_base += hosei_kyori_R;
+//
+enc_base += hosei_kyori_R;
 					
 				}
 				ir_R_flag = 0;
@@ -1204,13 +1205,13 @@ void run_shortest_path(){
 		delay(time);
         break;
       case 0://S
-//	  	if(queue_empty()){
+	  	if(queue_empty()){
 			if(path_num == 1){
 	  			S_run(s1,18,false,true);
 			}else{
 				S_run(s1 * (long long)path_num,25,false,true);
 			}
-/*		}else{
+		}else{
         	if(path_num == 1){
 	  			//S_run(s1,18,false,true);
 				
@@ -1223,24 +1224,24 @@ void run_shortest_path(){
 				  S_run_kabe(18,true,3);
 			  	}
 				
-				S_run(h1,18,false,true);
+				S_run(h1,15,false,true);
 				
 			}else{
 				S_run(s1 * ((long long)path_num - 1),25,false,true);
 				
 				if(queue_next() < 0){//次　左
-	          	  S_run_kabe(25,true,1);
+	          	  S_run_kabe(18,true,1);
 				
 			  	}else if(queue_next() > 0){//次　右
-				  S_run_kabe(25,true,2);
+				  S_run_kabe(18,true,2);
 			  	}else{
-				  S_run_kabe(25,true,3);
+				  S_run_kabe(18,true,3);
 			  	}
 				
-				S_run(h1,25,false,true);
+				S_run(h1,15,false,true);
 			}
 		}
-*/		
+		
         switch(my_angle){
           case 0:
             my_y -= path_num;
@@ -1876,7 +1877,7 @@ void run_shortest_path_fin(	char naname){
         break;
       case 0://S
         if(queue_empty()){
-			S_run(h1 * (long long)path_num ,48 + run_fin_speed_offset,false,true);
+			S_run(h1 * (long long)path_num ,50 + run_fin_speed_offset,false,true);
 			
 			while(1){//ゴールの奥まで進む
       			if(get_IR(IR_FL) > 60){
@@ -1896,8 +1897,8 @@ void run_shortest_path_fin(	char naname){
 		}else {
           path_num--;
           if(path_num > 0){
-			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,48 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
-		  	  else S_run((h1 * (long long)path_num)  - over_run ,48 + run_fin_speed_offset,true,true);
+			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,50 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
+		  	  else S_run((h1 * (long long)path_num)  - over_run ,50 + run_fin_speed_offset,true,true);
 		  }
 		  
 		  if(queue_next() < 0){//次　左
