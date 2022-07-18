@@ -99,11 +99,11 @@ void main(void)
 	ALL_init();//初期化
 	
 	delay(100);
-	
-/*	while(1){
+/*	
+	while(1){
 		led(0);
 		ir_flag = 1;//赤外線ON
-		motor(0,0);
+		motor(10,10);
 
 		printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
 		//printf2("%ld\n",get_encoder_total_L());
@@ -421,9 +421,10 @@ void CMT_init(void)
 /* 戻  り   値：なし										    									*/
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void MTU0_init(void){
-	volatile int C_cycle,duty;
+	volatile int C_cycle;
 	
-	C_cycle = 24e6 / 1000;
+	//C_cycle = 24e6 / 1000;
+	C_cycle = 1500;
 	
 	SYSTEM.MSTPCRA.BIT.MSTPA9 = 0;  // MTUユニット０　モジュールストップ解除
 	MTUA.TSTR.BYTE &= 0x04 ;  // カウンタの停止  00xx x100　
