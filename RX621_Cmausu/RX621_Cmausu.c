@@ -711,7 +711,8 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 
 void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
   int Lflag = 0,Rflag = 0;
- 
+  long long enc_base = get_encoder_total_L();
+  
   while(1){
 	if(LR == 3 || LR == 1){
     	if(Lflag == 0){
@@ -730,6 +731,8 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 	}
     
     Smotor(powor,flag);
+	
+	if(abs(get_encoder_total_L() -  enc_base) > (s1 + h1)/2)break; //壁切れが来なかったらブレーク
   }
  
   ESmotor(130,powor,true,false);
@@ -1208,38 +1211,38 @@ void run_shortest_path(){
       case 0://S
 	  	if(queue_empty()){
 			if(path_num == 1){
-	  			S_run(s1,18,false,true);
+	  			S_run(s1,20,false,true);
 			}else{
-				S_run(s1 * (long long)path_num,25,false,true);
+				S_run(s1 * (long long)path_num,30,false,true);
 			}
 		}else{
         	if(path_num == 1){
 	  			//S_run(s1,18,false,true);
 				
 				if(queue_next() < 0){//次　左
-	          	  S_run_kabe(18,true,1);
+	          	  S_run_kabe(20,true,1);
 				
 			  	}else if(queue_next() > 0){//次　右
-				  S_run_kabe(18,true,2);
+				  S_run_kabe(20,true,2);
 			  	}else{
-				  S_run_kabe(18,true,3);
+				  S_run_kabe(20,true,3);
 			  	}
 				
-				S_run(h1,15,false,true);
+				S_run(h1,20,false,true);
 				
 			}else{
-				S_run(s1 * ((long long)path_num - 1),25,false,true);
+				S_run(s1 * ((long long)path_num - 1),30,true,true);
 				
 				if(queue_next() < 0){//次　左
-	          	  S_run_kabe(18,true,1);
+	          	  S_run_kabe(20,true,1);
 				
 			  	}else if(queue_next() > 0){//次　右
-				  S_run_kabe(18,true,2);
+				  S_run_kabe(20,true,2);
 			  	}else{
-				  S_run_kabe(18,true,3);
+				  S_run_kabe(20,true,3);
 			  	}
 				
-				S_run(h1,15,false,true);
+				S_run(h1,20,false,true);
 			}
 		}
 		
@@ -1898,17 +1901,17 @@ void run_shortest_path_fin(	char naname){
 		}else {
           path_num--;
           if(path_num > 0){
-			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,50 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
-		  	  else S_run((h1 * (long long)path_num)  - over_run ,50 + run_fin_speed_offset,true,true);
+			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,55 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
+		  	  else S_run((h1 * (long long)path_num)  - over_run ,60 + run_fin_speed_offset,true,true);
 		  }
 		  
 		  if(queue_next() < 0){//次　左
-          	  S_run_kabe(40 + run_fin_speed_offset,true,1);
+          	  S_run_kabe(35 + run_fin_speed_offset,true,1);
 			
 		  }else if(queue_next() > 0){//次　右
-			  S_run_kabe(40 + run_fin_speed_offset,true,2);
+			  S_run_kabe(35 + run_fin_speed_offset,true,2);
 		  }else{
-			  S_run_kabe(40 + run_fin_speed_offset,true,3);
+			  S_run_kabe(35 + run_fin_speed_offset,true,3);
 		  }
         }
 
@@ -1917,9 +1920,9 @@ void run_shortest_path_fin(	char naname){
         break;
       case 10://Snaname
 	    if(path_num <= 2){
-        	S_run(s45 * (long long)path_num - 160,25 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+        	S_run(s45 * (long long)path_num - 200,35 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}else{
-			S_run(s45 * (long long)path_num - 160,35 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+			S_run(s45 * (long long)path_num - 200,45 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}
         //my_x = nx;
         //my_y = ny;
