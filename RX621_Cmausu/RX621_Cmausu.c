@@ -144,7 +144,7 @@ void main(void)
 			while(get_sw() == 1) nop();
 		
 			//正面センサーに手をかざす
-			while((get_IR(0) < 20) || (get_IR(3) < 20)) led(1);
+			while((get_IR(0) < 20) && (get_IR(3) < 20)) led(1);
   			while((get_IR(0) > 20) || (get_IR(3) > 20)) led(8);
 				
 			led_up();
@@ -607,7 +607,7 @@ void maze_update(char x,char y,char angle, char type){
       switch(i){
         case -1://L
 			//if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
-          		if(get_IR(IR_L) > 17){
+          		if(get_IR(IR_L) > 20){//17
 					maze_w[y][x] |= 1 << ii;
 		  		}else{
 					maze_w[y][x] &= ~(1 << ii);  
@@ -625,7 +625,7 @@ void maze_update(char x,char y,char angle, char type){
          	 break;
         case 1://R
 			//if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
-          		if(get_IR(IR_R) > 17){
+          		if(get_IR(IR_R) > 20){//17
 		  			maze_w[y][x] |= 1 << ii; 
 		  		}else{
 					maze_w[y][x] &= ~(1 << ii);
@@ -1196,6 +1196,7 @@ void run_shortest_path(){
   
   short comand ,path_num;
   int time = 50;
+
   
   while(!queue_empty()){
     comand = dequeue();path_num = dequeue();
@@ -1215,6 +1216,7 @@ void run_shortest_path(){
 			}else{
 				S_run(s1 * (long long)path_num,30,false,true);
 			}
+			
 		}else{
         	if(path_num == 1){
 	  			//S_run(s1,18,false,true);
@@ -1299,6 +1301,8 @@ void run_shortest_path(){
 /* 戻  り   値： なし										    									*/
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void maze_search_adachi(short target_x,short target_y){
+	int cnt = 0;
+	
 	GyroSum_reset();
 	Encoder_reset();
 
@@ -1314,6 +1318,22 @@ void maze_search_adachi(short target_x,short target_y){
 			led_up();
 			
       		if(target_x == Start_x && target_y == Start_y){
+				
+				while(1){//スタートの奥まで進む
+	      			if(get_IR(IR_FL) > 60){
+	        			Smotor(-7,true);
+
+	        			cnt = 0;
+	      			}else if(get_IR(IR_FL) < 55){
+	       	 			Smotor(+7,true);
+	       				
+	        			cnt = 0;
+	      			}else {
+	        			motor(0,0);
+	        			cnt++;
+	      			}
+	      			if(cnt > 2000)break;
+				}
         		Tmotor(r180);
         		my_angle = (4+my_angle+2)%4;
       		}
@@ -1920,9 +1940,9 @@ void run_shortest_path_fin(	char naname){
         break;
       case 10://Snaname
 	    if(path_num <= 2){
-        	S_run(s45 * (long long)path_num - 200,35 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+        	S_run(s45 * (long long)path_num - 200,25 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}else{
-			S_run(s45 * (long long)path_num - 200,45 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+			S_run(s45 * (long long)path_num - 200,35 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}
         //my_x = nx;
         //my_y = ny;

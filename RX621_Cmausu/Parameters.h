@@ -15,11 +15,11 @@
 #define Start_angle 1 // スタートする時の向き　
 
 #define Goal_x  1
-#define Goal_y  5
-#define Goal_angle 2 //ゴールした直後の向き
+#define Goal_y  1
+#define Goal_angle 1 //ゴールした直後の向き
 
-#define Pickup_x  1
-#define Pickup_y  2
+#define Pickup_x  0
+#define Pickup_y  1
 
 //ジャイロ関連
 #define r45  (11000)	//45度 右回転

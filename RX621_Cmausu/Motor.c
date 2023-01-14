@@ -133,30 +133,26 @@ void Smotor(int M,char w_flag){
 	static int cnt5 = 0;
 	
 	if(w_flag > 0){
-		if(get_encoder_L() > 0 || get_encoder_R() > 0){
+		if((get_encoder_L() > 0 || get_encoder_R() > 0) && (abs(get_encoder_L() - get_encoder_R()) < 10  )  ){
 
-			if(((get_IR(IR_FL) < 50) || (get_IR(IR_FR) < 50)) && abs(GyroSum_get()) < 6000){
+			if(((get_IR(IR_FL) < 50) || (get_IR(IR_FR) < 50)) && abs(GyroSum_get()) < 300){
 				
 				
 				if((get_IR(IR_R) > 70 )//){ //右壁近い
 			 	|| (get_IR(IR_R) < 10 && get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if(cnt1 > 13 - (get_encoder_L()/25)){
+					if(cnt1 > 14 - min(9,(get_encoder_R()/30))){
 						cnt1 = 0;
-						long long n = (long long)-1 * get_encoder_L();
-						if(n < -1)n = -1;
-						GyroSum_add(n);
+						GyroSum_add(-1);
 					}
 				}else cnt1 = 0;
 			
 				if((get_IR(IR_L) > 70 )//){ //左壁近い
 			 	|| (get_IR(IR_L) < 10 && get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if(cnt2 > 13 - (get_encoder_L()/25)){
+					if(cnt2 > 14 - min(9,(get_encoder_L()/30))){
 						cnt2 = 0;
-						long long n = (long long)1 * get_encoder_L();
-						if(n > 1)n = 1;
-						GyroSum_add(n);
+						GyroSum_add(1);
 					}
 				}else cnt2 = 0;
 			}else{
@@ -519,8 +515,8 @@ void ETmotor(long long A, long long E, char non_stop){
 	//GyroSum_reset();
 	//Encoder_reset();
 
-	int M = 25;//35
-	int M_kabe = 40;
+	int M = 20;//25 20
+	int M_kabe = 35;//40 35
 	
 	char flag = 0;
 	
