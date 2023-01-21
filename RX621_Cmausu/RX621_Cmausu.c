@@ -635,7 +635,7 @@ void log_reset(){
 	log_block_num = 1;
 	for(int i = 0; i < LOG_MAX;i++)log[i] = 0;
 	
-	for(int i = 0; i < 16;i++){
+	for(int i = 1; i < 16;i++){//メモ:0は迷路情報なので削除しない
 		//DataFlash_write(i,log,sizeof(log));
 		R_FlashErase(i + 38);// BLOCK_DB0    38 
 	}
@@ -828,7 +828,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
   while(1){
 	if(LR == 3 || LR == 1){
     	if(Lflag == 0){
-      		if(get_IR(IR_L) > 14)Lflag = 1;
+      		if(get_IR(IR_L) > 20)Lflag = 1;
     	}else if(Lflag == 1){
       		if(get_IR(IR_L) < 10)break;
     	}
@@ -836,7 +836,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){
     	if(Rflag == 0){
-      		if(get_IR(IR_R) > 14)Rflag = 1;
+      		if(get_IR(IR_R) > 20)Rflag = 1;
     	}else if(Rflag == 1){
       		if(get_IR(IR_R) < 10)break;
     	}
@@ -844,10 +844,14 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
     
     Smotor(powor,flag);
 	
-	if(abs(get_encoder_total_L() -  enc_base) > (s1 + (h1/2) ))break; //壁切れが来なかったらブレーク
+	if(abs(get_encoder_total_L() -  enc_base) > (s1 )){
+		led(9);
+		break; //壁切れが来なかったらブレーク
+	}
   }
- 
+  
   ESmotor(130,powor,true,false);
+  led(0);
 }
 
 void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
