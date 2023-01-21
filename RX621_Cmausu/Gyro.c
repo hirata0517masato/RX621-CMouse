@@ -66,14 +66,14 @@ void Gyro_init(){
   calib_acc();
   calib_mag();
 	
-  delay_ITP(1000);
+  delay_ITP(300);
   
   gyro_base = 0;
-  for(i = 0;i < 256;i++){
+  for(i = 0;i < 64;i++){
     gyro_base += Gyro_get();
     delay_ITP(1);
   }
-  gyro_base >>= 8;
+  gyro_base >>= 6;
   gyro_sum = 0;
   //gyro = gyro_base;
 }

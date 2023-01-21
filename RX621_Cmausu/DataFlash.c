@@ -33,6 +33,13 @@ void DataFlash_write(char BlockNum,uint8_t prog_buff[],int buf_num){//BlockNum:0
 	R_FlashWrite( g_flash_BlockAddresses[BlockNum + 38], (uint32_t)prog_buff, buf_num);
 }
 
+void DataFlash_write2(char BlockNum,char shift,uint8_t prog_buff[],int buf_num){//BlockNum:0-15
+
+	//R_FlashErase(BlockNum + 38);// BLOCK_DB0    38 
+
+	R_FlashWrite( g_flash_BlockAddresses[BlockNum + 38] + (32 * shift), (uint32_t)prog_buff, buf_num);
+}
+
 void DataFlash_read(char BlockNum,uint8_t read_buff[],int buf_num){
 	int i;
 	
