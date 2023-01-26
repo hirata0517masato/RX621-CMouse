@@ -197,7 +197,7 @@ void main(void)
 				shortest_path_search_fin();
 				
 				log_reset();//ログの初期化
-				log_start = 2; //ログ記録開始 20msに１回記録
+				log_start = 2; //ログ記録開始 10msに１回記録
 				
 				run_shortest_path_fin(false);
 				
@@ -219,7 +219,7 @@ void main(void)
 				remake_shortest_path_list_naname();
 				
 				log_reset();//ログの初期化
-				log_start = 2; //ログ記録開始 20msに１回記録
+				log_start = 2; //ログ記録開始 10msに１回記録
 				
 				run_shortest_path_fin(true);
 				
@@ -695,6 +695,7 @@ void log_load(){
 		while(1){
 			if( i >= LOG_MAX)break;
 			if(log[i+2] == 0 && log[i+3] == 0 && log[i+3] == 0 && log[i+5] == 0)break;//センサー値がすべて０なら終了
+			if(log[i+0] > 16 || log[i+1] > 16)break;//X,Y座標が範囲外なら終了
 			
 			printf2("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t\n",log[i],log[i+1]
 														,log[i+2],log[i+3],log[i+4],log[i+5]
@@ -834,34 +835,34 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 
 void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
   int Lflag = 0,Rflag = 0;
-  long long enc_base = get_encoder_total_L();
+  long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
   
   while(1){
 	if(LR == 3 || LR == 1){
     	if(Lflag == 0){
-      		if(get_IR(IR_L) > 17)Lflag = 1;
+      		if(get_IR(IR_L) > 20)Lflag = 1;
     	}else if(Lflag == 1){
-      		if(get_IR(IR_L) < 12)break;
+      		if(get_IR(IR_L) < 11)break;
     	}
 	}
 
 	if(LR == 3 || LR == 2){
     	if(Rflag == 0){
-      		if(get_IR(IR_R) > 17)Rflag = 1;
+      		if(get_IR(IR_R) > 20)Rflag = 1;
     	}else if(Rflag == 1){
-      		if(get_IR(IR_R) < 12)break;
+      		if(get_IR(IR_R) < 11)break;
     	}
 	}
     
     Smotor(powor,flag);
 	
-	if(abs(get_encoder_total_L() -  enc_base) > (s1 + h1 + 100 )){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1 )){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
   }
   
-  ESmotor(150,powor,true,false);
+  ESmotor(160,powor,true,false);
   led(0);
 }
 
@@ -874,12 +875,12 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
   while(1){
 	if(LR == 3 || LR == 1){
 		if(Lflag == 0){
-      		if(get_IR(IR_L) > 40){
+      		if(get_IR(IR_L) > 30){
 				led(1);
 				Lflag = 1;
 			}
     	}else if(Lflag == 1){
-      		if(get_IR(IR_L) < 17){
+      		if(get_IR(IR_L) < 15){
 				led(0);
 				break;
 			}
@@ -888,12 +889,12 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){
 		if(Rflag == 0){
-      		if(get_IR(IR_R) > 40){
+      		if(get_IR(IR_R) > 30){
 				led(8);
 				Rflag = 1;
 			}
     	}else if(Rflag == 1){
-      		if(get_IR(IR_R) < 17){
+      		if(get_IR(IR_R) < 15){
 				led(0);
 				break;
 			}
@@ -975,7 +976,7 @@ void S_run_maze_search(int path,int powor){
 			break;
 		}
 		
-		if( path_cnt < path-1 && get_IR(IR_FL) > 18 && get_IR(IR_FR) > 18){//目標まで１マス以上残ってる　＆＆　前壁が出現
+		if( path_cnt < path-1 && get_IR(IR_FL) > 25 && get_IR(IR_FR) > 25){//目標まで１マス以上残ってる　＆＆　前壁が出現
 			//マスの中心まで移動
 			while(enc_now - ((long long)s1 * path_cnt ) < s1 && get_IR(IR_FR) < 50){
 				Smotor(+10,true);
@@ -1064,10 +1065,10 @@ void S_run_maze_search(int path,int powor){
 		ir_R_now = get_IR(IR_R);
 		if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 		
-			if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 90){
+			if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 70){
 				ir_L_flag = 1;
 				
-			}else if(ir_L_flag == 1 && ir_L_now < 15 && ir_R_now < 90){
+			}else if(ir_L_flag == 1 && ir_L_now < 11 && ir_R_now < 70){
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
 					if(path_cnt == path_cnt_save_R){//左より先に右が壁切れ補正していた場合
@@ -1098,10 +1099,10 @@ void S_run_maze_search(int path,int powor){
 		
 		if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-			if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 90){
+			if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 70){
 				ir_R_flag = 1;
 				
-			}else if(ir_R_flag == 1 && ir_R_now < 15 && ir_L_now < 90){
+			}else if(ir_R_flag == 1 && ir_R_now < 11 && ir_L_now < 70){
 				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
 				
 					if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
@@ -2102,7 +2103,7 @@ void run_shortest_path_fin(	char naname){
   int first_flag = 0; //0:まだ走行してない 1:走行中
   int cnt = 0;
   
-  int over_run = -100;//速度上げるとオーバーランぎみなので少し手前で止める
+  int over_run = -200;//速度上げるとオーバーランぎみなので少し手前で止める
 
    
   /*
@@ -2120,10 +2121,10 @@ void run_shortest_path_fin(	char naname){
         L_curve(sl90,true);
   
 		if(queue_next() == -1){//ターン
-			ESmotor(50,30,true,true);//距離、スピード
+			ESmotor(20,30,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
-			ESmotor(20,30,true,true);//距離、スピード
+			ESmotor(50,30,true,true);//距離、スピード
 		}
 		
         break;
@@ -2163,12 +2164,12 @@ void run_shortest_path_fin(	char naname){
 		  }
 		  
 		  if(queue_next() < 0){//次　左
-          	  S_run_kabe(35 + run_fin_speed_offset,true,1);
+          	  S_run_kabe(50 + run_fin_speed_offset,true,1);
 			
 		  }else if(queue_next() > 0){//次　右
-			  S_run_kabe(35 + run_fin_speed_offset,true,2);
+			  S_run_kabe(50 + run_fin_speed_offset,true,2);
 		  }else{
-			  S_run_kabe(35 + run_fin_speed_offset,true,3);
+			  S_run_kabe(50 + run_fin_speed_offset,true,3);
 		  }
         }
 
@@ -2233,10 +2234,10 @@ void Excep_CMT0_CMI0(void)
 {	
 	static int task = 0;
 	static char log_flag = 0;
-	static char log_slow = 0;
 	
 	task ++;                         // タスクの更新						
-  	if (task == 10) task = 0;            
+  	if (log_start != 2 && task >= 30) task = 0;       
+	if (log_start == 2 && task >= 10) task = 0;       
 	
 	if(ir_flag == 1){
 		ir_update();
@@ -2259,45 +2260,43 @@ void Excep_CMT0_CMI0(void)
 	
 	switch(task) {                         			
 	case 0:
+	case 10:
+	case 20:
 		encoder_update();
         break;
    
    	case 1:
    		if(log_start != 0){
-			log_slow++;
-			
-			if((log_start== 1 && log_slow > 2) || (log_start == 2 && log_slow > 1)){//メモ：30msに１回（8byte)で２分が限界  最短走行は20msに１回にする
-				log_flag = 1;
-				log_slow = 0;
+			log_flag = 1;
 				
-				if((LOG_BUF_MAX * log_save_cnt) + log_cnt +8 <= LOG_MAX){
-					log_buff[log_cnt++] = my_x;
-					log_buff[log_cnt++] = my_y;
+			
+			if((LOG_BUF_MAX * log_save_cnt) + log_cnt +8 <= LOG_MAX){
+				log_buff[log_cnt++] = my_x;
+				log_buff[log_cnt++] = my_y;
+				
+				log_buff[log_cnt++] = (char)get_IR(IR_FL);
+				log_buff[log_cnt++] = (char)get_IR(IR_L);
+				log_buff[log_cnt++] = (char)get_IR(IR_R);
+				log_buff[log_cnt++] = (char)get_IR(IR_FR);
+				
+				log_buff[log_cnt++] = get_pwm_buff_L();
+				log_buff[log_cnt++] = get_pwm_buff_R();
+				
+				if(log_cnt >= LOG_BUF_MAX-2){//たまったら保存する
+					log_save();
+					log_save_cnt++;
+					log_cnt = 0;
+				}	
+				
+			}else{
+				if(log_block_num < 15){
+					log_block_num++;
 					
-					log_buff[log_cnt++] = (char)get_IR(IR_FL);
-					log_buff[log_cnt++] = (char)get_IR(IR_L);
-					log_buff[log_cnt++] = (char)get_IR(IR_R);
-					log_buff[log_cnt++] = (char)get_IR(IR_FR);
-					
-					log_buff[log_cnt++] = get_pwm_buff_L();
-					log_buff[log_cnt++] = get_pwm_buff_R();
-					
-					if(log_cnt >= LOG_BUF_MAX-2){//たまったら保存する
-						log_save();
-						log_save_cnt++;
-						log_cnt = 0;
-					}	
-					
+					log_cnt = 0;
+					log_save_cnt = 0;
+	
 				}else{
-					if(log_block_num < 15){
-						log_block_num++;
-						
-						log_cnt = 0;
-						log_save_cnt = 0;
-		
-					}else{
-						log_start = 0;//サイズオーバーなので記録終了
-					}
+					log_start = 0;//サイズオーバーなので記録終了
 				}
 			}
 		}else{
