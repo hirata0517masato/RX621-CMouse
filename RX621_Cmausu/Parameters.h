@@ -7,8 +7,9 @@
 */
 
 #define maze_d_max	9999
-#define H	16
-#define W	16
+
+#define W	16 //X
+#define H	16 //Y
 
 #define Start_x  0
 #define Start_y  0
@@ -22,8 +23,8 @@
 #define Pickup_y  1
 
 //ジャイロ関連
-#define r45  (11500)	//45度 右回転
-#define l45  (11500)	//45度 左回転
+#define r45  (11200)	//45度 右回転 11500 10500
+#define l45  (11500)	//45度 左回転 11500
 #define r90  (22700) 	//90度 右回転
 #define l90  (22000)	//90度 左回転
 #define r180  (-44000)	//180度 右回転

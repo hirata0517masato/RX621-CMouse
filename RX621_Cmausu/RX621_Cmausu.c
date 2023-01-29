@@ -37,6 +37,7 @@ void CLK_init(void);
 void IO_init(void);
 void AD_init(void);
 void CMT_init(void);
+void CMT2_init(void);
 void MTU0_init(void);
 void MTU1_init(void);
 
@@ -118,6 +119,8 @@ void main(void)
 		ir_flag = 1;//赤外線ON
 		//motor(20,20);
 
+		//printf2("%d\t%d\t%d\t%d :",get_IR_base(0),get_IR_base(1),get_IR_base(2),get_IR_base(3));
+		
 		printf2("%d\t%d\t%d\t%d\n",get_IR(0),get_IR(1),get_IR(2),get_IR(3));
 		//printf2("%ld\n",get_encoder_total_L());
 		if(get_sw() == 1){
@@ -369,6 +372,7 @@ void ALL_init(){
 	Gyro_init();	//ジャイロ、SPIの初期化 　注意：少し時間かかります 処理中はジャイロセンサーを動かさないこと
 
 	CMT_init();  // CMT0の初期化
+	CMT2_init();  // CMT2の初期化
 
 	initSCI1(SPEED_9600);
 	//USB_init();  //USB CDCの初期化
@@ -456,13 +460,32 @@ void CMT_init(void)
 {
     MSTP(CMT0) = 0;                // SYSTEM.MSTPCRA.BIT.MSTPA15 = 0; // CMT0 タイマースタンバイ解除 （0で解除）
     CMT0.CMCR.WORD = 0x0040;       // 4:割り込み許可　0:PCLK/8 1:PCLK/32 2:PCLK/128 3:PCLK/512
-    CMT0.CMCOR = 3000-1;           // 1ms Count： PCLK = 24MHz/8=3MHz 3M/1mS=3000 (得たいカウント数-1)
+    CMT0.CMCOR = 3000-1;           // 1ms Count： PCLK = 24MHz/8=3MHz 3M/1mS=3000 (得たいカウント数-1) 
     IPR(CMT0,CMI0) = 3;
     IEN(CMT0,CMI0) = 1;
 	
     set_psw(0x00010000);
 	
     CMT.CMSTR0.BIT.STR0 = 1;   	   // CMT0タイマースタート
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：CMT2(コンペアマッチタイマー)の初期化                                                */
+/* 関 数 詳 細：0.25ms割り込み周期                                                                     */
+/* 引       数：なし										    */
+/* 戻  り   値：なし										    */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void CMT2_init(void)
+{
+    MSTP(CMT2) = 0;                // SYSTEM.MSTPCRA.BIT.MSTPA15 = 0; // CMT0 タイマースタンバイ解除 （0で解除）
+    CMT2.CMCR.WORD = 0x0040;       // 4:割り込み許可　0:PCLK/8 1:PCLK/32 2:PCLK/128 3:PCLK/512
+    CMT2.CMCOR = 750-1;           // 0.25ms Count： PCLK = 24MHz/8=3MHz 3M/0.25mS=750 (得たいカウント数-1) 
+    IPR(CMT2,CMI2) = 3;
+    IEN(CMT2,CMI2) = 1;
+	
+    set_psw(0x00010000);
+	
+    CMT.CMSTR1.BIT.STR2 = 1;   	   // CMT2タイマースタート
 }
 	
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -841,17 +864,29 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
   while(1){
 	if(LR == 3 || LR == 1){
     	if(Lflag == 0){
-      		if(get_IR(IR_L) > 17)Lflag = 1;
+      		if((get_IR(IR_L) > 20) || (get_IR(IR_L) > 13 && get_IR(IR_R) > 70)){//反対の壁が近いときは柱の値が小さくなる
+				Lflag = 1;
+				led(1);
+			}
     	}else if(Lflag == 1){
-      		if(get_IR(IR_L) < 11)break;
+      		if(get_IR(IR_L) < 11){
+				led(0);
+				break;
+			}
     	}
 	}
 
 	if(LR == 3 || LR == 2){
     	if(Rflag == 0){
-      		if(get_IR(IR_R) > 17)Rflag = 1;
+      		if((get_IR(IR_R) > 20) || (get_IR(IR_L) > 70 && get_IR(IR_R) > 13)){//反対の壁が近いときは柱の値が小さくなる
+				Rflag = 1;
+				led(8);
+			}
     	}else if(Rflag == 1){
-      		if(get_IR(IR_R) < 11)break;
+      		if(get_IR(IR_R) < 11){
+				led(0);
+				break;
+			}
     	}
 	}
     
@@ -877,13 +912,58 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 		}
 	}
 	
-	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1 )){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1 )){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
   }
   
-  ESmotor(160,powor,true,false);
+  ESmotor(170,powor,true,false);
+  led(0);
+}
+
+void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５ターン
+  int Lflag = 0,Rflag = 0;
+  long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
+	
+  while(1){
+	if(LR == 3 || LR == 1){
+    	if(Lflag == 0){
+      		if((get_IR(IR_L) > 20) || (get_IR(IR_L) > 13 && get_IR(IR_R) > 70)){//反対の壁が近いときは柱の値が小さくなる
+				Lflag = 1;
+				led(1);
+			}
+    	}else if(Lflag == 1){
+      		if(get_IR(IR_L) < 11){
+				led(0);
+				break;
+			}
+    	}
+	}
+
+	if(LR == 3 || LR == 2){
+    	if(Rflag == 0){
+      		if((get_IR(IR_R) > 20) || (get_IR(IR_L) > 70 && get_IR(IR_R) > 13)){//反対の壁が近いときは柱の値が小さくなる
+				Rflag = 1;
+				led(8);
+			}
+    	}else if(Rflag == 1){
+      		if(get_IR(IR_R) < 11){
+				led(0);
+				break;
+			}
+    	}
+	}
+    
+    Smotor(powor,flag);
+	
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1 )){
+		led(9);
+		break; //壁切れが来なかったらブレーク
+	}
+  }
+  
+  ESmotor(5,powor,true,false);//　直線からの４５ターン 勢いがあるので不要
   led(0);
 }
 
@@ -2147,7 +2227,7 @@ void run_shortest_path_fin(	char naname){
 			ESmotor(20,40,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
-			ESmotor(30,40,true,true);//距離、スピード
+			ESmotor(50,40,true,true);//距離、スピード
 		}
 		
         break;
@@ -2190,15 +2270,38 @@ void run_shortest_path_fin(	char naname){
           if(path_num > 0){
 			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,55 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
 		  	  else S_run((h1 * (long long)path_num)  - over_run ,55 + run_fin_speed_offset,true,true);
-		  }
-		  
-		  if(queue_next() < 0){//次　左
-          	  S_run_kabe(50 + run_fin_speed_offset,true,1);
-			
-		  }else if(queue_next() > 0){//次　右
-			  S_run_kabe(50 + run_fin_speed_offset,true,2);
-		  }else{
-			  S_run_kabe(50 + run_fin_speed_offset,true,3);
+			  
+			  if(queue_next() == -11 || queue_next() == 11){//直線後に45ターン
+				  if(queue_next() < 0){//次　左
+			      	  S_run_kabe2(35 + run_fin_speed_offset,true,1);
+						
+				  }else if(queue_next() > 0){//次　右
+				  	  S_run_kabe2(35 + run_fin_speed_offset,true,2);
+				  }else{
+					  S_run_kabe2(35 + run_fin_speed_offset,true,3);
+				  }
+			  }else{
+				   if(queue_next() < 0){//次　左
+			      	  S_run_kabe(50 + run_fin_speed_offset,true,1);
+						
+				  }else if(queue_next() > 0){//次　右
+				  	  S_run_kabe(50 + run_fin_speed_offset,true,2);
+				  }else{
+					  S_run_kabe(50 + run_fin_speed_offset,true,3);
+				  }
+				  
+			  }
+			  
+			  
+		  }else{//半マスだけ＝スタート直後に壁切れ　
+			  if(queue_next() < 0){//次　左
+	          	  S_run_kabe(30 + run_fin_speed_offset,false,1);
+				
+			  }else if(queue_next() > 0){//次　右
+				  S_run_kabe(30 + run_fin_speed_offset,false,2);
+			  }else{
+				  S_run_kabe(30 + run_fin_speed_offset,false,3);
+			  }
 		  }
         }
 
@@ -2211,7 +2314,7 @@ void run_shortest_path_fin(	char naname){
 	    if(path_num <= 0){
 			//存在しないはず
 		}else{
-			S_run(s45 * (long long)path_num - 0,50 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+			S_run(s45 * (long long)path_num + 300,50 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}
 		
 		
@@ -2231,7 +2334,7 @@ void run_shortest_path_fin(	char naname){
         R_curve(sr90,true);
 		
 		if(queue_next() == -1){//ターン
-			ESmotor(30,40,true,true);//距離、スピード
+			ESmotor(50,40,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
 			ESmotor(20,40,true,true);//距離、スピード
@@ -2273,12 +2376,6 @@ void Excep_CMT0_CMI0(void)
 	task ++;                         // タスクの更新						
   	if (log_start != 2 && task >= 30) task = 0;       
 	if (log_start == 2 && task >= 10) task = 0;       
-	
-	if(ir_flag == 1){
-		ir_update();
-	}else{
-		ir(0);
-	}
 	
 	Gyro_update();
 		
@@ -2351,6 +2448,21 @@ void Excep_CMT0_CMI0(void)
    	}
 }
 
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：CMT2割り込みモジュール                                                              */
+/* 関 数 詳 細：                                                                                    */
+/* 引       数：なし										    */
+/* 戻  り   値：なし										    */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+#pragma interrupt (Excep_CMT2_CMI2(vect=30))
+void Excep_CMT2_CMI2(){
+	
+	if(ir_flag == 1){
+		ir_update();
+	}else{
+		ir(0);
+	}
+}
 
 
 

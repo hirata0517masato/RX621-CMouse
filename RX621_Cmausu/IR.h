@@ -10,5 +10,6 @@ void AD_update( void );
 void ir(char);
 void ir_update(void);
 int get_IR(int);
+int get_IR_base(int);
 
 #endif

@@ -159,9 +159,9 @@ void Smotor(int M,char w_flag){
 						cnt1 = 0;
 						GyroSum_add(-1);
 					}
-				}else if((get_IR(IR_R) < 30 && get_IR(IR_L) > 15 && get_IR(IR_L) < 50)){ // 右壁なし　左壁あり　左壁遠い
+				}else if((get_IR(IR_R) < 30 && get_IR(IR_L) > 15 && get_IR(IR_L) < 48)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if((cnt1 > 14 - min(15,(get_encoder_R()/20)) ) || (get_IR(IR_L) < 40 )){
+					if((cnt1 > 14 - min(15,(get_encoder_R()/20)) ) || (get_IR(IR_L) < 35 )){
 						cnt1 = 0;
 						GyroSum_add(-1);
 					}
@@ -173,9 +173,9 @@ void Smotor(int M,char w_flag){
 						cnt2 = 0;
 						GyroSum_add(1);
 					}
-				}else if((get_IR(IR_L) < 30 && get_IR(IR_R) > 15 && get_IR(IR_R) < 50)){ //左壁なし　右壁あり　右壁遠い
+				}else if((get_IR(IR_L) < 30 && get_IR(IR_R) > 15 && get_IR(IR_R) < 48)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if((cnt2 > 14 - min(15,(get_encoder_L()/20))) || (get_IR(IR_R) < 40)){
+					if((cnt2 > 14 - min(15,(get_encoder_L()/20))) || (get_IR(IR_R) < 35)){
 						cnt2 = 0;
 						GyroSum_add(1);
 					}
@@ -190,7 +190,7 @@ void Smotor(int M,char w_flag){
 		//斜め対策
 		if(w_flag == 3){
 			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 400){
-				if(get_IR(IR_FL) > 17  &&                   get_IR(IR_R) < 30 && get_IR(IR_FR) < 30){//左前のみ
+				if(get_IR(IR_FL) > 14  &&                   get_IR(IR_R) < 30 && get_IR(IR_FR) < 30){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
@@ -199,7 +199,7 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt3 = 0;
 				
-				if(get_IR(IR_FL) < 30 && get_IR(IR_L) < 30 &&                 get_IR(IR_FR) > 17){//右前のみ
+				if(get_IR(IR_FL) < 30 && get_IR(IR_L) < 30 &&                 get_IR(IR_FR) > 14){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
@@ -692,17 +692,17 @@ void Tmotor_naname(long long A){
 	
 	//壁切れ
 	if(A > 0){//R
-		while(get_IR(IR_R) > 17){
+		while(get_IR(IR_R) > 20){
 			Smotor(M_kabe,true);
 			flag = 1;
 		}
 		if(flag)ESmotor(130,M_kabe,true,false);
 	}else{//L
-		while(get_IR(IR_L) > 17){
+		while(get_IR(IR_L) > 20){
 			Smotor(M_kabe,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(150,M_kabe,true,false);
+		if(flag)ESmotor(180,M_kabe,true,false);
 	}
 	
 	if(A > 0){//R
@@ -711,6 +711,7 @@ void Tmotor_naname(long long A){
 		PORTA.DR.BIT.B3 = 1;
 	}
 	
+	Encoder_reset();
 	while(1){
 		if(A > 0){//R
 			if(get_IR(IR_L) > 70 || get_IR(IR_R) > 70 ){ //左壁近い || 右壁が近い
@@ -754,8 +755,10 @@ void Tmotor_naname(long long A){
 		if(0 > RM && RM > -min_M)RM = -min_M;
 		 
 		if(A > 0){//R
+			//motor(LM ,-get_encoder_total_R() * 2);
 			motor(LM ,0);
 		}else{//L
+			//motor(-get_encoder_total_L() * 2 ,RM);
 			motor(0 ,RM);
 		}
 
