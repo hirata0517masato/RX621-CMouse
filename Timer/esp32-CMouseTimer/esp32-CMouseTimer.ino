@@ -155,6 +155,7 @@ void loop() {
   while(1){
     if(get_SW() == 1){//reset
       currentMillis = millis();
+      SerialBT.write('g');
       break;
     }
     if(SerialBT.available()){

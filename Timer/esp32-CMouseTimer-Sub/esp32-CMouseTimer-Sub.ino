@@ -34,7 +34,7 @@ void loop() {
   }
 
   while(1){
-    if (analogRead(14) > 24) {
+    if (analogRead(14) > 36) {
     //  Serial.println('H');
       SerialBT.write('H');
     }else{
