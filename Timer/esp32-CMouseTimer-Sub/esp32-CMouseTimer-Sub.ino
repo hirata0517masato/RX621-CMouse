@@ -34,11 +34,11 @@ void loop() {
   }
 
   while(1){
-    if (analogRead(14) > 512) {
-      //Serial.println('H');
+    if (analogRead(14) > 24) {
+    //  Serial.println('H');
       SerialBT.write('H');
     }else{
-      //Serial.println('L');
+    //  Serial.println('L');
       SerialBT.write('L');
     }
 

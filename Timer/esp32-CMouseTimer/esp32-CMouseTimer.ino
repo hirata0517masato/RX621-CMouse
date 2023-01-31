@@ -145,7 +145,7 @@ void loop() {
   set_7seg_start();
 
   SerialBT.write('s');
-  while(analogRead(14) > 512);
+  while(analogRead(14) > 36);
   //start
   previousMillis = millis();
   
@@ -153,6 +153,10 @@ void loop() {
   
   
   while(1){
+    if(get_SW() == 1){//reset
+      currentMillis = millis();
+      break;
+    }
     if(SerialBT.available()){
      // Serial.println((char)SerialBT.read());
       if ((char)SerialBT.read() == 'L') {
