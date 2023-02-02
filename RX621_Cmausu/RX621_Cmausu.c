@@ -1037,8 +1037,8 @@ void S_run_maze_search(int path,int powor){
 	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 //	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
 	long long enc_kabe_L,enc_kabe_R;
-	
-//	int kame_hosei = 230;//170
+	int led_num = 0;
+//	int kame_hosei = 180;//170
 	
 	GyroSum_reset();
 	
@@ -1119,6 +1119,9 @@ void S_run_maze_search(int path,int powor){
 		if( path_cnt < path-1){//目標まで１マス以上残ってる メモ：最後の１マスは前壁補正後に迷路情報を更新するため
 			if(enc_now - ((long long)s1 * path_cnt ) > s1){//１マス進んだ
 			
+				led_num = 0;
+				led(led_num);
+				
 				if(maza_update_flag != 2){//なぜか壁の更新ができていなければ
 					if(maza_update_flag == 0)maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,3);//迷路情報の更新
 					else if(maza_update_flag == 1)maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,1);//迷路情報の更新
@@ -1171,9 +1174,13 @@ void S_run_maze_search(int path,int powor){
 			if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 70){
 				ir_L_flag = 1;
 				
+				led_num |= 1;
+				led(led_num);
 			}else if(ir_L_flag == 1 && ir_L_now < 11 && ir_R_now < 70){
-				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
+				if((enc_now % s1) < s1 / 2){//マスの半分より手前で壁切れした場合
 				
+					led_num &= ~1;
+					led(led_num);
 					if(path_cnt == path_cnt_save_R){//左より先に右が壁切れ補正していた場合
 /*						enc_base -= hosei_kyori_R;//右での補正を無かったことにする
 						enc_now = (get_encoder_total_L() + get_encoder_total_R())/2 - enc_base;
@@ -1203,11 +1210,18 @@ void S_run_maze_search(int path,int powor){
 		if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
 			if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 70){
+				
 				ir_R_flag = 1;
 				
-			}else if(ir_R_flag == 1 && ir_R_now < 11 && ir_L_now < 70){
-				if((enc_now % s1) < s1 * 2 / 3){//マスの半分より手前で壁切れした場合
+				led_num |= 8;
+				led(led_num);
 				
+			}else if(ir_R_flag == 1 && ir_R_now < 11 && ir_L_now < 70){
+				if((enc_now % s1) < s1 / 2){//マスの半分より手前で壁切れした場合
+				
+					led_num &= ~8;
+					led(led_num);
+					
 					if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
 /*						enc_base -= hosei_kyori_L;//左での補正を無かったことにする
 						enc_now = (get_encoder_total_L() + get_encoder_total_R())/2 - enc_base;
@@ -1236,6 +1250,7 @@ void S_run_maze_search(int path,int powor){
 		enc_now = (get_encoder_total_L() + get_encoder_total_R())/2 - enc_base;
 	}
 	
+	led(0);
 	motor(0,0);
 	GyroSum_reset();
 	Encoder_reset();
@@ -1912,6 +1927,33 @@ void shortest_path_search_fin(){
     short n_num = 0;
     char s_flag = 0;
     int nx = my_x+dx[my_angle],ny = my_y+dy[my_angle];
+
+	/*
+	for(int i = 0;i < 4;i++){
+        if(i == (my_angle+2)%4){//逆走はありえない
+		
+		}else if(i == my_angle){//直線はあとから比較する
+		
+        }else{// L or R
+			if( ((maze_w[my_y][my_x] & (1<<((i+2)%4))) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+((i+2)%4)))) != 0 )){//壁が無い　＆　確定している
+          		short next = maze_d[my_y][my_x][i];
+          		if(num > next){
+            		n_num = i;
+            		num = next;
+          		}
+			}
+        }
+    }
+	
+	if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<((my_angle+2)%4))) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+((my_angle+2)%4)))) != 0 ) ){
+		if(num > maze_d[my_y][my_x][my_angle]){//直線
+			n_num = my_angle;
+	        num = maze_d[my_y][my_x][my_angle];
+		}
+	}
+*/
+	
+	
     if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<my_angle)) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+my_angle))) != 0 ) ){
       short next = maze_d[ny][nx][(my_angle+2)%4];
       if(num == next+1){
@@ -1923,8 +1965,8 @@ void shortest_path_search_fin(){
 
     if(s_flag == false){
       for(int i = 0;i < 4;i++){
-        if(i == (my_angle+2)%4){
-        }else{
+        if(i == (my_angle+2)%4){//逆走はありえない
+        }else{// L or R
           short next = maze_d[my_y][my_x][i];
           if(num > next){
             n_num = i;
@@ -1933,7 +1975,7 @@ void shortest_path_search_fin(){
         }
       }
     }
-    
+   
     n_num = (n_num+2)%4;// 0 ~ 4
     short ni = ((4 + n_num - ((4+my_angle-1)%4))%4) -1;// -1 ~ 2
 
@@ -2209,14 +2251,16 @@ void run_shortest_path_fin(	char naname){
   int over_run = -200;//速度上げるとオーバーランぎみなので少し手前で止める
 
    
-  /*
+ /* 
+ ////////////////////////////////////////////////////////////最短経路の導出確認
   while(!queue_empty()){//debug
     comand = dequeue();path_num = dequeue();
 	printf2("%d %d\n",comand,path_num);
 	delay(1);
   }
   while(1);
- */ 
+  //////////////////////////////////////////////////////////
+ */
   while(!queue_empty()){
     comand = dequeue();path_num = dequeue();
     switch(comand){
