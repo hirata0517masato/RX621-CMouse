@@ -153,29 +153,29 @@ void Smotor(int M,char w_flag){
 			if(((get_IR(IR_FL) < 20) || (get_IR(IR_FR) < 20)) && abs(GyroSum_get()) < 350){
 				
 				
-				if(get_IR(IR_R) > 55 ){ //右壁近い
+				if(get_IR(IR_R) > 50 ){ //右壁近い
 					cnt1++;
-					if((cnt1 > 16 - min(16,(get_encoder_R()/20)) ) || (get_IR(IR_R) > 70 )){
+					if((cnt1 > 16 - min(16,(get_encoder_R()/15)) ) || (get_IR(IR_R) > 70 )){
 						cnt1 = 0;
 						GyroSum_add(-1);
 					}
 				}else if((get_IR(IR_R) < 15 && get_IR(IR_L) > 15 && get_IR(IR_L) < 45)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if((cnt1 > 16 - min(16,(get_encoder_R()/20)) ) || (get_IR(IR_L) < 35 )){
+					if((cnt1 > 16 - min(16,(get_encoder_R()/15)) ) || (get_IR(IR_L) < 33 )){
 						cnt1 = 0;
 						GyroSum_add(-1);
 					}
 				}else cnt1 = 0;
 			
-				if(get_IR(IR_L) > 55 ){ //左壁近い
+				if(get_IR(IR_L) > 50 ){ //左壁近い
 					cnt2++;
-					if((cnt2 > 16 - min(16,(get_encoder_L()/20))) || (get_IR(IR_L) > 70)){
+					if((cnt2 > 16 - min(16,(get_encoder_L()/15))) || (get_IR(IR_L) > 70)){
 						cnt2 = 0;
 						GyroSum_add(1);
 					}
 				}else if((get_IR(IR_L) < 15 && get_IR(IR_R) > 15 && get_IR(IR_R) < 45)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if((cnt2 > 16 - min(16,(get_encoder_L()/20))) || (get_IR(IR_R) < 35)){
+					if((cnt2 > 16 - min(16,(get_encoder_L()/15))) || (get_IR(IR_R) < 33)){
 						cnt2 = 0;
 						GyroSum_add(1);
 					}
@@ -189,8 +189,8 @@ void Smotor(int M,char w_flag){
 				
 		//斜め対策
 		if(w_flag == 3){
-			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 400){
-				if(get_IR(IR_FL) > 25  &&                   get_IR(IR_R) < 30 && get_IR(IR_FR) < 30){//左前のみ
+			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 450){
+				if(get_IR(IR_FL) > 10  &&                   get_IR(IR_R) < 35 && get_IR(IR_FR) < 35){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
@@ -199,7 +199,7 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt3 = 0;
 				
-				if(get_IR(IR_FL) < 30 && get_IR(IR_L) < 30 &&                 get_IR(IR_FR) > 25){//右前のみ
+				if(get_IR(IR_FL) < 35 && get_IR(IR_L) < 35 &&                 get_IR(IR_FR) > 10){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
@@ -306,6 +306,12 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				}else{
 					min_M_use = non_stop_min_M;
 				}
+			}else if(non_stop == 4){//加速はやめ　減速しっかり
+				if(enc_now < A/2){// 進んだ距離 < A/2
+					min_M_use = non_stop_min_M;
+				}else{
+					min_M_use = min_M;
+				}
 			}else{
 				min_M_use = min_M;
 			}
@@ -316,10 +322,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				M = min_M_use + ( (A - enc_now) / 6);
 			
 			}else if(enc_now < 50){//出だしは加速しすぎないように
-				M = min_M_use + (enc_now / 7);
+				M = min_M_use + (enc_now / 8);
 				
 			}else{
-				M = min_M_use + (enc_now / 5);	
+				M = min_M_use + (enc_now / 6);	
 			}
 			
 			
@@ -485,14 +491,19 @@ void Tmotor(long long A){
 
 	int sa = 0;
 	int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
-	int MA = 1,min_M = 2;
+	int MA = 1,min_M = 4;
 	
 	int cnt = 0;
 	int powor_max = 10;
 	int powor;
 
 	while(1){
-		powor = gyro_powor_L();
+		if((A > 0 && GyroSum_get() < 0) || (A < 0 && GyroSum_get() > 0)){
+			powor = gyro_powor_L() * 1.5; //行き過ぎた
+			
+		}else{
+			powor = gyro_powor_L();
+		}
 		
 		if(powor > powor_max)powor = powor_max;
 		else if(-powor_max > powor)powor = -powor_max; 
@@ -526,8 +537,8 @@ void Tmotor(long long A){
 		L = get_encoder_total_L();
 		R = get_encoder_total_R();
 
-		if(abs(GyroSum_get()) < 60)cnt += 10;
-		else if(abs(GyroSum_get()) < 170)cnt++;
+		if(abs(GyroSum_get()) < 50)cnt += 10;
+		else if(abs(GyroSum_get()) < 130)cnt++;
 		else cnt = 0;
 
 		if(cnt > 1000)break;
@@ -555,13 +566,13 @@ void ETmotor(long long A, long long E, char non_stop){
 			Smotor(M_kabe,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(130,M_kabe,true,false);
+		if(flag)ESmotor(170,M_kabe,true,false);
 	}else{//L
 		while(get_IR(IR_L) > 17){
 			Smotor(M_kabe,true);
 			flag = 1;
 		}
-		if(flag)ESmotor(130,M_kabe,true,false);
+		if(flag)ESmotor(170,M_kabe,true,false);
 	}
 
 //	GyroSum_reset();
