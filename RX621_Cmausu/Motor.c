@@ -190,7 +190,7 @@ void Smotor(int M,char w_flag){
 		//斜め対策
 		if(w_flag == 3){
 			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 450){
-				if(get_IR(IR_FL) > 10  &&                   get_IR(IR_R) < 35 && get_IR(IR_FR) < 35){//左前のみ
+				if(get_IR(IR_FL) > 10  &&                   get_IR(IR_R) < 60 && get_IR(IR_FR) < 60){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
@@ -199,7 +199,7 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt3 = 0;
 				
-				if(get_IR(IR_FL) < 35 && get_IR(IR_L) < 35 &&                 get_IR(IR_FR) > 10){//右前のみ
+				if(get_IR(IR_FL) < 60 && get_IR(IR_L) < 60 &&                 get_IR(IR_FR) > 10){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
@@ -233,11 +233,11 @@ void Smotor(int M,char w_flag){
 		
 		 //前壁補正　
 		if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 350){
-			if(get_IR(IR_FL) > 15 && get_IR(IR_FR) > 15){//前壁あり
+			if(get_IR(IR_FL) > 20 && get_IR(IR_FR) > 20){//前壁あり
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
 				if(abs(diff) < 15){
 					cnt5++;
-					if(cnt5 > 5){
+					if(cnt5 > 2){
 						cnt5 = 0;
 						
 						if(diff > 1)diff = 1;
@@ -282,7 +282,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	
 	int p = 5,min_M = 3,M = 3;
 	
-	int non_stop_min_M = 13;
+	int non_stop_min_M = 30;
 	int min_M_use = 0;
 	
 	int M_max_safe = 40;//横壁が近すぎる場合は減速
@@ -370,10 +370,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			ir_R_now = get_IR(IR_R);
 			if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-				if(ir_L_flag == 0 && ir_L_now > 20 && ir_R_now < 65){
+				if(ir_L_flag == 0 && ir_L_now > 15 && ir_R_now < 65){
 					ir_L_flag = 1;
 				
-				}else if(ir_L_flag == 1 && ir_L_now < 11 && ir_R_now < 65){
+				}else if(ir_L_flag == 1 && ir_L_now < 10 && ir_R_now < 65){
 				
 					if( (non_stop == 0 && (enc_now % s1) < s1 * 2 / 3) || 
 						(non_stop == 1 && ((enc_now - h1) % s1) < s1 * 2 / 3)	){
@@ -415,10 +415,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			
 			if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-				if(ir_R_flag == 0 && ir_R_now > 20 && ir_L_now < 65){
+				if(ir_R_flag == 0 && ir_R_now > 15 && ir_L_now < 65){
 					ir_R_flag = 1;
 				
-				}else if(ir_R_flag == 1 && ir_R_now < 11 && ir_L_now < 65){
+				}else if(ir_R_flag == 1 && ir_R_now < 10 && ir_L_now < 65){
 					if( (non_stop == 0 && (enc_now % s1) < s1 * 2 / 3) || 
 						(non_stop == 1 && ((enc_now - h1) % s1) < s1 * 2 / 3)	){
 					
@@ -555,8 +555,8 @@ void ETmotor(long long A, long long E, char non_stop){
 	//GyroSum_reset();
 	//Encoder_reset();
 
-	int M = 20;//25 20
-	int M_kabe = 40;//40 35
+	int M = 20;//25 20 20
+	int M_kabe = 30;//40 35 40
 	
 	char flag = 0;
 	
@@ -579,7 +579,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	//Encoder_reset();
 	
 
-	ESmotor(60,M_kabe,true,true);
+	ESmotor(55,M_kabe,true,true);//60
 
 	
 /*	if(get_IR(IR_FL) > 13 || get_IR(IR_FR) > 13){//前に壁がある
@@ -617,7 +617,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 55){ //左壁近い
+			if(get_IR(IR_L) > 65){ //左壁近い
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -629,7 +629,7 @@ void ETmotor(long long A, long long E, char non_stop){
 			E_sum += (L - L_prev);
 			
 		}else{//L
-			if(get_IR(IR_R) > 55 ){ //右壁近い
+			if(get_IR(IR_R) > 65 ){ //右壁近い
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -680,7 +680,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	PORTA.DR.BIT.B0 = 0;
 	PORTA.DR.BIT.B3 = 0;
 	
-	ESmotor(60,M_kabe,true,true);
+	ESmotor(60,M_kabe,true,true);//60
 	
 	//motor(0,0);
 	//GyroSum_reset();
@@ -771,10 +771,10 @@ void Tmotor_naname(long long A){
 		 
 		if(A > 0){//R
 			//motor(LM ,-get_encoder_total_R() * 2);
-			motor(LM ,0);
+			motor(LM ,-1);
 		}else{//L
 			//motor(-get_encoder_total_L() * 2 ,RM);
-			motor(0 ,RM);
+			motor(-1 ,RM);
 		}
 
 		LM_prev = LM;

@@ -1022,7 +1022,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
   while(1){
 	if(LR == 3 || LR == 1){
 		if(Lflag == 0){
-      		if(get_IR(IR_L) > 30){
+      		if(get_IR(IR_L) > 40){
 				led(1);
 				Lflag = 1;
 			}
@@ -1036,7 +1036,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){
 		if(Rflag == 0){
-      		if(get_IR(IR_R) > 30){
+      		if(get_IR(IR_R) > 40){
 				led(8);
 				Rflag = 1;
 			}
@@ -1060,7 +1060,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
   }
  
   
-  ESmotor(180,powor,true,false);
+  ESmotor(170,powor,true,false);
   led(0);
 }
 
@@ -2351,12 +2351,12 @@ void run_shortest_path_fin(	char naname){
       case -11://L45
 	  	
 		if(queue_next() == -11){//Vターン
-			 L_rotate_naname(l45 * path_num * 0.65);//0.75
+			 L_rotate_naname(l45 * path_num * 0.75);//0.75
 			 
 		}else if(queue_next() == -1){//45からの90ターン
-			L_rotate_naname(l45 * path_num);
+			L_rotate_naname(l45 * path_num * 0.95);
 			
-			ESmotor(50,30,true,true);//距離、スピード
+			ESmotor(60,30,true,true);//距離、スピード
 		
 		}else{
 			 L_rotate_naname(l45 * path_num);
@@ -2433,17 +2433,17 @@ void run_shortest_path_fin(	char naname){
 	    if(path_num <= 0){
 			//存在しないはず
 		}else{
-			S_run(s45 * (long long)path_num + 200,50 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+			S_run(s45 * (long long)path_num + 100,50 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}
 		
 		
 		if(queue_next() < 0){//次　左
-        	S_run_kabe_naname(35 + run_fin_speed_offset,3,1);
+        	S_run_kabe_naname(40 + run_fin_speed_offset,3,1);
 			
 		}else if(queue_next() > 0){//次　右
-			S_run_kabe_naname(35 + run_fin_speed_offset,3,2);
+			S_run_kabe_naname(40 + run_fin_speed_offset,3,2);
 		}else{
-			S_run_kabe_naname(35 + run_fin_speed_offset,3,3);
+			S_run_kabe_naname(40 + run_fin_speed_offset,3,3);
 		}
 		
         //my_x = nx;
@@ -2465,12 +2465,12 @@ void run_shortest_path_fin(	char naname){
       case 11://R45
         
   		if(queue_next() == 11){//Vターン
-			R_rotate_naname(r45 * path_num * 0.65);//0.75
+			R_rotate_naname(r45 * path_num * 0.85);//0.75
 			
 		}else if(queue_next() == 1){//45からの90ターン
-			R_rotate_naname(r45 * path_num);
+			R_rotate_naname(r45 * path_num * 0.95);
 			
-			ESmotor(50,30,true,true);//距離、スピード
+			ESmotor(60,30,true,true);//距離、スピード
 			
 		}else{
 			R_rotate_naname(r45 * path_num);
