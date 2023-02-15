@@ -18,6 +18,6 @@ void ESmotor(long long,int,char,char);
 char motor_stop_get(void);
 void Tmotor(long long);
 void ETmotor(long long , long long,char);
-
+void ETmotorBIG(long long , long long,char);
 void Tmotor_naname(long long);
 #endif
