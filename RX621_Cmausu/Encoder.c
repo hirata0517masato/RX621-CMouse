@@ -3,8 +3,8 @@
 #include <machine.h>
 #include <stdlib.h>
 
-#define LencData	(short)(MTU7.TCNT)	     //A:CN4-15 B:CN4-16
-#define RencData	(short)(MTU8.TCNT)	     //A:CN4-13 B:CN4-14
+#define LencData	(-(short)(MTU7.TCNT))	     //A:CN4-15 B:CN4-16
+#define RencData	(-(short)(MTU8.TCNT))	     //A:CN4-13 B:CN4-14
 
 volatile long long  L_enc_total_rev = 0;
 volatile long long  L_enc_total = 0;

@@ -83,19 +83,19 @@ void pwm(float duty_L, float duty_R){
 	}
 	
 	/* デューティ比の算出 */
-   	dt_R = MTU3.TGRA * (100.0 - duty_R) / 100.0;//  dt_R = 0.9445*50/100 = 0.5
+   	dt_R = MTU4.TGRA * (100.0 - duty_R) / 100.0;//  dt_R = 0.9445*50/100 = 0.5
 		 
 	/* デューティ比のオーバーフロー保護 */
-    if(dt_R >= MTU3.TGRA)   dt_R = MTU3.TGRA - 1;  // 
+    if(dt_R >= MTU4.TGRA)   dt_R = MTU3.TGRA - 1;  // 
 		
 	if(R_PM == 0){
 		 /* デューティ比の設定 */
-   		 MTU3.TGRB = MTU3.TGRA - 1;
-   		 MTU4.TGRB = dt_R;
+   		 MTU4.TGRB = MTU4.TGRA - 1;
+   		 MTU3.TGRB = dt_R;
 	}else{
 		/* デューティ比の設定 */
-   		 MTU3.TGRB = dt_R;
-   		 MTU4.TGRB = MTU3.TGRA - 1;
+   		 MTU4.TGRB = dt_R;
+   		 MTU3.TGRB = MTU3.TGRA - 1;
 	}
 }
 
@@ -150,10 +150,10 @@ void Smotor(int M,char w_flag){
 	if(w_flag > 0){
 		if((get_encoder_L() > 15 || get_encoder_R() > 15) && (abs(get_encoder_L() - get_encoder_R()) < 30  )  && (w_flag != 3) ){
 
-			if(((get_IR(IR_FL) < 20) || (get_IR(IR_FR) < 20)) && abs(GyroSum_get()) < 350){
+			if((get_IR(IR_F) < 20) && abs(GyroSum_get()) < 350){
 				
 				
-				if(get_IR(IR_R) > 55 ){ //右壁近い
+				if(get_IR(IR_R) > 50 ){ //右壁近い
 					cnt1++;
 					if((cnt1 > 20 - min(20,(get_encoder_R()/15)) ) || (get_IR(IR_R) > 75 )){
 						cnt1 = 0;
@@ -167,7 +167,7 @@ void Smotor(int M,char w_flag){
 					}
 				}else cnt1 = 0;
 			
-				if(get_IR(IR_L) > 55 ){ //左壁近い
+				if(get_IR(IR_L) > 50 ){ //左壁近い
 					cnt2++;
 					if((cnt2 > 20 - min(20,(get_encoder_L()/15))) || (get_IR(IR_L) > 75)){
 						cnt2 = 0;
@@ -190,11 +190,11 @@ void Smotor(int M,char w_flag){
 		//斜め対策
 		if(w_flag == 3){
 			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 450){
-				if(get_IR(IR_FL) > 10  &&                   get_IR(IR_R) < 60 && get_IR(IR_FR) < 60){//左前のみ
+				if(get_IR(IR_FL) > 10  && get_IR(IR_F) < 20 && get_IR(IR_FR) < 60 &&  get_IR(IR_R) < 60 ){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
-						if(get_IR(IR_FL) > 25){
+						if(get_IR(IR_FL) > 20){
 							GyroSum_add(2);
 						}else{
 							GyroSum_add(1);
@@ -203,11 +203,11 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt3 = 0;
 				
-				if(get_IR(IR_FL) < 60 && get_IR(IR_L) < 60 &&                 get_IR(IR_FR) > 10){//右前のみ
+				if(get_IR(IR_L) < 60 && get_IR(IR_FL) < 60 &&  get_IR(IR_F) < 20 && get_IR(IR_FR) > 10){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
-						if(get_IR(IR_FR) > 25){
+						if(get_IR(IR_FR) > 20){
 							GyroSum_add(-2);
 						}else{
 							GyroSum_add(-1);
@@ -216,9 +216,9 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt4 = 0;
 			}
-		}else if(w_flag > 0){//串対策
+		}else if(w_flag == 4){//串対策 壁あり、斜め以外 メモ：探索では使用しない方が良い
 			if((get_encoder_L() > 15 || get_encoder_R() > 15) && abs(GyroSum_get()) < 350){
-				if(get_IR(IR_FL) > 20  && /*  get_IR(IR_L) < 25 && */  get_IR(IR_R) < 15 && get_IR(IR_FR) < 15){//左前のみ
+				if( get_IR(IR_L) < 15 &&  get_IR(IR_FL) > 15  &&  get_IR(IR_F) < 20  && get_IR(IR_FR) < 13 &&  get_IR(IR_R) < 13){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
@@ -227,7 +227,7 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt3 = 0;
 				
-				if(get_IR(IR_FL) < 15 && get_IR(IR_L) < 15 && /* get_IR(IR_R) < 25 && */  get_IR(IR_FR) > 20){//右前のみ
+				if( get_IR(IR_L) < 13 &&  get_IR(IR_FL) < 13  &&  get_IR(IR_F) < 20  && get_IR(IR_FR) > 15 &&  get_IR(IR_R) < 15){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
@@ -240,7 +240,7 @@ void Smotor(int M,char w_flag){
 		
 		
 		 //前壁補正　
-		if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 350){
+		if((get_encoder_L() > 5 && get_encoder_R() > 5) && abs(GyroSum_get()) < 350){
 			if(get_IR(IR_FL) > 20 && get_IR(IR_FR) > 20){//前壁あり
 				long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
 				if(abs(diff) < 15){
