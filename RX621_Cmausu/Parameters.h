@@ -15,35 +15,43 @@
 #define Start_y  0
 #define Start_angle 1 // スタートする時の向き　
 
-#define Goal_x  8
-#define Goal_y  3
-#define Goal_angle 1 //ゴールした直後の向き
+#define Goal_x  0
+#define Goal_y  1
+#define Goal_angle 0 //ゴールした直後の向き
 
-#define Pickup_x  1
-#define Pickup_y  1
+#define Pickup_x  2
+#define Pickup_y  0
 
 //ジャイロ関連
 #define r45  (11500)	//45度 右回転 11500 10500
 #define l45  (11500)	//45度 左回転 11500
 #define r90  (21300) 	//90度 右回転
-#define l90  (21800)	//90度 左回転
+#define l90  (20900)	//90度 左回転
 #define r180  (-43500)	//180度 右回転
-#define sr90  (23500)	//スラローム 23000
-#define sl90  (23500)	//スラローム 23000
+#define sr90  (24000)	//スラローム 23000
+#define sl90  (24000)	//スラローム 23000
 
 #define sr90BIG  (24000)	//スラローム 
 #define sl90BIG  (23800)	//スラローム 
 
-//エンコーダ関連　memo : 1mm = 4 //壁切れ170
-#define s1 (714)		//1マス直進 700  　735
-#define s45 (500)		//45度１マス直進 500 520
-#define h1 (350)		//半マス直進 350 340
-#define rslsl90 (664)	//スラローム 664
-#define rslsr90 (664)	//スラローム 660
+//エンコーダ関連　memo : 1mm = 5.56 //壁切れ170 //2ndの1.34倍くらい
+#define s1 (998)		//1マス直進 714
+#define s45 (695)		//45度１マス直進 500
+#define h1 (510)		//半マス直進 350
+#define rslsl90 (942)	//スラローム 664
+#define rslsr90 (942)	//スラローム 664
 
-#define rslsl90_BIG (700)	//スラローム 大
-#define rslsr90_BIG (680)	//スラローム 大
+#define rslsl90_BIG (980)	//スラローム 大700
+#define rslsr90_BIG (980)	//スラローム 大 680
 
 #define r_cost 4		//迷路の重み　90度回転の場合
+
+
+//前壁補正のパラメータ
+#define F_max 280
+#define F_min 260
+#define F_pow 15
+#define F_cnt 500
+
 
 #endif
