@@ -791,7 +791,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 200){ //¶•Ç‹ß‚¢
+			if(get_IR(IR_L) > 180){ //¶•Ç‹ß‚¢
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -803,7 +803,7 @@ void ETmotor(long long A, long long E, char non_stop){
 			E_sum += (L - L_prev);
 			
 		}else{//L
-			if(get_IR(IR_R) > 200 ){ //‰E•Ç‹ß‚¢
+			if(get_IR(IR_R) > 180 ){ //‰E•Ç‹ß‚¢
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;

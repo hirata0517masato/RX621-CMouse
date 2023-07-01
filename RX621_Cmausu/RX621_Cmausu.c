@@ -86,6 +86,8 @@ char my_x = Start_x,my_y = Start_y,my_angle = Start_angle;//0:up 1:right 2:down 
 
 int ir_flag = 0; // 0:赤外線OFF 1:赤外線ON
 
+int Gy_flag = 0; // 0:ジャイロOFF 1:ジャイロON
+
 int run_fin_speed_offset = 0;
 
 long long time_limit = -1;
@@ -142,6 +144,7 @@ void main(void)
 	}
 */			
 	while(1){
+		
 		Encoder_reset();
 		
 		ir_flag = 0;//赤外線OFF
@@ -187,7 +190,15 @@ void main(void)
 			//正面センサーに手をかざす
 			while(get_IR(IR_F) < 40) led(8);
   			while(get_IR(IR_F) > 40) led(1);
+			
+			
+			if( Gy_flag == 0){
+				led_up();
 				
+				Gyro_init();	//ジャイロ、SPIの初期化 　注意：少し時間かかります 処理中はジャイロセンサーを動かさないこと
+				Gy_flag = 1;
+			}
+			
 			led_up();
 			
 			GyroSum_reset();
@@ -451,7 +462,7 @@ void ALL_init(){
 	led(0);
 	while(get_sw() == 1) nop();
 	
-	Gyro_init();	//ジャイロ、SPIの初期化 　注意：少し時間かかります 処理中はジャイロセンサーを動かさないこと
+	//Gyro_init();	//ジャイロ、SPIの初期化 　注意：少し時間かかります 処理中はジャイロセンサーを動かさないこと
 
 	CMT_init();  // CMT0の初期化
 	CMT2_init();  // CMT2の初期化
@@ -1138,7 +1149,7 @@ void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５タ
 
   }
   
-  //ESmotor(5,powor,true,false);//　直線からの４５ターン 勢いがあるので不要
+  //ESmotor(10,powor,true,false);//　直線からの４５ターン 勢いがあるので不要
   led(0);
 }
 
@@ -1209,7 +1220,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
   }
  
   
-  ESmotor(360,powor,true,false);///222
+  ESmotor(400,powor,true,false);///222
   led(0);
 }
 
@@ -2731,7 +2742,7 @@ void run_shortest_path_fin(	char naname){
   		L_curve(sl90,true);
 		
 		if(queue_next() == -1){//ターン
-			ESmotor(170,35,true,true);//距離、スピード
+			ESmotor(190,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
 			ESmotor(80,35,true,true);//距離、スピード
@@ -2744,10 +2755,10 @@ void run_shortest_path_fin(	char naname){
       case -11://L45
 	  	
 		if(queue_next() == -11){//Vターン
-			 L_rotate_naname(l45 * path_num * 0.7);//0.75
+			 L_rotate_naname(l45 * path_num * 0.75);//0.75
 			 
 		}else if(queue_next() == -1){//45からの90ターン
-			L_rotate_naname(l45 * path_num );
+			L_rotate_naname(l45 * path_num * 0.85 );
 			
 			ESmotor(90,25,true,true);//距離、スピード
 		
@@ -2866,7 +2877,7 @@ void run_shortest_path_fin(	char naname){
 			ESmotor(80,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
-			ESmotor(170,35,true,true);//距離、スピード
+			ESmotor(190,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == -11 || queue_next() == 11){
 			ESmotor(120,35,true,true);//距離、スピード
@@ -2875,10 +2886,10 @@ void run_shortest_path_fin(	char naname){
       case 11://R45
         
   		if(queue_next() == 11){//Vターン
-			R_rotate_naname(r45 * path_num * 0.7);//0.75
+			R_rotate_naname(r45 * path_num * 0.75);//0.75
 			
 		}else if(queue_next() == 1){//45からの90ターン
-			R_rotate_naname(r45 * path_num );
+			R_rotate_naname(r45 * path_num * 0.85 );
 			
 			ESmotor(90,25,true,true);//距離、スピード
 			
@@ -2910,13 +2921,15 @@ void Excep_CMT0_CMI0(void)
   	if (log_start != 2 && task >= 30) task = 0;       
 	if (log_start == 2 && task >= 10) task = 0;       
 	
-	Gyro_update();
-		
-	if(ir_flag == 1){//赤外線有効時=走行時にジャイロによる安全停止チェックを行う
-		if(abs(Gyro()) > 320){
-    		motor_stop_cnt++;
-    		if(motor_stop_cnt > 30)motor_stop();
-  		}else motor_stop_cnt = 0;
+	if(Gy_flag == 1){
+		Gyro_update();
+			
+		if(ir_flag == 1){//赤外線有効時=走行時にジャイロによる安全停止チェックを行う
+			if(abs(Gyro()) > 320){
+	    		motor_stop_cnt++;
+	    		if(motor_stop_cnt > 30)motor_stop();
+	  		}else motor_stop_cnt = 0;
+		}
 	}
 	
 	if(motor_stop_get() == 1){//モータ緊急停止状態
