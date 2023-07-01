@@ -69,11 +69,11 @@ void Gyro_init(){
   delay_ITP(300);
   
   gyro_base = 0;
-  for(i = 0;i < 64;i++){
+  for(i = 0;i < 16;i++){
     gyro_base += Gyro_get();
     delay_ITP(1);
   }
-  gyro_base >>= 6;
+  gyro_base >>= 4;
   gyro_sum = 0;
   //gyro = gyro_base;
 }
