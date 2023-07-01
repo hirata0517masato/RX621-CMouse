@@ -850,24 +850,24 @@ void maze_update(char x,char y,char angle, char type){
 				if(get_IR(IR_L) > 50){
 					if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 							
-							/*if(type == 3){
+							//if(type == 3){
 								maze_w[y][x] &= ~(1 << (4+ii));//確定情報を消す
 								L_rotate(l90);//左回転
 								maze_update(x,y,my_angle, 1);//前壁のみチェック
 								R_rotate(r90);//右回転
-							}*/
+							//}
 					}else{
 							maze_w[y][x] |= 1 << ii;
 					}
 			  	}else{
 					if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 							
-							/*if(type == 3){
+							//if(type == 3){
 								maze_w[y][x] &= ~(1 << (4+ii));//確定情報を消す
 								L_rotate(l90);//左回転
 								maze_update(x,y,my_angle, 1);//前壁のみチェック
 								R_rotate(r90);//右回転
-							}*/	
+							//}	
 					}else{
 						maze_w[y][x] &= ~(1 << ii); 
 					}  
@@ -883,24 +883,24 @@ void maze_update(char x,char y,char angle, char type){
           		if(get_IR(IR_F) > 50 ){
 					if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 						
-						/*if(type == 3){
+						//if(type == 3){
 							maze_w[y][x] &= ~(1 << (4+ii));//確定情報を消す
 							L_rotate(l90);//左回転
 							maze_update(x,y,my_angle, 2);//横壁のみチェック
 							R_rotate(r90);//右回転
-						}*/
+						//}
 					}else{
 						maze_w[y][x] |= 1 << ii; 
 					}
 		  		}else{
 					if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 						
-						/*if(type == 3){
+						//if(type == 3){
 							maze_w[y][x] &= ~(1 << (4+ii));//確定情報を消す
 							L_rotate(l90);//左回転
 							maze_update(x,y,my_angle, 2);//横壁のみチェック
 							R_rotate(r90);//右回転
-						}*/
+						//}
 					}else{
 						maze_w[y][x] &= ~(1 << ii);
 					}
@@ -914,23 +914,23 @@ void maze_update(char x,char y,char angle, char type){
 				if(get_IR(IR_R) > 50){
 					if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 							
-							/*if(type == 3){
+							//if(type == 3){
 								maze_w[y][x] &= ~(1 << (4+ii));//確定情報を消す
 								R_rotate(r90);//右回転
 								maze_update(x,y,my_angle, 1);//前壁のみチェック
 								L_rotate(l90);//左回転
-							}*/	
+							//}	
 					}else{
 			  				maze_w[y][x] |= 1 << ii; 
 					}
 			  	}else{
 					if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
-							/*if(type == 3){
+							//if(type == 3){
 								maze_w[y][x] &= ~(1 << (4+ii));//確定情報を消す
 								R_rotate(r90);//右回転
 								maze_update(x,y,my_angle, 1);//前壁のみチェック
 								L_rotate(l90);//左回転
-							}*/
+							//}
 					}else{
 						maze_w[y][x] &= ~(1 << ii);
 					}
@@ -1091,7 +1091,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 
   }
   
-  ESmotor(115,powor,true,false);//1cmくらい？
+  ESmotor(50,powor,true,false);//1cmくらい？
   led(0);
 }
 
@@ -1297,9 +1297,7 @@ void S_run_maze_search(int path,int powor){
       			if(cnt2 > F_cnt)break;
 			}
 			
-			if(maza_update_flag != 2){//なぜか壁の更新ができていなければ
-				maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,3);//迷路情報の更新
-			}
+			
 			//現在地の更新
 			my_x += dx[my_angle];
 			my_y += dy[my_angle];
@@ -2733,7 +2731,7 @@ void run_shortest_path_fin(	char naname){
   		L_curve(sl90,true);
 		
 		if(queue_next() == -1){//ターン
-			ESmotor(140,35,true,true);//距離、スピード
+			ESmotor(170,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
 			ESmotor(80,35,true,true);//距離、スピード
@@ -2761,7 +2759,7 @@ void run_shortest_path_fin(	char naname){
         if(queue_empty()){
 			
 			//S_run(h1 * (long long)path_num ,55 + run_fin_speed_offset,4,true);//non_stop = 4
-			S_run(h1 * (long long)path_num - 100 ,85 + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 串の壁補正あり
+			S_run(h1 * (long long)path_num - 100 ,80 + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 串の壁補正あり
 			
 			//if(get_IR(IR_FL) > 10 || get_IR(IR_FR) > 10){
 				while(1){//ゴールの奥まで進む 前壁補正
@@ -2786,8 +2784,8 @@ void run_shortest_path_fin(	char naname){
 			//  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,55 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
 		  	//  else S_run((h1 * (long long)path_num)  - over_run ,55 + run_fin_speed_offset,true,true);
 			  
-			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,85 + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
-		  	  else S_run((h1 * (long long)path_num)  - over_run ,85 + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
+			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,80 + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
+		  	  else S_run((h1 * (long long)path_num)  - over_run ,80 + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
 			  
 			  
 			  if(queue_next() == -11 || queue_next() == 11){//直線後に45ターン
@@ -2868,7 +2866,7 @@ void run_shortest_path_fin(	char naname){
 			ESmotor(80,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
-			ESmotor(140,35,true,true);//距離、スピード
+			ESmotor(170,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == -11 || queue_next() == 11){
 			ESmotor(120,35,true,true);//距離、スピード

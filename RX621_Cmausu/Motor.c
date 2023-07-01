@@ -519,10 +519,12 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 void Tmotor(long long A){
 	GyroSum_reset();
 	GyroSum_add(A);
-	Encoder_reset();
+//	Encoder_reset(); 有効化しないこと　壁読み間違えの再チェックが動作しなくなる
 	
 	long long L = get_encoder_total_L();
 	long long R = get_encoder_total_R();
+	
+	long long L_base = L,R_base = R;
 
 	int sa = 0;
 	int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
@@ -543,7 +545,7 @@ void Tmotor(long long A){
 		if(powor > powor_max)powor = powor_max;
 		else if(-powor_max > powor)powor = -powor_max; 
 
-		sa = abs(L) - abs(R);
+		sa = abs(L-L_base) - abs(R-R_base);
 		
 		if(powor > 0){
 			LM = powor - sa;
@@ -582,7 +584,7 @@ void Tmotor(long long A){
 
 	motor(0,0);
 	GyroSum_reset();
-	Encoder_reset();
+//	Encoder_reset(); 有効化しないこと　壁読み間違えの再チェックが動作しなくなる
 }
 
 
