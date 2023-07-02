@@ -1575,10 +1575,10 @@ void make_shortest_path_list(short target_x,short target_y){
           			
 					}else if(num == next){// LとRが同じ重み　斜めを優先したい
 			 			if(last == -1){//前回がLなら今回はR
-				 			n_num = (my_angle+1+4)%4;
+				 			n_num = (angle-1+4)%4;
 				 
 			 			}else if(last == 1){//前回がRなら今回はL
-				 			n_num = (my_angle-1+4)%4;
+				 			n_num = (angle+1+4)%4;
 				 
 			 			}else{//前回がSなら今回は?
 				 			//わからんから先に見つかった方にする
@@ -1650,7 +1650,8 @@ void make_shortest_path_list(short target_x,short target_y){
 				
 				unknown_flag = 0;
 				mas_cnt++;
-				last = 0;
+				
+				//last = 0; 
 		        break;
 				
 			case 10://S 未確定の直線
@@ -1660,7 +1661,7 @@ void make_shortest_path_list(short target_x,short target_y){
 		        y += dy[n_num];
 				
 				mas_cnt++;
-				last = 0;
+				//last = 0;
 		        break;
 				
       		case 1://R
@@ -1705,7 +1706,7 @@ void make_shortest_path_list(short target_x,short target_y){
 		        //y += dy[n_num];
 				
 				//unknown_flag = 0;
-				last = 2;
+				//last = 2;
         		break;
     	}
   	}
@@ -1732,7 +1733,7 @@ void run_shortest_path(){
   int time = 30;
   
   int run_speed = 25;
-  int run_speed_boost = 45;
+  int run_speed_boost = 40;
 
   
   while(!queue_empty()){
@@ -1919,10 +1920,10 @@ void make_shortest_path_list_simple(short target_x,short target_y){
             			num = next;
           			}else if(num == next){// LとRが同じ重み　斜めを優先したい
 						 if(last == -1){//前回がLなら今回はR
-							 n_num = (my_angle+1+4)%4;
+							 n_num = (angle-1+4)%4;
 							 
 						 }else if(last == 1){//前回がRなら今回はL
-							 n_num = (my_angle-1+4)%4;
+							 n_num = (angle+1+4)%4;
 							 
 						 }else{//前回がSなら今回は?
 							 //わからんから先に見つかった方にする
@@ -1960,7 +1961,7 @@ void make_shortest_path_list_simple(short target_x,short target_y){
 		        x += dx[n_num];
 		        y += dy[n_num];
 				
-				last = 0;
+				//last = 0;
 		        break;
 				
       		case 1://R
@@ -1989,7 +1990,7 @@ void make_shortest_path_list_simple(short target_x,short target_y){
 				 
         		angle = (4+angle+2)%4;
 				
-				last = 2;
+				//last = 2;
         		break;
     	}
   	}
@@ -2035,10 +2036,10 @@ void maze_search_unknown(short* target_x,short* target_y){
             			num = next;
 	          		}else if(num == next){// LとRが同じ重み　斜めを優先したい
 						 if(last == -1){//前回がLなら今回はR
-							 n_num = (my_angle+1+4)%4;
+							 n_num = (angle-1+4)%4;
 							 
 						 }else if(last == 1){//前回がRなら今回はL
-							 n_num = (my_angle-1+4)%4;
+							 n_num = (angle+1+4)%4;
 							 
 						 }else{//前回がSなら今回は?
 							 //わからんから先に見つかった方にする
@@ -2069,7 +2070,7 @@ void maze_search_unknown(short* target_x,short* target_y){
 		        x += dx[n_num];
 		        y += dy[n_num];
 				
-				last = 0;
+				//last = 0;
 		        break;
 				
       		case 1://R
@@ -2081,7 +2082,7 @@ void maze_search_unknown(short* target_x,short* target_y){
         	
         		angle = (4+angle+2)%4;
 				
-				last = 2;
+				//last = 2;
         		break;
     	}
   	}
@@ -2276,10 +2277,10 @@ void shortest_path_search_fin(){
             num = next;
           }else if(num == next){// LとRが同じ重み　斜めを優先したい
 			 if(last == -1){//前回がLなら今回はR
-				 n_num = (my_angle+1+4)%4;
+				 n_num = (my_angle-1+4)%4;
 				 
 			 }else if(last == 1){//前回がRなら今回はL
-				 n_num = (my_angle-1+4)%4;
+				 n_num = (my_angle+1+4)%4;
 				 
 			 }else{//前回がSなら今回は?
 				 //わからんから先に見つかった方にする
@@ -2316,7 +2317,7 @@ void shortest_path_search_fin(){
         my_x += dx[n_num];
         my_y += dy[n_num];
 		
-		last = 0;
+		//last = 0;
         break;
       case 1://R
         if(h_path > 0){
