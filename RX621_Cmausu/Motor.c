@@ -230,7 +230,7 @@ void Smotor(int M,char w_flag){
 			}
 		}else if(w_flag == 4){//串対策 壁あり、斜め以外 メモ：探索では使用しない方が良い
 			if((get_encoder_L() > 10 || get_encoder_R() > 10) && abs(GyroSum_get()) < 550){
-				if( get_IR(IR_L) < 40 &&  get_IR(IR_FL) > 15  /*&&  get_IR(IR_F) < 15*/  && get_IR(IR_FR) < 10 &&  get_IR(IR_R) < 40){//左前のみ
+				if( get_IR(IR_L) < 40 &&  get_IR(IR_FL) > 15  &&  get_IR(IR_F) < 10  && get_IR(IR_FR) < 10 &&  get_IR(IR_R) < 40){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
@@ -243,7 +243,7 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt3 = 0;
 				
-				if( get_IR(IR_L) < 40 &&  get_IR(IR_FL) < 10  /*&&  get_IR(IR_F) < 15*/  && get_IR(IR_FR) > 15 &&  get_IR(IR_R) < 40){//右前のみ
+				if( get_IR(IR_L) < 40 &&  get_IR(IR_FL) < 10  &&  get_IR(IR_F) < 10  && get_IR(IR_FR) > 15 &&  get_IR(IR_R) < 40){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
