@@ -110,14 +110,14 @@ void motor(int LM,int RM){
   //if(((LM - RM) > 50) || ((RM - LM) > 50))motor_stop();
 
   if(abs(LM) > 5){
-	if(abs(get_encoder_L()) < 5){
+	if(abs(get_encoder_L()) < 2){
 		safe_cnt ++;
 		if(safe_cnt > 20000)motor_stop();
 	}else safe_cnt = 0;
   }else safe_cnt = 0;
 
   if(abs(RM) > 5){
-	if(abs(get_encoder_R()) < 5){
+	if(abs(get_encoder_R()) < 2){
 		safe_cnt ++;
 		if(safe_cnt > 20000)motor_stop();
 	}else safe_cnt = 0;
@@ -155,7 +155,7 @@ void Smotor(int M,char w_flag){
 				
 				if(get_IR(IR_R) > 125 ){ //右壁近い
 					cnt1++;
-					if(get_IR(IR_R) > 155 ){
+					if(get_IR(IR_R) > 155){
 						cnt1 = 0;
 						GyroSum_add(-2);
 						
@@ -165,7 +165,7 @@ void Smotor(int M,char w_flag){
 					}
 				}else if((get_IR(IR_R) < 50 && get_IR(IR_L) > 50 && get_IR(IR_L) < 100)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if((cnt1 > 20 - min(20,(get_encoder_R()/10)) ) || (get_IR(IR_L) < 80 )){
+					if((cnt1 > 20 - min(20,(get_encoder_R()/10)) ) || (get_IR(IR_L) < 80)){
 						cnt1 = 0;
 						GyroSum_add(-1);
 					}
@@ -197,15 +197,15 @@ void Smotor(int M,char w_flag){
 				
 		//斜め対策
 		if(w_flag == 3){
-			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 550){
-				if(   get_IR(IR_FL) > 50 && get_IR(IR_FR) < 50  ){//左前のみ
+			if((get_encoder_L() > 0 || get_encoder_R() > 0) && abs(GyroSum_get()) < 550){
+				if(   get_IR(IR_FL) > 60 && get_IR(IR_FR) < 50  ){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
 						if(get_IR(IR_FL) > 150){
-							GyroSum_add(10);
+							GyroSum_add(20);
 						}else if(get_IR(IR_FL) > 100){
-							GyroSum_add(8);
+							GyroSum_add(15);
 						}else{
 							GyroSum_add(4);
 						}
@@ -213,14 +213,14 @@ void Smotor(int M,char w_flag){
 					}	
 				}else cnt3 = 0;
 				
-				if(get_IR(IR_FL) < 50 &&  get_IR(IR_FR) > 50  ){//右前のみ
+				if(get_IR(IR_FL) < 50 &&  get_IR(IR_FR) > 60  ){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
 						if(get_IR(IR_FR) > 150){
-							GyroSum_add(-10);
+							GyroSum_add(-20);
 						}else if(get_IR(IR_FR) > 100){
-							GyroSum_add(-8);
+							GyroSum_add(-15);
 						}else{
 							GyroSum_add(-4);
 						}
@@ -265,12 +265,12 @@ void Smotor(int M,char w_flag){
 		
 		//前壁補正　
 		if(w_flag != 3){ //斜め中ではない
-			if((get_encoder_L() > 5 && get_encoder_R() > 5) && abs(GyroSum_get()) < 350){
+			if((get_encoder_L() > 0 && get_encoder_R() > 0) && abs(GyroSum_get()) < 350){
 				if(get_IR(IR_FL) > 10 && (get_IR(IR_F) > 10) &&  get_IR(IR_FR) > 10){//前壁あり
 					long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
 					if(abs(diff) < 25){
 						cnt5++;
-						if(cnt5 > 2){
+						if(cnt5 > 0){
 							cnt5 = 0;
 							
 							if(diff > 1)diff = 1;
@@ -291,6 +291,10 @@ void Smotor(int M,char w_flag){
 /*	if( get_encoder_L() < 10){//速度が遅い時はジャイロ弱める	
 		powor /= 2;
 	}*/
+	
+	if(0 < M &&  F_max < get_IR(IR_F)){//前進　かつ　前壁が近すぎる場合は
+		M /= 2; //速度を下げる
+	}
 	motor(M + powor ,M - powor);
 }
 
