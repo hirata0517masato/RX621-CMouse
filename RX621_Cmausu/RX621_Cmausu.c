@@ -1108,15 +1108,15 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 			}
 		}
 	}
-/*	
+	
 	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1) ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
-*/
+
   }
   
-  ESmotor(50,powor,true,false);//1cmくらい？
+  ESmotor(25,powor,true,false);//1cmくらい？
   led(0);
 }
 
@@ -1156,11 +1156,11 @@ void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５タ
     
     Smotor(powor,flag);
 	
-/*	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1 )){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1 )){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
-*/
+
   }
   
   //ESmotor(10,powor,true,false);//　直線からの４５ターン 勢いがあるので不要
@@ -1226,15 +1226,15 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 	
 	
 	
-/*	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45 /2 )  ){
+	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45 /2 )  ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
-*/
+
   }
  
   
-  ESmotor(300,powor,true,false);///222
+  ESmotor(350,powor,true,false);///222
   led(0);
 }
 
@@ -1734,7 +1734,7 @@ void run_shortest_path(){
   Encoder_reset();
   
   short comand ,path_num;
-  int time = 30;
+  int time = 60;
   
   int run_speed = 25;
   int run_speed_boost = 40;
@@ -2784,10 +2784,10 @@ void run_shortest_path_fin(	char naname){
       case -11://L45
 	  	
 		if(queue_next() == -11){//Vターン
-			 L_rotate_naname(l45 * path_num * 1.1);//0.75
+			 L_rotate_naname(l45 * path_num * 0.95);//0.75
 			 
 		}else if(queue_next() == -1){//45からの90ターン
-			L_rotate_naname(l45 * path_num  * 0.85);
+			L_rotate_naname(l45 * path_num  * 1.1);
 			
 			//ESmotor(80,25,true,true);//距離、スピード
 			
@@ -2802,7 +2802,7 @@ void run_shortest_path_fin(	char naname){
         if(queue_empty()){
 			
 			//S_run(h1 * (long long)path_num ,55 + run_fin_speed_offset,4,true);//non_stop = 4
-			S_run(h1 * (long long)path_num - 100 ,90 + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 串の壁補正あり
+			S_run(h1 * (long long)path_num - 100 ,80 + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 串の壁補正あり
 			
 			//if(get_IR(IR_FL) > 10 || get_IR(IR_FR) > 10){
 				while(1){//ゴールの奥まで進む 前壁補正
@@ -2827,8 +2827,8 @@ void run_shortest_path_fin(	char naname){
 			//  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,55 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
 		  	//  else S_run((h1 * (long long)path_num)  - over_run ,55 + run_fin_speed_offset,true,true);
 			  
-			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,90 + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
-		  	  else S_run((h1 * (long long)path_num)  - over_run ,90 + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
+			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,80 + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
+		  	  else S_run((h1 * (long long)path_num)  - over_run ,80 + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
 			  
 			  
 			  if(queue_next() == -11 || queue_next() == 11){//直線後に45ターン
@@ -2846,14 +2846,14 @@ void run_shortest_path_fin(	char naname){
 			  }else{
 				   if(queue_next() < 0){//次　左
 			      	  //S_run_kabe(40,true,1);
-					  S_run_kabe(40,4,1);// w_flag = 4 串の壁補正あり
+					  S_run_kabe(35,4,1);// w_flag = 4 串の壁補正あり
 						
 				  }else if(queue_next() > 0){//次　右
 				  	  //S_run_kabe(40,true,2);
-					  S_run_kabe(40,4,2);// w_flag = 4 串の壁補正あり
+					  S_run_kabe(35,4,2);// w_flag = 4 串の壁補正あり
 				  }else{
 					  //S_run_kabe(40,true,3);
-					  S_run_kabe(40,4,3);// w_flag = 4 串の壁補正あり
+					  S_run_kabe(35,4,3);// w_flag = 4 串の壁補正あり
 				  }
 				  
 			  }
@@ -2881,7 +2881,7 @@ void run_shortest_path_fin(	char naname){
 			//存在しないはず
 			S_run(s45 /2 ,60 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
 		}else{
-			S_run(s45 * (long long)path_num + s45/2 ,60 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+			S_run(s45 * (long long)path_num + s45/2 ,70 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}
 		
 		
@@ -2922,7 +2922,7 @@ void run_shortest_path_fin(	char naname){
 			R_rotate_naname(r45 * path_num * 0.95);//0.75
 			
 		}else if(queue_next() == 1){//45からの90ターン
-			R_rotate_naname(r45 * path_num * 0.85);
+			R_rotate_naname(r45 * path_num * 1.1);
 			
 			//ESmotor(80,25,true,true);//距離、スピード
 			
