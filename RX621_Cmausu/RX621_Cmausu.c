@@ -1109,7 +1109,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 		}
 	}
 	
-	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1) ){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+s1) ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
@@ -1156,7 +1156,7 @@ void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５タ
     
     Smotor(powor,flag);
 	
-	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1 )){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+s1 )){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
@@ -2771,13 +2771,13 @@ void run_shortest_path_fin(	char naname){
   		L_curve(sl90,true);
 		
 		if(queue_next() == -1){//ターン
-			ESmotor(190,35,true,true);//距離、スピード
+			ESmotor(230,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
 			ESmotor(80,35,true,true);//距離、スピード
 		
 		}else if(queue_next() == -11 || queue_next() == 11){
-			ESmotor(100,35,true,true);//距離、スピード
+			ESmotor(120,35,true,true);//距離、スピード
 		}
 		
         break;
@@ -2834,14 +2834,14 @@ void run_shortest_path_fin(	char naname){
 			  if(queue_next() == -11 || queue_next() == 11){//直線後に45ターン
 				  if(queue_next() < 0){//次　左
 			      	  //S_run_kabe2(35,true,1);
-					  S_run_kabe2(25,4,1);// w_flag = 4 串の壁補正あり
+					  S_run_kabe2(20,4,1);// w_flag = 4 串の壁補正あり
 						
 				  }else if(queue_next() > 0){//次　右
 				  	  //S_run_kabe2(35,true,2);
-					  S_run_kabe2(25,4,2);// w_flag = 4 串の壁補正あり
+					  S_run_kabe2(20,4,2);// w_flag = 4 串の壁補正あり
 				  }else{
 					  //S_run_kabe2(35,true,3);
-					  S_run_kabe2(25,4,3);// w_flag = 4 串の壁補正あり
+					  S_run_kabe2(20,4,3);// w_flag = 4 串の壁補正あり
 				  }
 			  }else{
 				   if(queue_next() < 0){//次　左
@@ -2881,7 +2881,7 @@ void run_shortest_path_fin(	char naname){
 			//存在しないはず
 			S_run(s45 /2 ,60 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
 		}else{
-			S_run(s45 * (long long)path_num + s45/2 ,70 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
+			S_run(s45 * (long long)path_num + s45/2 ,60 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}
 		
 		
@@ -2910,10 +2910,10 @@ void run_shortest_path_fin(	char naname){
 			ESmotor(80,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
-			ESmotor(190,35,true,true);//距離、スピード
+			ESmotor(230,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == -11 || queue_next() == 11){
-			ESmotor(100,35,true,true);//距離、スピード
+			ESmotor(120,35,true,true);//距離、スピード
 		}
         break;
       case 11://R45

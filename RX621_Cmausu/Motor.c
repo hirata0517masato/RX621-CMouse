@@ -153,9 +153,9 @@ void Smotor(int M,char w_flag){
 			if((w_flag != 3) && (get_IR(IR_F) < 280) && abs(GyroSum_get()) < 650){
 				
 				
-				if(get_IR(IR_R) > 130 ){ //右壁近い
+				if(get_IR(IR_R) > 135 ){ //右壁近い
 					cnt1++;
-					if(get_IR(IR_R) > 165){
+					if(get_IR(IR_R) > 170){
 						cnt1 = 0;
 						GyroSum_add(-2);
 						
@@ -163,17 +163,17 @@ void Smotor(int M,char w_flag){
 						cnt1 = 0;
 						GyroSum_add(-1);
 					}
-				}else if((get_IR(IR_R) < 50 && get_IR(IR_L) > 50 && get_IR(IR_L) < 100)){ // 右壁なし　左壁あり　左壁遠い
+				}else if((get_IR(IR_R) < 50 && get_IR(IR_L) > 50 && get_IR(IR_L) < 95)){ // 右壁なし　左壁あり　左壁遠い
 					cnt1++;
-					if((cnt1 > 20 - min(20,(get_encoder_R()/10)) ) || (get_IR(IR_L) < 80)){
+					if((cnt1 > 20 - min(20,(get_encoder_R()/10)) ) || (get_IR(IR_L) < 75)){
 						cnt1 = 0;
 						GyroSum_add(-1);
 					}
 				}else cnt1 = 0;
 			
-				if(get_IR(IR_L) > 130 ){ //左壁近い
+				if(get_IR(IR_L) > 135 ){ //左壁近い
 					cnt2++;
-					if(get_IR(IR_L) > 165){
+					if(get_IR(IR_L) > 170){
 						cnt2 = 0;
 						GyroSum_add(2);
 						
@@ -181,9 +181,9 @@ void Smotor(int M,char w_flag){
 						cnt2 = 0;
 						GyroSum_add(1);
 					}
-				}else if((get_IR(IR_L) < 50 && get_IR(IR_R) > 50 && get_IR(IR_R) < 100)){ //左壁なし　右壁あり　右壁遠い
+				}else if((get_IR(IR_L) < 50 && get_IR(IR_R) > 50 && get_IR(IR_R) < 95)){ //左壁なし　右壁あり　右壁遠い
 				 	cnt2++;
-					if((cnt2 > 20 - min(20,(get_encoder_L()/10))) || (get_IR(IR_R) < 80)){
+					if((cnt2 > 20 - min(20,(get_encoder_L()/10))) || (get_IR(IR_R) < 75)){
 						cnt2 = 0;
 						GyroSum_add(1);
 					}
@@ -576,11 +576,11 @@ void Tmotor(long long A){
 		L = get_encoder_total_L();
 		R = get_encoder_total_R();
 
-		if(abs(GyroSum_get()) < 50)cnt += 10;
-		else if(abs(GyroSum_get()) < 150)cnt++;
+		if(abs(GyroSum_get()) < 60)cnt += 10;
+		else if(abs(GyroSum_get()) < 160)cnt++;
 		else cnt = 0;
 
-		if(cnt > 500)break;
+		if(cnt > 300)break;
 	}
 
 
@@ -731,20 +731,20 @@ void ETmotor(long long A, long long E, char non_stop){
 	GyroSum_reset();
 	//Encoder_reset();
 
-	int M = 30;//25 20 20
+	int M = 27;//25 20 20
 	int M_kabe = 30;//40 35 40
 	
 	char flag = 0;
 	
 	//壁切れ
 	if(A > 0){//R
-		while(get_IR(IR_R) > 20){
+		while(get_IR(IR_R) > 10){
 			Smotor(M_kabe,true);
 			flag = 1;
 		}
 		if(flag)ESmotor(115,M_kabe,true,false);
 	}else{//L
-		while(get_IR(IR_L) > 20){
+		while(get_IR(IR_L) > 10){
 			Smotor(M_kabe,true);
 			flag = 1;
 		}
