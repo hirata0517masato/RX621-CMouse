@@ -15,19 +15,19 @@
 #define Start_y  0
 #define Start_angle 1 // スタートする時の向き　
 
-#define Goal_x  0
-#define Goal_y  1
-#define Goal_angle 0 //ゴールした直後の向き
+#define Goal_x  0 //8
+#define Goal_y  1 //7
+#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
-#define Pickup_x  2
-#define Pickup_y  0
+#define Pickup_x  2 //8
+#define Pickup_y  0 // 10
 
 //ジャイロ関連
 #define r45  (11500)	//45度 右回転 11500 10500
 #define l45  (11600)	//45度 左回転 11500
-#define r90  (21400) 	//90度 右回転
-#define l90  (21400)	//90度 左回転
-#define r180  (-43500)	//180度 右回転
+#define r90  (21200) 	//90度 右回転
+#define l90  (21200)	//90度 左回転
+#define r180  (-43000)	//180度 右回転
 #define sr90  (25000)	//スラローム 23000 //左右で同じ値でないと連続時にずれていく
 #define sl90  (25000)	//スラローム 23000
 
@@ -48,8 +48,8 @@
 
 
 //前壁補正のパラメータ
-#define F_max 265
-#define F_min 250
+#define F_max 260
+#define F_min 245
 #define F_pow 10
 #define F_cnt 600
 
