@@ -15,12 +15,12 @@
 #define Start_y  0
 #define Start_angle 1 // スタートする時の向き　
 
-#define Goal_x  8
-#define Goal_y  7
+#define Goal_x  0
+#define Goal_y  1
 #define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
-#define Pickup_x  8
-#define Pickup_y  10
+#define Pickup_x  2
+#define Pickup_y  0
 
 //ジャイロ関連
 #define r45  (11500)	//45度 右回転 11500 10500
@@ -37,9 +37,9 @@
 //エンコーダ関連　memo : 1mm = 5.56 //壁切れ170 //2ndの1.34倍くらい
 #define s1 (1025)		//1マス直進 714
 #define s45 (780)		//45度１マス直進 500
-#define h1 (520)		//半マス直進 350
-#define rslsl90 (945)	//スラローム 664
-#define rslsr90 (945)	//スラローム 664
+#define h1 (525)		//半マス直進 350
+#define rslsl90 (955)	//スラローム 664
+#define rslsr90 (955)	//スラローム 664
 
 #define rslsl90_BIG (980)	//スラローム 大700
 #define rslsr90_BIG (980)	//スラローム 大 680

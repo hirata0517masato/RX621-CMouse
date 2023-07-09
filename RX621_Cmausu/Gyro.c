@@ -7,7 +7,7 @@
 int gyro= 0;        /* ジャイロセンサーの値  左＋　右ー   */
 long long gyro_base = 0;
 long long gyro_sum = 0;  //左＋　右ー  
-int Gyro_kp = 2,Gyro_kd = 30;
+int Gyro_kp = 2,Gyro_kd = 35;
 
 
 
