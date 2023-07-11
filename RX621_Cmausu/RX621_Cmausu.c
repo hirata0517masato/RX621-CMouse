@@ -170,19 +170,21 @@ void main(void)
 			ir_flag = 1;//赤外線ON
 			
 			led(6);
+			delay(500);
+			
 			//スイッチ入力待ち
 			while(get_sw() == 0){
-/*				if(get_IR(0) > 10 && get_IR(3) < 10){
+				
+				if(get_IR(IR_L) - get_IR(IR_R) > 15){//左寄り
+					led(8);
+					
+				}else if(get_IR(IR_L) - get_IR(IR_R) < -15){//右寄り
 					led(1);
 					
-				}else if(get_IR(0) < 10 && get_IR(3) > 10){
-					led(8);
-				}else if(get_IR(0) > 10 && get_IR(3) > 10){
-					led(9);
-				}else{
+				}else{//ほぼ中央
 					led(6);
 				}
-*/
+				
 			}
 			while(get_sw() == 1) nop();
 		
@@ -1078,7 +1080,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
     	if(Rflag == 0){
-      		if(get_IR(IR_R) > 20){
+      		if(get_IR(IR_R) > 25){
 				Rflag = 1;
 				led(1);
 			}
@@ -1147,7 +1149,7 @@ void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５タ
 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
     	if(Rflag == 0){
-      		if(get_IR(IR_R) > 20){
+      		if(get_IR(IR_R) > 25){
 				Rflag = 1;
 				led(1);
 			}
@@ -1239,7 +1241,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
   }
  
   
-  ESmotor(390,powor,true,false);///222
+  ESmotor(400,powor,true,false);///222
   led(0);
 }
 
@@ -2781,7 +2783,7 @@ void run_shortest_path_fin(	char naname){
   		L_curve(sl90,true);
 		
 		if(queue_next() == -1){//ターン
-			ESmotor(230,35,true,true);//距離、スピード
+			ESmotor(200,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
 			ESmotor(230,35,true,true);//距離、スピード
@@ -2794,7 +2796,7 @@ void run_shortest_path_fin(	char naname){
       case -11://L45
 	  	
 		if(queue_next() == -11){//Vターン
-			 L_rotate_naname(l45 * path_num * 0.95);//0.75
+			 L_rotate_naname(l45 * path_num * 1.0);//0.75
 			 
 		}else if(queue_next() == -1){//45からの90ターン
 			L_rotate_naname(l45 * path_num  * 0.95);
@@ -2896,12 +2898,12 @@ void run_shortest_path_fin(	char naname){
 		
 		
 		if(queue_next() < 0){//次　左
-        	S_run_kabe_naname(40,3,1);
+        	S_run_kabe_naname(30,3,1);
 			
 		}else if(queue_next() > 0){//次　右
-			S_run_kabe_naname(40,3,2);
+			S_run_kabe_naname(30,3,2);
 		}else{
-			S_run_kabe_naname(40,3,3);
+			S_run_kabe_naname(30,3,3);
 		}
 		
         //my_x = nx;
@@ -2917,19 +2919,19 @@ void run_shortest_path_fin(	char naname){
 		R_curve(sr90,true);
 		
 		if(queue_next() == -1){//ターン
-			ESmotor(230,35,true,true);//距離、スピード
+			ESmotor(230,30,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
-			ESmotor(230,35,true,true);//距離、スピード
+			ESmotor(200,30,true,true);//距離、スピード
 			
 		}else if(queue_next() == -11 || queue_next() == 11){
-			ESmotor(120,35,true,true);//距離、スピード
+			ESmotor(120,30,true,true);//距離、スピード
 		}
         break;
       case 11://R45
         
   		if(queue_next() == 11){//Vターン
-			R_rotate_naname(r45 * path_num * 0.95);//0.75
+			R_rotate_naname(r45 * path_num * 1.0);//0.75
 			
 		}else if(queue_next() == 1){//45からの90ターン
 			R_rotate_naname(r45 * path_num * 0.95);
