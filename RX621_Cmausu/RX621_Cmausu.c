@@ -1116,7 +1116,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 		}
 	}
 	
-	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1+h1) ){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (h1+h1) ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
@@ -1163,7 +1163,7 @@ void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５タ
     
     Smotor(powor,flag);
 	
-	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1 + h1 )){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (h1 + h1 )){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
@@ -1183,23 +1183,25 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
   while(1){
 	if(LR == 3 || LR == 1){//両方 || Lだけ
 		if(Lflag == 0){
-      		if(get_IR(IR_L) > 70){
+      		if(get_IR(IR_L) > 90){
 				led(8);
 				Lflag = 1;
 			}
     	}else if(Lflag == 1){
-			if(get_IR(IR_L) > 100){
+			if(get_IR(IR_L) > 115){
 				led(8);
 				Lflag = 2;
 			}
 			
-      		if(get_IR(IR_L) < 50){
+      		if(get_IR(IR_L) < 80){
 				led(0);
+				Lflag = 3;
 				break;
 			}
     	}else if(Lflag == 2){
-			if(get_IR(IR_L) < 80){
+			if(get_IR(IR_L) < 110){
 				led(0);
+				Lflag = 3;
 				break;
 			}
     	}
@@ -1207,23 +1209,25 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
 		if(Rflag == 0){
-      		if(get_IR(IR_R) > 70){
+      		if(get_IR(IR_R) > 90){
 				led(1);
 				Rflag = 1;
 			}
     	}else if(Rflag == 1){
-			if(get_IR(IR_R) > 100){
+			if(get_IR(IR_R) > 115){
 				led(1);
 				Rflag = 2;
 			}
 			
-      		if(get_IR(IR_R) < 50){
+      		if(get_IR(IR_R) < 80){
 				led(0);
+				Rflag = 3;
 				break;
 			}
     	}else if(Rflag == 2){
-			if(get_IR(IR_R) < 80){
+			if(get_IR(IR_R) < 110){
 				led(0);
+				Rflag = 3;
 				break;
 			}
     	}
@@ -1240,8 +1244,15 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 
   }
  
-  
-  ESmotor(400,powor,true,false);///222
+  if(Lflag == 3 && get_IR(IR_L) > 30){//壁切れが遅かった場合
+	ESmotor(330,powor,true,false);///222
+	
+  }else if(Rflag == 3 && get_IR(IR_R) > 30){//壁切れが遅かった場合
+	ESmotor(330,powor,true,false);///222
+	
+  }else{
+  	ESmotor(415,powor,true,false);///222
+  }
   led(0);
 }
 
@@ -1407,7 +1418,7 @@ void S_run_maze_search(int path,int powor){
 		ir_R_now = get_IR(IR_R);
 		if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 		
-			if(ir_L_flag == 0 && ir_L_now > 25 && ir_R_now < 160){//左壁がある　&& 右壁に近すぎない
+			if(ir_L_flag == 0 && ir_L_now > 18 && ir_R_now < 160){//左壁がある　&& 右壁に近すぎない
 				ir_L_flag = 1;
 				
 				led_num |= 8;
@@ -1445,7 +1456,7 @@ void S_run_maze_search(int path,int powor){
 		
 		if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-			if(ir_R_flag == 0 && ir_R_now > 25 && ir_L_now < 160){//右壁がある　&& 左壁に近すぎない
+			if(ir_R_flag == 0 && ir_R_now > 18 && ir_L_now < 160){//右壁がある　&& 左壁に近すぎない
 				
 				ir_R_flag = 1;
 				
@@ -2757,7 +2768,7 @@ void run_shortest_path_fin(	char naname){
   int first_flag = 0; //0:まだ走行してない 1:走行中
   int cnt = 0;
   
-  int over_run = -300;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
+  int over_run = -400;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
 
    
  
@@ -2786,7 +2797,7 @@ void run_shortest_path_fin(	char naname){
 			ESmotor(250,35,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
-			ESmotor(230,35,true,true);//距離、スピード
+			ESmotor(250,35,true,true);//距離、スピード
 		
 		}else if(queue_next() == -11 || queue_next() == 11){
 			ESmotor(120,35,true,true);//距離、スピード
@@ -2796,12 +2807,12 @@ void run_shortest_path_fin(	char naname){
       case -11://L45
 	  	
 		if(queue_next() == -11){//Vターン
-			 L_rotate_naname(l45 * path_num * 1.0);//0.75
+			 L_rotate_naname(l45 * path_num * 0.98);//0.75
 			 
 		}else if(queue_next() == -1){//45からの90ターン
-			L_rotate_naname(l45 * path_num  * 0.95);
+			L_rotate_naname(l45 * path_num  * 0.90);
 			
-			//ESmotor(80,25,true,true);//距離、スピード
+			ESmotor(40,25,true,true);//距離、スピード
 			
 		}else if(queue_next() == 0){//45から直線 = 斜め終わり
 			 L_rotate_naname(l45 * path_num * 0.95);
@@ -2919,7 +2930,7 @@ void run_shortest_path_fin(	char naname){
 		R_curve(sr90,true);
 		
 		if(queue_next() == -1){//ターン
-			ESmotor(230,30,true,true);//距離、スピード
+			ESmotor(250,30,true,true);//距離、スピード
 			
 		}else if(queue_next() == 1){//ターン
 			ESmotor(250,30,true,true);//距離、スピード
@@ -2931,12 +2942,12 @@ void run_shortest_path_fin(	char naname){
       case 11://R45
         
   		if(queue_next() == 11){//Vターン
-			R_rotate_naname(r45 * path_num * 1.0);//0.75
+			R_rotate_naname(r45 * path_num * 0.98);//0.75
 			
 		}else if(queue_next() == 1){//45からの90ターン
-			R_rotate_naname(r45 * path_num * 0.95);
+			R_rotate_naname(r45 * path_num * 0.90);
 			
-			//ESmotor(80,25,true,true);//距離、スピード
+			ESmotor(40,25,true,true);//距離、スピード
 			
 		}else if(queue_next() == 0){//45から直線 =　斜め終わり
 			R_rotate_naname(r45 * path_num * 0.95);
