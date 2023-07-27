@@ -16,7 +16,8 @@ char motor_stop_flag = 0;
 int LM_prev = 0,RM_prev = 0;
 int safe_cnt = 0;
 char buff_pwm_L = 0,buff_pwm_R = 0;
-
+char motor_pid_flag = 0;
+char motor_pid_mode = 0; //0:低速 1:高速
 
 void motor_stop(){
 	motor_stop_flag = 1;
@@ -36,6 +37,14 @@ char get_pwm_buff_L(){
 }
 char get_pwm_buff_R(){
 	return 	buff_pwm_R;
+}
+
+void motor_pid_flag_reset(){
+	motor_pid_flag = 0;	
+}
+
+void Set_motor_pid_mode(char n){
+	motor_pid_mode = n;
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -143,11 +152,17 @@ void motor(int LM,int RM){
 
 void Smotor(int M,char w_flag){
 
-	static int cnt1 = 0,cnt2 = 0;
+//	static int cnt1 = 0,cnt2 = 0;
 	static int cnt3 = 0,cnt4 = 0;
 	static int cnt5 = 0;
 	
+	static int ir_sa = 0,ir_sa_buf = 0;
+	static int ir_wall = 115,ir_core = 0;
+	static int kp = 0,kd = 0;
+	
 	if(w_flag > 0){
+		
+		/*
 		//if( ( abs(M) > 8)  && (w_flag != 3) ){
 		if((get_encoder_L() > 15 || get_encoder_R() > 15)  && (w_flag != 3) ){
 
@@ -203,7 +218,65 @@ void Smotor(int M,char w_flag){
 			}
 		}
 	
+		*/
+		
+		if(motor_pid_flag == 0){//1msの割り込み内でフラグはリセットされる
+			
+			//ir_wall = 115;//マス中央でのセンサー値
+			if(get_IR(IR_L) > 80 && get_IR(IR_R) > 80){//左右に壁がある
 				
+				if(abs(get_IR(IR_L) - get_IR(IR_R)) < 10){//左右の差が少ない
+					ir_wall = ir_wall*9/10 + ((get_IR(IR_L) + get_IR(IR_R))/2)*1/10 ; //マス中央でのセンサー値を更新
+				}
+			}
+			
+			if(motor_pid_mode == 0){//低速
+				ir_core = 30;//左右の差の許容範囲
+				
+				kp = 1;
+				kd = 0;
+			}else{//高速
+				ir_core = 30;//左右の差の許容範囲
+				
+				kp = 1;
+				kd = 1;
+			}
+			
+			
+			if((get_encoder_L() > 15 || get_encoder_R() > 15)  && (w_flag != 3) ){
+				
+				//左右に壁がある  && 左右の差が小さきすぎない
+				if(get_IR(IR_L) > 50 && get_IR(IR_R) > 50 && abs(get_IR(IR_L) - get_IR(IR_R)) > ir_core){
+					
+					ir_sa =  get_IR(IR_L) - get_IR(IR_R);
+						
+					motor_pid_flag = 1;
+					
+				}else if(get_IR(IR_L) > 20 && get_IR(IR_L) - get_IR(IR_R) > 0 && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある && 左の方が壁が近い && 左右の差が小さきすぎない
+					
+					ir_sa =  get_IR(IR_L) - ir_wall;
+					motor_pid_flag = 1;
+					
+				}else if(get_IR(IR_R) > 20  && get_IR(IR_L) - get_IR(IR_R) < 0 && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある && 右の方が壁が近い && 左右の差が小さきすぎない
+				
+					ir_sa =  ir_wall - get_IR(IR_R);
+					motor_pid_flag = 1;
+					
+				}
+				
+				if(motor_pid_flag == 1){
+					ir_sa = max(min(ir_sa,50),-50);
+					
+					ir_sa += (ir_sa > 0)? -ir_core : ir_core;
+					
+					GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd / 20) );
+					
+					ir_sa_buf = ir_sa;
+				}
+				
+			}
+		}
+		
 		//斜め対策
 		if(w_flag == 3){
 			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 450){
@@ -311,6 +384,8 @@ void Smotor(int M,char w_flag){
 	}
 	motor(M + powor ,M - powor);
 }
+		
+
 
 
 
@@ -329,7 +404,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	int ir_L_flag = 0,ir_R_flag = 0;
 	int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
-	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
+//	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
 //	int kame_hosei = 0;
 	long long enc_kabe_L,enc_kabe_R;
 	
@@ -552,7 +627,7 @@ void Tmotor(long long A){
 	int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
 	int MA = 1,min_M = 4;
 	
-	int cnt = 0;
+//	int cnt = 0;
 	int powor_max = 10;
 	int powor;
 
@@ -761,19 +836,19 @@ void ETmotor(long long A, long long E, char non_stop){
 	int M 		= 25;
 	int M_kabe2 = 25;
 	
-	char flag = 0;
+//	char flag = 0;
 	
 	//壁切れ
 	if(A > 0){//R
 		while(get_IR(IR_R) > 15){
 			Smotor(M_kabe,true);
-			flag = 1;
+//			flag = 1;
 		}
 //		if(flag)ESmotor(25,M_kabe,true,false);
 	}else{//L
 		while(get_IR(IR_L) > 15){
 			Smotor(M_kabe,true);
-			flag = 1;
+//			flag = 1;
 		}
 //		if(flag)ESmotor(25,M_kabe,true,false);
 	}
@@ -825,7 +900,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 200){ //左壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_L) > 250){ //左壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -838,7 +913,7 @@ void ETmotor(long long A, long long E, char non_stop){
 			E_sum += (L - L_prev);
 			
 		}else{//L
-			if(get_IR(IR_R) > 200 ){ //右壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_R) > 250 ){ //右壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -909,7 +984,7 @@ void Tmotor_naname(long long A){
 	GyroSum_add(A);
 	Encoder_reset();
 
-	static int cnt1 = 0;
+//	static int cnt1 = 0;
 		
 	int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
 	int MA = 5,min_M = 15;
@@ -917,9 +992,9 @@ void Tmotor_naname(long long A){
 	int powor_max = 30;
 	int powor;
 
-	int M_kabe = 30;
+//	int M_kabe = 30;
 	
-	char flag = 0;
+//	char flag = 0;
 
 /*	
 	//壁切れ

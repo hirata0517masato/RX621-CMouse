@@ -219,6 +219,7 @@ void main(void)
 				log_reset();//ログの初期化
 				log_start = 1; //ログ記録開始　30msに１回記録
 				
+				Set_motor_pid_mode(0);//低速
 				maze_search_adachi(Goal_x,Goal_y);
 		
 				if(first_flag == 1){
@@ -226,6 +227,7 @@ void main(void)
 					maze_save();//片道でも迷路を保存する
 				}
 				
+				Set_motor_pid_mode(0);//低速
 				maze_search_adachi(Start_x,Start_y);
 				
 				log_start = 0; //ログ記録終了
@@ -239,6 +241,7 @@ void main(void)
 				log_reset();//ログの初期化
 				log_start = 2; //ログ記録開始 10msに１回記録
 				
+				Set_motor_pid_mode(1);//高速
 				run_shortest_path_fin(false);
 				
 				log_start = 0; //ログ記録終了
@@ -251,6 +254,7 @@ void main(void)
 				my_y = Goal_y;
 				my_angle = Goal_angle;
 				
+				Set_motor_pid_mode(0);//低速
 				maze_search_adachi(Pickup_x,Pickup_y);//拾いやすいところまで移動する
 				
 				break;
@@ -261,6 +265,7 @@ void main(void)
 				log_reset();//ログの初期化
 				log_start = 2; //ログ記録開始 10msに１回記録
 				
+				Set_motor_pid_mode(1);//高速
 				run_shortest_path_fin(true);
 				
 				log_start = 0; //ログ記録終了
@@ -273,6 +278,7 @@ void main(void)
 				my_y = Goal_y;
 				my_angle = Goal_angle;
 				
+				Set_motor_pid_mode(0);//低速
 				maze_search_adachi(Pickup_x,Pickup_y);//拾いやすいところまで移動する
 				
 				break;
@@ -288,6 +294,7 @@ void main(void)
 				log_reset();//ログの初期化
 				log_start = 1; //ログ記録開始　30msに１回記録
 				
+				Set_motor_pid_mode(0);//低速
 				maze_search_adachi(Goal_x,Goal_y);//はじめは普通に探索走行
 				
 				
@@ -296,6 +303,7 @@ void main(void)
 					maze_save();//片道でも迷路を保存する
 				}
 				
+				Set_motor_pid_mode(0);//低速
 				maze_search_all();//最短経路上の未確定マスを探しに行く
 				
 				log_start = 0; //ログ記録終了
@@ -310,6 +318,7 @@ void main(void)
 				log_reset();//ログの初期化
 				log_start = 2; //ログ記録開始 10msに１回記録
 				
+				Set_motor_pid_mode(1);//高速
 				run_shortest_path_fin(true);
 				
 				log_start = 0; //ログ記録終了
@@ -322,6 +331,7 @@ void main(void)
 				my_y = Goal_y;
 				my_angle = Goal_angle;
 				
+				Set_motor_pid_mode(0);//低速
 				maze_search_adachi(Pickup_x,Pickup_y);//拾いやすいところまで移動する
 				
 				break;
@@ -1273,7 +1283,7 @@ void S_run_maze_search(int path,int powor){
 	int ir_L_flag = 0,ir_R_flag = 0;
 	int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 	int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
-	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左右異なるタイミングで壁切れした際に利用する
+//	int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左右異なるタイミングで壁切れした際に利用する
 	long long enc_kabe_L,enc_kabe_R;
 	int led_num = 0;
 //	int kame_hosei = 510;
@@ -2830,7 +2840,7 @@ void run_shortest_path_fin(	char naname){
         if(queue_empty()){
 			
 			//S_run(h1 * (long long)path_num ,80 + run_fin_speed_offset,4,true);//non_stop = 4
-			S_run(h1 * (long long)path_num - 100 ,70 + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 串の壁補正あり
+			S_run(h1 * (long long)path_num - 100 ,80 + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 串の壁補正あり
 			
 			//if(get_IR(IR_FL) > 10 || get_IR(IR_FR) > 10){
 				while(1){//ゴールの奥まで進む 前壁補正
@@ -2855,8 +2865,8 @@ void run_shortest_path_fin(	char naname){
 			  //if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,80 + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
 		  	  //else S_run((h1 * (long long)path_num)  - over_run ,80 + run_fin_speed_offset,true,true);
 			  
-			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,70 + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
-		  	  else S_run((h1 * (long long)path_num)  - over_run ,70 + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
+			  if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,80 + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
+		  	  else S_run((h1 * (long long)path_num)  - over_run ,80 + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
 			  
 			  
 			  if(queue_next() == -11 || queue_next() == 11){//直線後に45ターン
@@ -3012,6 +3022,8 @@ void Excep_CMT0_CMI0(void)
 	if(time_limit > 0){
 		time_limit--;	
 	}
+	
+	motor_pid_flag_reset();
 	
 	switch(task) {                         			
 	case 0:

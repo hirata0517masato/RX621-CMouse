@@ -1,4 +1,4 @@
-Renesas Optimizing Linker (W3.03.00 )             16-Jul-2023 11:23:40
+Renesas Optimizing Linker (W3.03.00 )             27-Jul-2023 23:43:21
 
 *** Options ***
 
@@ -38,19 +38,19 @@ SECTION                            START      END         SIZE   ALIGN
 B_1
                                   00000004  00000066        63   1
 R_1
-                                  00000067  000009e3       97d   1
+                                  00000067  000009e5       97f   1
 B_2
-                                  000009e4  000009e9         6   2
+                                  000009e6  000009eb         6   2
 R_2
-                                  000009ea  00001407       a1e   2
+                                  000009ec  00001409       a1e   2
 B
-                                  00001408  00001873       46c   4
+                                  0000140c  00001877       46c   4
 R
-                                  00001874  00001b9b       328   4
+                                  00001878  00001baf       338   4
 SU
-                                  00001b9c  00001c9b       100   4
+                                  00001bb0  00001caf       100   4
 SI
-                                  00001c9c  00001f9b       300   4
+                                  00001cb0  00001faf       300   4
 PResetPRG
                                   fff80000  fff80030        31   1
 C_1
@@ -70,23 +70,23 @@ C$VTBL
 C$VECT
                                   fff80824  fff80c23       400   4
 D_1
-                                  fff80c24  fff815a0       97d   1
+                                  fff80c24  fff815a2       97f   1
 D_2
-                                  fff815a2  fff81fbf       a1e   2
+                                  fff815a4  fff81fc1       a1e   2
 D
-                                  fff81fc0  fff822e7       328   4
+                                  fff81fc4  fff822fb       338   4
 P
-                                  fff822e8  fff8d2b9      afd2   1
+                                  fff822fc  fff8d3ae      b0b3   1
 PIntPRG
-                                  fff8d2ba  fff8d3ff       146   1
+                                  fff8d3af  fff8d4f4       146   1
 W_1
-                                  fff8d400  fff8d400         0   1
+                                  fff8d4f5  fff8d4f5         0   1
 W_2
-                                  fff8d400  fff8d423        24   2
+                                  fff8d4f6  fff8d519        24   2
 W
-                                  fff8d424  fff8d424         0   4
+                                  fff8d51c  fff8d51c         0   4
 L
-                                  fff8d424  fff8d4e0        bd   4
+                                  fff8d51c  fff8d5d8        bd   4
 $ADDR_C_FFFFFFA0
                                   ffffffa0  ffffffaf        10   1
 FIXEDVECT
