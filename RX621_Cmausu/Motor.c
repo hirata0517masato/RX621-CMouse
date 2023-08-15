@@ -118,15 +118,15 @@ void motor(int LM,int RM){
   
   //if(((LM - RM) > 50) || ((RM - LM) > 50))motor_stop();
 
-  if(abs(LM) > 5){
-	if(abs(get_encoder_L()) < 2){
+  if(abs(LM) > 10){
+	if(abs(get_encoder_L()) < 1){
 		safe_cnt ++;
 		if(safe_cnt > 20000)motor_stop();
 	}else safe_cnt = 0;
   }else safe_cnt = 0;
 
-  if(abs(RM) > 5){
-	if(abs(get_encoder_R()) < 2){
+  if(abs(RM) > 10){
+	if(abs(get_encoder_R()) < 1){
 		safe_cnt ++;
 		if(safe_cnt > 20000)motor_stop();
 	}else safe_cnt = 0;
@@ -223,20 +223,20 @@ void Smotor(int M,char w_flag){
 		if(motor_pid_flag == 0){//1msの割り込み内でフラグはリセットされる
 			
 			//ir_wall = 115;//マス中央でのセンサー値
-			if(get_IR(IR_L) > 80 && get_IR(IR_R) > 80){//左右に壁がある
+			if(get_IR(IR_L) > 100 && get_IR(IR_R) > 100){//左右に壁がある
 				
-				if(abs(get_IR(IR_L) - get_IR(IR_R)) < 10){//左右の差が少ない
+				if(abs(get_IR(IR_L) - get_IR(IR_R)) < 10 && abs(GyroSum_get()) < 450 ){//左右の差が少ない && まっすぐ
 					ir_wall = ir_wall*9/10 + ((get_IR(IR_L) + get_IR(IR_R))/2)*1/10 ; //マス中央でのセンサー値を更新
 				}
 			}
 			
 			if(motor_pid_mode == 0){//低速
-				ir_core = 30;//左右の差の許容範囲
+				ir_core = 10;//左右の差の許容範囲
 				
 				kp = 1;
 				kd = 0;
 			}else{//高速
-				ir_core = 30;//左右の差の許容範囲
+				ir_core = 20;//左右の差の許容範囲
 				
 				kp = 1;
 				kd = 1;
@@ -245,22 +245,28 @@ void Smotor(int M,char w_flag){
 			
 			if((get_encoder_L() > 15 || get_encoder_R() > 15)  && (w_flag != 3) ){
 				
-				//左右に壁がある  && 左右の差が小さきすぎない
-				if(get_IR(IR_L) > 50 && get_IR(IR_R) > 50 && abs(get_IR(IR_L) - get_IR(IR_R)) > ir_core){
+				//左右に壁がある 
+				if(get_IR(IR_L) > 50 && get_IR(IR_R) > 50 ){
+					if(abs(get_IR(IR_L) - get_IR(IR_R)) > ir_core){//  左右の差が小さきすぎない
 					
-					ir_sa =  get_IR(IR_L) - get_IR(IR_R);
+						ir_sa =  get_IR(IR_L) - get_IR(IR_R);
 						
-					motor_pid_flag = 1;
+						motor_pid_flag = 1;
+					}
 					
-				}else if(get_IR(IR_L) > 20 && get_IR(IR_L) - get_IR(IR_R) > 0 && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある && 左の方が壁が近い && 左右の差が小さきすぎない
+				}else if(get_IR(IR_L) > 20 && get_IR(IR_L) - get_IR(IR_R) > 0){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある && 左の方が壁が近い
+					if(abs(get_IR(IR_L) - ir_wall) > ir_core/2) {// 左右の差が小さきすぎない
 					
-					ir_sa =  get_IR(IR_L) - ir_wall;
-					motor_pid_flag = 1;
+						ir_sa =  (get_IR(IR_L) - ir_wall);
+						motor_pid_flag = 1;
+					}
 					
-				}else if(get_IR(IR_R) > 20  && get_IR(IR_L) - get_IR(IR_R) < 0 && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある && 右の方が壁が近い && 左右の差が小さきすぎない
+				}else if(get_IR(IR_R) > 20  && get_IR(IR_L) - get_IR(IR_R) < 0){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある && 右の方が壁が近い
+					if(abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//左右の差が小さきすぎない
 				
-					ir_sa =  ir_wall - get_IR(IR_R);
-					motor_pid_flag = 1;
+						ir_sa =  (ir_wall - get_IR(IR_R));
+						motor_pid_flag = 1;
+					}
 					
 				}
 				
@@ -279,15 +285,15 @@ void Smotor(int M,char w_flag){
 		
 		//斜め対策
 		if(w_flag == 3){
-			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 450){
+			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 2000){
 				if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
 						if(get_IR(IR_FL) > 100){
-							GyroSum_add(35);
-						}else if(get_IR(IR_FL) > 60){
-							GyroSum_add(25);
+							GyroSum_add(200);
+						}else if(get_IR(IR_FL) > 45){
+							GyroSum_add(100);
 						}else{
 							GyroSum_add(20);
 						}
@@ -300,9 +306,9 @@ void Smotor(int M,char w_flag){
 					if(cnt4 > 0){
 						cnt4 = 0;
 						if(get_IR(IR_FR) > 100){
-							GyroSum_add(-35);
-						}else if(get_IR(IR_FR) > 60){
-							GyroSum_add(-25);
+							GyroSum_add(-200);
+						}else if(get_IR(IR_FR) > 45){
+							GyroSum_add(-100);
 						}else{
 							GyroSum_add(-20);
 						}
@@ -345,7 +351,7 @@ void Smotor(int M,char w_flag){
 		//前壁補正　
 		if(w_flag != 3){ //斜め中ではない
 			if((get_encoder_L() > 0 && get_encoder_R() > 0) && abs(GyroSum_get()) < 450){
-				if(get_IR(IR_L) < 130 && get_IR(IR_FL) > 40 && (get_IR(IR_F) > 40) &&  get_IR(IR_FR) > 40 && get_IR(IR_R) < 130 ){//前壁あり 横壁が近くない
+				if(get_IR(IR_L) < 130 && get_IR(IR_FL) > 30 && (get_IR(IR_F) > 30) &&  get_IR(IR_FR) > 30 && get_IR(IR_R) < 130 ){//前壁あり 横壁が近くない
 				
 			
 					long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
@@ -355,11 +361,11 @@ void Smotor(int M,char w_flag){
 							cnt5 = 0;
 							
 							if(get_IR(IR_F) > 200){
-								if(diff > 1)diff = 8;
-								if(diff < -8)diff = -8;
+								if(diff > 10)diff = 10;
+								if(diff < -10)diff = -10;
 							}else{
-								if(diff > 15)diff = 15;
-								if(diff < -15)diff = -15;
+								if(diff > 20)diff = 20;
+								if(diff < -20)diff = -20;
 							}
 							
 							GyroSum_add(diff);
@@ -370,8 +376,27 @@ void Smotor(int M,char w_flag){
 		}
 	
 	}
-	int powor_max = 30;//ジャイロのパワー
+	int powor_max;//ジャイロのパワー
 	int powor = gyro_powor_L();
+	
+	if(motor_pid_mode == 0){//低速
+		powor_max = 30;	
+	}else{//高速
+		if( M < 30 && w_flag != 3){//高速モードだがまだ加速していないとき かつ　斜めでないとき
+		
+			if( get_encoder_L() < 20){//速度が遅い時はジャイロ弱める	
+				powor /= 2;
+			}
+			powor_max = 20;	
+			
+		}else if( w_flag == 3){ //斜め中は壁をよけるために数値を大きくする
+			powor_max = 80;
+			
+		}else{
+			powor_max = 30;
+		}
+	}
+	
 	if(powor > powor_max)powor = powor_max;
 	else if(-powor_max > powor)powor = -powor_max; 
 	
@@ -692,50 +717,40 @@ void Tmotor(long long A){
 
 
 void ETmotorBIG(long long A, long long E, char non_stop){
-	//GyroSum_reset();
+	GyroSum_reset();
 	//Encoder_reset();
 
-	int M = 30;//25 20 20
-	int M_kabe = 30;//40 35 40
+	int M_kabe = 25;
+	int M 		= 30;
 	
-	char flag = 0;
+//	char flag = 0;
 	
 	//壁切れ
 	if(A > 0){//R
-		while(get_IR(IR_R) > 40){
+		while(get_IR(IR_R) > 15){
 			Smotor(M_kabe,true);
-			flag = 1;
+//			flag = 1;
 		}
-		if(flag)ESmotor(115,M_kabe,true,false);
+//		if(flag)ESmotor(25,M_kabe,true,false);
 	}else{//L
-		while(get_IR(IR_L) > 40){
+		while(get_IR(IR_L) > 15){
 			Smotor(M_kabe,true);
-			flag = 1;
+//			flag = 1;
 		}
-		if(flag)ESmotor(115,M_kabe,true,false);
+//		if(flag)ESmotor(25,M_kabe,true,false);
 	}
 
 //	GyroSum_reset();
 	//Encoder_reset();
+		
 	
-
-//	ESmotor(55,M_kabe,true,true);//60
-
-	
-/*	if(get_IR(IR_FL) > 13 || get_IR(IR_FR) > 13){//前に壁がある
-		PORTA.DR.BIT.B1 = 1;
-		while(get_IR(IR_FR) < 20){//理想より前壁が遠い
-			Smotor(M_kabe,true);
-		}
-		PORTA.DR.BIT.B1 = 0;
-	}
-*/	
 	long long L = get_encoder_total_L();
 	long long R = get_encoder_total_R();
 	long long L_prev = L, R_prev = R;
 	long long E_sum = 0;
+	long long E_add = 0;
 	
-	int powor_max = 25;
+	int powor_max = 20;
 	int powor;
 	
 	int LM = 0, RM = 0;
@@ -750,18 +765,23 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	static int cnt1 = 0;
 	
 	if(A > 0){//R
+		GyroSum_add(5);
+		
 		PORTA.DR.BIT.B3 = 1;
 	}else{//L
+		GyroSum_add(-5);
+		
 		PORTA.DR.BIT.B0 = 1;
 	}
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 200){ //左壁近い
+			if(get_IR(IR_L) > 2500){ //左壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
 					GyroSum_add(1);
+					E_add += 1;
 				}
 			}else cnt1 = 0;
 		
@@ -769,11 +789,12 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 			E_sum += (L - L_prev);
 			
 		}else{//L
-			if(get_IR(IR_R) > 200 ){ //右壁近い
+			if(get_IR(IR_R) > 2500 ){ //右壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
 					GyroSum_add(-1);
+					E_add += 1;//マイナスでもプラスを設定
 				}
 			}else cnt1 = 0;
 		
@@ -814,19 +835,18 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 		L = get_encoder_total_L();
 		R = get_encoder_total_R();
 
-		if(E - E_sum < 0)break;
+		if(E - E_add - E_sum < 0)break;
 	}
 
 	PORTA.DR.BIT.B0 = 0;
 	PORTA.DR.BIT.B3 = 0;
 	
-//	ESmotor(60,M_kabe,true,true);//60
-	
-	//motor(0,0);
-	//GyroSum_reset();
-	//Encoder_reset();
-}
 
+	//motor(0,0);
+	GyroSum_reset();
+	//Encoder_reset();
+
+}
 
 void ETmotor(long long A, long long E, char non_stop){
 	GyroSum_reset();
@@ -900,7 +920,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 250){ //左壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_L) > 2500){ //左壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -913,7 +933,7 @@ void ETmotor(long long A, long long E, char non_stop){
 			E_sum += (L - L_prev);
 			
 		}else{//L
-			if(get_IR(IR_R) > 250 ){ //右壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_R) > 2500 ){ //右壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
