@@ -23,16 +23,19 @@
 #define Pickup_y  0
 
 //ジャイロ関連
-#define r45  (11500)	//45度 右回転 11500 10500
-#define l45  (11500)	//45度 左回転 11500
+#define r45  (11000)	//45度 右回転 11500 10500
+#define l45  (11000)	//45度 左回転 11500
 #define r90  (21470) 	//90度 右回転
 #define l90  (21300)	//90度 左回転
 #define r180  (-43000)	//180度 右回転
 #define sr90  (25000)	//スラローム 23000 //左右で同じ値でないと連続時にずれていく
 #define sl90  (25000)	//スラローム 23000
 
-#define sr90BIG  (25000)	//スラローム 
-#define sl90BIG  (25000)	//スラローム 
+#define sr90BIG  (25500)	//スラローム 大曲
+#define sl90BIG  (25500)	//スラローム 大曲
+
+#define ur180  (45000)	//Uターン //左右で同じ値でないと連続時にずれていく
+#define ul180  (45000)	//Uターン 
 
 //エンコーダ関連　memo : 1mm = 5.56 //壁切れ170 //2ndの1.34倍くらい
 #define s1 (1025)		//1マス直進 714
@@ -41,8 +44,11 @@
 #define rslsl90 (970)	//スラローム 664
 #define rslsr90 (970)	//スラローム 664
 
-#define rslsl90_BIG (985)	//スラローム 大700
-#define rslsr90_BIG (985)	//スラローム 大 680
+#define rslsl90_BIG (980)	//スラローム 大700
+#define rslsr90_BIG (980)	//スラローム 大 680
+
+#define usll180 (1900)	//Uターン
+#define uslr180 (1900)	//Uターン
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 
@@ -50,7 +56,7 @@
 //前壁補正のパラメータ
 #define F_max 255
 #define F_min 240
-#define F_pow 8
+#define F_pow 5
 #define F_cnt 600
 
 
