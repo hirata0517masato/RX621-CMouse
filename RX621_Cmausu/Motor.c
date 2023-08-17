@@ -400,9 +400,13 @@ void Smotor(int M,char w_flag){
 	if(motor_pid_mode == 0){//低速
 		powor_max = 30;	
 	}else{//高速
-		if(  get_encoder_L() < 30 && w_flag != 3){//速度が遅い時はジャイロ弱める かつ　斜めでないとき
+		if(  (get_encoder_L()+get_encoder_R())/2 < 40 && w_flag != 3){//速度が遅い時はジャイロ弱める かつ　斜めでないとき
 		
-			powor = powor * 3 / 4;
+			if((get_encoder_L()+get_encoder_R())/2 < 20){
+				powor = powor * 2 / 4;
+			}else{
+				powor = powor * 3 / 4;
+			}
 			
 			powor_max = 50;	
 			
@@ -1037,7 +1041,6 @@ void ETmotor(long long A, long long E, char non_stop){
 //	GyroSum_reset();
 	//Encoder_reset();
 	
-
 	ESmotor(45,M_kabe,true,true);//60
 
 	
@@ -1090,7 +1093,7 @@ void ETmotor(long long A, long long E, char non_stop){
 				}
 			}else cnt1 = 0;
 		
-			GyroSum_add( (A * (((L - L_prev)*100000) / E)) / 100000);
+			GyroSum_add((A * (((L - L_prev)*100000) / E)) / 100000);
 			E_sum += (L - L_prev);
 			
 		}else{//L
@@ -1103,7 +1106,7 @@ void ETmotor(long long A, long long E, char non_stop){
 				}
 			}else cnt1 = 0;
 		
-		   	GyroSum_add( (A * (((R - R_prev)*100000) / E)) / 100000);
+		   	GyroSum_add((A * (((R - R_prev)*100000) / E)) / 100000);
 			E_sum += (R - R_prev);
 		}
 		
@@ -1160,7 +1163,7 @@ void ETmotor(long long A, long long E, char non_stop){
 */
 }
 
-void Tmotor_naname(long long A){
+void Tmotor_naname(long long A ,char inout){
 	//GyroSum_reset();
 	GyroSum_add(A);
 	Encoder_reset();
@@ -1179,18 +1182,20 @@ void Tmotor_naname(long long A){
 
 	
 	//壁切れ
-	if(A > 0){//R
-		while(get_IR(IR_R) > 15){
-			Smotor(M_kabe,true);
-		//	flag = 1;
+	if(inout == 1){//斜めのはじめのみ有効
+		if(A > 0){//R
+			while(get_IR(IR_R) > 15){
+				Smotor(M_kabe,true);
+			//	flag = 1;
+			}
+			//if(flag)ESmotor(115,M_kabe,true,false);
+		}else{//L
+			while(get_IR(IR_L) > 15){
+				Smotor(M_kabe,true);
+			//	flag = 1;
+			}
+			//if(flag)ESmotor(115,M_kabe,true,false);
 		}
-		//if(flag)ESmotor(115,M_kabe,true,false);
-	}else{//L
-		while(get_IR(IR_L) > 15){
-			Smotor(M_kabe,true);
-		//	flag = 1;
-		}
-		//if(flag)ESmotor(115,M_kabe,true,false);
 	}
 	
 	if(A > 0){//R

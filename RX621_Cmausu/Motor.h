@@ -22,5 +22,5 @@ void Tmotor(long long);
 void ETmotor(long long , long long,char);
 void ETmotorBIG(long long , long long,char);
 void ETmotorU(long long , long long,char);
-void Tmotor_naname(long long);
+void Tmotor_naname(long long,char);
 #endif
