@@ -1,15 +1,13 @@
 品質記録情報
-2023年8月17日 20:57:42
+2023年8月18日 21:01:43
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
-RX621_Cmausu.c(2799):W0520550:Variable "comand_old" was set but never used
-RX621_Cmausu.c(2799):W0520550:Variable "path_num_old" was set but never used
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
-W0561016:The evaluation version of CC-RX V3 is valid for the remaining 53 days. After that, link size limit (128 Kbyte) will be applied. Please consider purchasing the product.
-W0561016:The evaluation version of CC-RX V3 is valid for the remaining 53 days. After that, link size limit (128 Kbyte) will be applied. Please consider purchasing the product.
+W0561016:The evaluation version of CC-RX V3 is valid for the remaining 52 days. After that, link size limit (128 Kbyte) will be applied. Please consider purchasing the product.
+W0561016:The evaluation version of CC-RX V3 is valid for the remaining 52 days. After that, link size limit (128 Kbyte) will be applied. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:4個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:2個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -46,8 +44,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: e5bd993d2e27926452b8d7de3ce8bfebb60b36cb
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 392c991e59158cbeec6c3ee0adbf2ee8d3fab2b5
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: dbc27370263a4079612d1cd8239281c5d47eca3b
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 67f5a98e490d41cc65af778ef7ff06fbe1ca4464
 
 
 --- システム情報 ---
@@ -73,13 +71,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 392c991e59158cbeec6c3ee
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  386 MB
+  306 MB
  *GDIオブジェクト数
-  2090
+  2139
  *USERオブジェクト数
-  999
+  1048
  *開いているファイル
-  5 editors, 5 files, 119 KB
+  4 editors, 4 files, 122 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン
