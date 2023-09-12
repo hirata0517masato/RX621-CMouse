@@ -35,20 +35,23 @@
 #define sl90BIG  (25500)	//スラローム 大曲
 
 #define ur180  (45000)	//Uターン //左右で同じ値でないと連続時にずれていく
-#define ul180  (45000)	//Uターン 
+#define ul180  (46500)	//Uターン 
 
 //エンコーダ関連　memo : 1mm = 5.56 //壁切れ170 //2ndの1.34倍くらい
-#define s1 (1025)		//1マス直進 714
-#define s45 (800)		//45度１マス直進 500
-#define h1 (525)		//半マス直進 350
+#define s1 (1000)		//1マス直進      タイヤ削れた時：1025
+#define s45 (785)		//45度１マス直進 タイヤ削れた時：800
+#define h1 (515)		//半マス直進 	タイヤ削れた時：525
 #define rslsl90 (970)	//スラローム 664
 #define rslsr90 (970)	//スラローム 664
 
-#define rslsl90_BIG (980)	//スラローム 大700
-#define rslsr90_BIG (980)	//スラローム 大 680
+#define rslsl90_BIG (1000)	//スラローム 大700
+#define rslsr90_BIG (1000)	//スラローム 大 680
 
-#define usll180 (1900)	//Uターン
-#define uslr180 (1900)	//Uターン
+#define usll180     (2020)	//Uターン
+#define usll180_fin (-150)	//Uターン 微調整
+
+#define uslr180     (2030)	//Uターン
+#define uslr180_fin (-50)	//Uターン　微調整
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 

@@ -306,7 +306,7 @@ void Smotor(int M,char w_flag){
 		//斜め対策
 		if(w_flag == 3){
 			if((get_encoder_L() > 5 || get_encoder_R() > 5) && abs(GyroSum_get()) < 800){
-				if(   get_IR(IR_FL) > 45 && get_IR(IR_FR) < 30  ){//左前のみ
+				if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
 					cnt3++;
 					if(cnt3 > 0){
 						cnt3 = 0;
@@ -314,14 +314,16 @@ void Smotor(int M,char w_flag){
 							GyroSum_add(50);
 						}else if(get_IR(IR_FL) > 65){
 							GyroSum_add(30);
+						}else if(get_IR(IR_FL) > 45){
+							GyroSum_add(15);
 						}else{
-							GyroSum_add(10);
+							GyroSum_add(1);
 						}
 						//PORTA.DR.BIT.B3 = 1;
 					}	
 				}else cnt3 = 0;
 				
-				if(get_IR(IR_FL) < 30 &&  get_IR(IR_FR) > 45  ){//右前のみ
+				if(get_IR(IR_FL) < 30 &&  get_IR(IR_FR) > 35  ){//右前のみ
 					cnt4++;
 					if(cnt4 > 0){
 						cnt4 = 0;
@@ -329,8 +331,10 @@ void Smotor(int M,char w_flag){
 							GyroSum_add(-50);
 						}else if(get_IR(IR_FR) > 65){
 							GyroSum_add(-30);
+						}else if(get_IR(IR_FR) > 45){
+							GyroSum_add(-15);
 						}else{
-							GyroSum_add(-10);
+							GyroSum_add(-1);
 						}
 						//PORTA.DR.BIT.B0 = 1;
 					}	
@@ -463,9 +467,9 @@ void Smotor(int M,char w_flag){
 				powor_max = 100;
 				
 			}else{
-				if(  (get_encoder_L()+get_encoder_R())/2 < 40){//速度が遅い時はジャイロ弱める
+				if(  (get_encoder_L()+get_encoder_R())/2 < 50){//速度が遅い時はジャイロ弱める
 		
-					if((get_encoder_L()+get_encoder_R())/2 < 20){
+					if((get_encoder_L()+get_encoder_R())/2 < 30){
 							powor = powor * 2 / 4;
 					}else{
 						powor = powor * 3 / 4;
@@ -523,7 +527,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	
 	int p = 5,min_M = 5,M = 5;
 	
-	int non_stop_min_M = 18;
+	int non_stop_min_M = 25;
 	int min_M_use = 0;
 	
 	int M_max_safe = 60;//横壁が近すぎる場合は減速
@@ -612,7 +616,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			ir_R_now = get_IR(IR_R);
 			if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-				if(ir_L_flag == 0 && ir_L_now > 18 && ir_R_now < 160){//左壁がある　&& 右壁に近すぎない
+				if(ir_L_flag == 0 && ir_L_now > 23 && ir_R_now < 160){//左壁がある　&& 右壁に近すぎない
 					ir_L_flag = 1;
 				
 				}else if(ir_L_flag == 1 && ir_L_now < 10 && ir_R_now < 160){//左壁がない　&& 右壁に近すぎない
@@ -657,7 +661,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			
 			if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-				if(ir_R_flag == 0 && ir_R_now > 18 && ir_L_now < 160){//右壁がある　&& 左壁に近すぎない
+				if(ir_R_flag == 0 && ir_R_now > 23 && ir_L_now < 160){//右壁がある　&& 左壁に近すぎない
 					ir_R_flag = 1;
 				
 				}else if(ir_R_flag == 1 && ir_R_now < 10 && ir_L_now < 160){//右壁がない　&& 左壁に近すぎない
@@ -808,7 +812,7 @@ void ETmotorU(long long A, long long E, char non_stop){
 	GyroSum_reset();
 	//Encoder_reset();
 
-	int M_kabe = 25;
+	int M_kabe = 30;
 	int M 		= 30;
 	
 	//壁切れ
@@ -920,9 +924,9 @@ void ETmotorU(long long A, long long E, char non_stop){
 		R = get_encoder_total_R();
 
 		if(A > 0){//R
-			E_add_U = 150;
+			E_add_U = uslr180_fin;
 		}else{//L
-			E_add_U = -150;
+			E_add_U = usll180_fin;
 		}
 		
 		if(E + E_add_U - E_add - E_sum < 0)break;
@@ -1077,12 +1081,13 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 
 }
 */
+
 void ETmotorBIG(long long A, long long E, char non_stop){
 	GyroSum_reset();
 	//Encoder_reset();
 
 	int M_kabe = 25;
-	int M 		= 30;
+	int M 		= 25;
 	
 //	char flag = 0;
 	
@@ -1137,7 +1142,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 200){ //左壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_L) > 2000){ //左壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -1150,7 +1155,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 			E_sum += (L - L_prev);
 			
 		}else{//L
-			if(get_IR(IR_R) > 200 ){ //右壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_R) > 2000 ){ //右壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -1208,6 +1213,8 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	//Encoder_reset();
 
 }
+
+
 
 void ETmotor(long long A, long long E, char non_stop){
 	GyroSum_reset();
