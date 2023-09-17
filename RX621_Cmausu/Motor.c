@@ -55,14 +55,41 @@ void Set_motor_pid_mode(char n){
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void pwm(float duty_L, float duty_R){
 	
-    unsigned int dt_L, dt_R;
+    	unsigned int dt_L, dt_R;
 	int L_PM = 0,R_PM = 0; // 0:プラス 1:マイナス
 	
-    if(duty_L >  100.0) duty_L =  100.0; // duty_Lを100以上にしない
-    if(duty_L < -100.0) duty_L = -100.0; // duty_Lを-100以下にしない
-    if(duty_R >  100.0) duty_R =  100.0;
-    if(duty_R < -100.0) duty_R = -100.0;
+	//static float duty_L_old = 0.0, duty_R_old = 0.0;
+	//const float duty_a = 0.1;
 	
+	
+    	if(duty_L >  100.0) duty_L =  100.0; // duty_Lを100以上にしない
+    	if(duty_L < -100.0) duty_L = -100.0; // duty_Lを-100以下にしない
+    	if(duty_R >  100.0) duty_R =  100.0;
+	if(duty_R < -100.0) duty_R = -100.0;
+
+	/*
+	if(motor_pid_mode == 1){//高速
+		//急激な変化を抑制する
+		
+		//if(duty_L > 0){
+			if(duty_L - duty_L_old > duty_a){
+				duty_L = duty_L_old + duty_a;
+			}else if(duty_L_old - duty_L < -duty_a){
+				duty_L = duty_L_old - duty_a;
+			}
+		//}
+		duty_L_old = duty_L;
+		
+		//if(duty_R > 0){
+			if(duty_R - duty_R_old > duty_a){
+				duty_R = duty_R_old + duty_a;
+			}else if(duty_R_old - duty_R < -duty_a){
+				duty_R = duty_R_old - duty_a;
+			}
+		//}
+		duty_R_old = duty_R;
+	}
+	*/
 	pwm_buff((char)duty_L,(char)duty_R);//ログ用に保存
 	
 	if(duty_L < 0.0){
@@ -74,7 +101,7 @@ void pwm(float duty_L, float duty_R){
    	dt_L = MTU1.TGRA * (100.0 - duty_L) / 100.0;//  dt_L = 0.9445*50/100 = 0.5
 		 
 	/* デューティ比のオーバーフロー保護 */
-    if(dt_L >= MTU1.TGRA)   dt_L = MTU1.TGRA - 1;  // 
+    	if(dt_L >= MTU1.TGRA)   dt_L = MTU1.TGRA - 1;  // 
 		
 	if(L_PM == 0){
 		 /* デューティ比の設定 */
@@ -95,7 +122,7 @@ void pwm(float duty_L, float duty_R){
    	dt_R = MTU4.TGRA * (100.0 - duty_R) / 100.0;//  dt_R = 0.9445*50/100 = 0.5
 		 
 	/* デューティ比のオーバーフロー保護 */
-    if(dt_R >= MTU4.TGRA)   dt_R = MTU3.TGRA - 1;  // 
+    	if(dt_R >= MTU4.TGRA)   dt_R = MTU3.TGRA - 1;  // 
 		
 	if(R_PM == 0){
 		 /* デューティ比の設定 */
@@ -467,15 +494,18 @@ void Smotor(int M,char w_flag){
 				powor_max = 100;
 				
 			}else{
-				if(  (get_encoder_L()+get_encoder_R())/2 < 50){//速度が遅い時はジャイロ弱める
+				if(  (get_encoder_L()+get_encoder_R())/2 < 60){//速度が遅い時はジャイロ弱める
 		
 					if((get_encoder_L()+get_encoder_R())/2 < 30){
-							powor = powor * 2 / 4;
+						powor = powor * 2 / 4;
+			
 					}else{
 						powor = powor * 3 / 4;
 					}
+
 				}
-				powor_max = 50;	
+				
+				powor_max = 50;
 			}
 		}
 	}
@@ -495,8 +525,10 @@ void Smotor(int M,char w_flag){
 	RM = M - powor;
 	
 	if(motor_pid_mode == 1){//高速モード
-		if(LM < 0)LM = 0;	
-		if(RM < 0)RM = 0;	
+		if(LM != 0 || RM != 0){
+			if(LM < 10)LM = 10;	
+			if(RM < 10)RM = 10;
+		}
 	}
 	
 	motor(LM ,RM);
@@ -526,9 +558,18 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	long long enc_kabe_L,enc_kabe_R;
 	
 	int p = 5,min_M = 5,M = 5;
-	
-	int non_stop_min_M = 25;
 	int min_M_use = 0;
+	
+	int non_stop_min_M = 20;//探索の既知区間用
+	
+	if(motor_pid_mode == 1){//高速モード
+		if(h1 < A){//距離が半マス以上
+			non_stop_min_M = 50;
+		}else{
+			non_stop_min_M = 30;
+		}
+	}
+	
 	
 	int M_max_safe = 60;//横壁が近すぎる場合は減速
 	
@@ -943,7 +984,7 @@ void ETmotorU(long long A, long long E, char non_stop){
 
 }
 
-/*
+
 void ETmotorBIG(long long A, long long E, char non_stop){
 	GyroSum_reset();
 	//Encoder_reset();
@@ -1004,7 +1045,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	while(1){
 		
 		if(A > 0){//R
-			if(get_IR(IR_L) > 200){ //左壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_L) > 20000){ //左壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -1017,7 +1058,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 			GyroSum_add( (A * (((L - L_prev)*100000) / E)) / 100000);
 			
 		}else{//L
-			if(get_IR(IR_R) > 200 ){ //右壁近い //どうしても以外は使わない方がよい
+			if(get_IR(IR_R) > 20000 ){ //右壁近い //どうしても以外は使わない方がよい
 				cnt1++;
 				if(cnt1 > 5){
 					cnt1 = 0;
@@ -1080,14 +1121,14 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	//Encoder_reset();
 
 }
-*/
 
+/*
 void ETmotorBIG(long long A, long long E, char non_stop){
 	GyroSum_reset();
 	//Encoder_reset();
 
 	int M_kabe = 25;
-	int M 		= 25;
+	int M 		= 30;
 	
 //	char flag = 0;
 	
@@ -1213,16 +1254,16 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	//Encoder_reset();
 
 }
-
+*/
 
 
 void ETmotor(long long A, long long E, char non_stop){
 	GyroSum_reset();
 	//Encoder_reset();
 
-	int M_kabe = 25;
-	int M 		= 25;
-	int M_kabe2 = 25;
+	int M_kabe = 30;
+	int M 		= 30;
+	int M_kabe2 = 30;
 	
 //	char flag = 0;
 	
@@ -1241,11 +1282,12 @@ void ETmotor(long long A, long long E, char non_stop){
 //		if(flag)ESmotor(25,M_kabe,true,false);
 	}
 
-//	GyroSum_reset();
+	GyroSum_reset();
 	//Encoder_reset();
 	
 	ESmotor(45,M_kabe,true,true);//60
 
+	GyroSum_reset();
 	
 /*	if(get_IR(IR_FL) > 13 || get_IR(IR_FR) > 13){//前に壁がある
 		PORTA.DR.BIT.B1 = 1;
@@ -1349,10 +1391,13 @@ void ETmotor(long long A, long long E, char non_stop){
 		if(E - E_add - E_sum < 0)break;
 	}
 
+	GyroSum_reset();
+		
 	PORTA.DR.BIT.B0 = 0;
 	PORTA.DR.BIT.B3 = 0;
 	
-	ESmotor(45,M_kabe2,true,true);//60
+	//ESmotor(45,M_kabe2,true,true);//60
+	ESmotor(45,M_kabe2,true,false);//60
 	
 	//motor(0,0);
 	GyroSum_reset();
