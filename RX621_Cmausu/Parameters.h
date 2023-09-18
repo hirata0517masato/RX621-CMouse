@@ -41,15 +41,17 @@
 #define s1 (1000)		//1マス直進      タイヤ削れた時：1025
 #define s45 (785)		//45度１マス直進 タイヤ削れた時：800
 #define h1 (515)		//半マス直進 	タイヤ削れた時：525
-#define rslsl90 (970)	//スラローム 664
-#define rslsr90 (970)	//スラローム 664
+
+#define rslsl90 	(970)	//スラローム 664
+#define rslsl90_offset  (-15)
+#define rslsr90 	(970)	//スラローム 664
+#define rslsr90_offset  (-15)
 
 #define rslsl90_BIG (1000)	//スラローム 大700
 #define rslsr90_BIG (1000)	//スラローム 大 680
 
 #define usll180     (2020)	//Uターン
 #define usll180_fin (-150)	//Uターン 微調整
-
 #define uslr180     (2030)	//Uターン
 #define uslr180_fin (-50)	//Uターン　微調整
 
