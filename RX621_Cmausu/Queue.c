@@ -15,7 +15,7 @@ void queue_reset(){
 }
 
 void enqueue(short n){
-	if(queue_num >= MAXqueue)return ;
+    if(queue_num >= MAXqueue)return ;
     queue[queue_end++] = n;
     if(queue_end == MAXqueue)queue_end = 0;
     queue_num++;
@@ -29,7 +29,9 @@ short dequeue(){
     return r;
 }
 
-short queue_next(){
+short queue_next(int n){
+    n += queue_front-1;
+    n %= MAXqueue;
     if(queue_empty())return -99;
-    return queue[queue_front];
+    return queue[n];
 }

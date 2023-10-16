@@ -1,11 +1,11 @@
 品質記録情報
-2023年9月18日 20:22:41
+2023年10月16日 18:40:45
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
-W0561016:The evaluation version of CC-RX V3 is valid for the remaining 21 days. After that, link size limit (128 Kbyte) will be applied. Please consider purchasing the product.
-W0561016:The evaluation version of CC-RX V3 is valid for the remaining 21 days. After that, link size limit (128 Kbyte) will be applied. Please consider purchasing the product.
+W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
+W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
 ------ ビルド終了(エラー:0個, 警告:2個)(RX621_Cmausu, DefaultBuild) ------
 
@@ -44,8 +44,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: c573303b46fbb29b607b6ccdde31c1b22fa974f8
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: c7cdfdc9151889e56974553f7b554dc5ace3b610
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: d3e7e46537c64dc346e19898ff3f0cae124e9ec6
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: f0e2cbb8ec561b7db1a9023c79f0209a312aee4f
 
 
 --- システム情報 ---
@@ -71,13 +71,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: c7cdfdc9151889e56974553
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  255 MB
+  301 MB
  *GDIオブジェクト数
-  2055
+  2102
  *USERオブジェクト数
-  940
+  985
  *開いているファイル
-  4 editors, 4 files, 124 KB
+  4 editors, 4 files, 125 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン

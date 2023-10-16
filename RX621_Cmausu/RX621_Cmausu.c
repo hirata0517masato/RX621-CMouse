@@ -1218,7 +1218,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 			}
     		}else if(Lflag == 1){
 			
-			if(LMax -5 > get_IR(IR_L)){
+			if(LMax -10 > get_IR(IR_L)){
 				led(0);
 				Lflag = 3;
 				break;
@@ -1250,7 +1250,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 				Rflag = 1;
 			}
     		}else if(Rflag == 1){
-			if(RMax -5 > get_IR(IR_R)){
+			if(RMax -10 > get_IR(IR_R)){
 				led(0);
 				Rflag = 3;
 				break;
@@ -1279,11 +1279,11 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 	
 	
 	
-	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45 )  ){
+/*	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45 )  ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
-
+*/
   }
  
   if(Lflag == 3 && get_IR(IR_L) > 70){//壁切れが遅かった場合
@@ -1832,11 +1832,11 @@ void run_shortest_path(){
 		}else{
         	if(path_num == 1){
 	  			
-			if(queue_next() < 0){//次　左
+			if(queue_next(1) < 0){//次　左
 	          	  	S_run_kabe(run_speed + run_fin_speed_offset,true,1);
 				  //S_run_kabe(run_speed + run_fin_speed_offset,4,1);//non_stop = 4
 				
-			  	}else if(queue_next() > 0){//次　右
+			  	}else if(queue_next(1) > 0){//次　右
 				  S_run_kabe(run_speed + run_fin_speed_offset,true,2);
 				  //S_run_kabe(run_speed + run_fin_speed_offset,4,2);//non_stop = 4
 			  	}else{
@@ -1851,11 +1851,11 @@ void run_shortest_path(){
 				//S_run(s1 * ((long long)path_num - 1),run_speed_boost + run_fin_speed_offset,3,true);//non_stop = 3
 				S_run(s1 * ((long long)path_num - 1),run_speed_boost + run_fin_speed_offset,3,4);//non_stop = 3 // w_flag = 4 串の壁補正あり
 				
-				if(queue_next() < 0){//次　左
+				if(queue_next(1) < 0){//次　左
 	          	  	  S_run_kabe(run_speed + run_fin_speed_offset,true,1);
 				  //S_run_kabe(run_speed + run_fin_speed_offset,4,1);// w_flag = 4 串の壁補正あり
 				
-			  	}else if(queue_next() > 0){//次　右
+			  	}else if(queue_next(1) > 0){//次　右
 				  S_run_kabe(run_speed + run_fin_speed_offset,true,2);
 				  //S_run_kabe(run_speed + run_fin_speed_offset,4,2);// w_flag = 4 串の壁補正あり
 			  	}else{
@@ -2479,7 +2479,7 @@ void remake_shortest_path_list_naname2(){
 	          naname_cnt = 1;
 	          lr = -1;
 			  first_lr = -1;
-	        }else if(naname_cnt == 1 && lr == -1 && queue_next() == 0){//Uターン
+	        }else if(naname_cnt == 1 && lr == -1 && queue_next(1) == 0){//Uターン
 				enqueue(-1);
 	            enqueue(1);
 				
@@ -2488,7 +2488,7 @@ void remake_shortest_path_list_naname2(){
 				
 				naname_cnt = 0;
 	          	lr = 0;
-			}else if(naname_cnt == 1 && lr == -1 && queue_next() == 1){//L L R //１つ目はスラロームにする
+			}else if(naname_cnt == 1 && lr == -1 && queue_next(1) == 1){//L L R //１つ目はスラロームにする
 				enqueue(-1);
 	            enqueue(1);
 							
@@ -2512,7 +2512,7 @@ void remake_shortest_path_list_naname2(){
 			    enqueue(-11);
 	            enqueue(1);
 				
-				if(queue_next() == 0){//L L (S) //スラロームにする
+				if(queue_next(1) == 0){//L L (S) //スラロームにする
 					naname_cnt = 0;
 					enqueue(-1);
 	           		enqueue(1);
@@ -2572,7 +2572,7 @@ void remake_shortest_path_list_naname2(){
 	          naname_cnt = 1;
 	          lr = 1;
 			  first_lr = 1;
-	        }else if(naname_cnt == 1 && lr == 1 && queue_next() == 0){//Uターン
+	        }else if(naname_cnt == 1 && lr == 1 && queue_next(1) == 0){//Uターン
 				enqueue(1);
 	            enqueue(1);
 				
@@ -2581,7 +2581,7 @@ void remake_shortest_path_list_naname2(){
 				
 				naname_cnt = 0;
 	          	lr = 0;
-			}else if(naname_cnt == 1 && lr == 1 && queue_next() == -1){//R R L //１つ目はスラロームにする
+			}else if(naname_cnt == 1 && lr == 1 && queue_next(1) == -1){//R R L //１つ目はスラロームにする
 				enqueue(1);
 	            enqueue(1);
 				
@@ -2606,7 +2606,7 @@ void remake_shortest_path_list_naname2(){
 				enqueue(11);
 	            enqueue(1);
 				
-				if(queue_next() == 0){//R R (S) //スラロームにする
+				if(queue_next(1) == 0){//R R (S) //スラロームにする
 					naname_cnt = 0;
 					enqueue(1);
 	           		enqueue(1);
@@ -2643,7 +2643,7 @@ void remake_shortest_path_list_naname(){
 	          naname_cnt = 1;
 	          lr = -1;
 			  first_lr = -1;
-	        }else if(naname_cnt == 1 && lr == -1 && queue_next() == 0){//Uターン
+	        }else if(naname_cnt == 1 && lr == -1 && queue_next(1) == 0){//Uターン
 				enqueue(-1);
 	            enqueue(1);
 				
@@ -2652,11 +2652,11 @@ void remake_shortest_path_list_naname(){
 				
 				naname_cnt = 0;
 	          	lr = 0;
-			}else if(naname_cnt == 1 && lr == -1 && queue_next() == 1){//L L R //１つ目はスラロームにする
+			}else if(naname_cnt == 1 && lr == -1 && queue_next(1) == 1){//L L R //１つ目はスラロームにする
 				enqueue(-1);
 	            enqueue(1);
 				
-			}else if(naname_cnt == 1 && lr == 1 && queue_next() != 1){//R L * //スラロームにする
+			}else if(naname_cnt == 1 && lr == 1 && queue_next(1) != 1){//R L * //スラロームにする
 				enqueue(1);
 	            enqueue(1);
 				
@@ -2686,7 +2686,7 @@ void remake_shortest_path_list_naname(){
 			    enqueue(-11);
 	            enqueue(1);
 				
-				if(queue_next() == 0){//L L (S) //スラロームにする
+				if(queue_next(1) == 0){//L L (S) //スラロームにする
 					naname_cnt = 0;
 					enqueue(-1);
 	           		enqueue(1);
@@ -2746,7 +2746,7 @@ void remake_shortest_path_list_naname(){
 	          naname_cnt = 1;
 	          lr = 1;
 			  first_lr = 1;
-	        }else if(naname_cnt == 1 && lr == 1 && queue_next() == 0){//Uターン
+	        }else if(naname_cnt == 1 && lr == 1 && queue_next(1) == 0){//Uターン
 				enqueue(1);
 	            enqueue(1);
 				
@@ -2755,11 +2755,11 @@ void remake_shortest_path_list_naname(){
 				
 				naname_cnt = 0;
 	          	lr = 0;
-			}else if(naname_cnt == 1 && lr == 1 && queue_next() == -1){//R R L //１つ目はスラロームにする
+			}else if(naname_cnt == 1 && lr == 1 && queue_next(1) == -1){//R R L //１つ目はスラロームにする
 				enqueue(1);
 	            enqueue(1);
 				
-			}else if(naname_cnt == 1 && lr == -1 && queue_next() != -1){//L R * //スラロームにする
+			}else if(naname_cnt == 1 && lr == -1 && queue_next(1) != -1){//L R * //スラロームにする
 				enqueue(-1);
 	            enqueue(1);
 				
@@ -2789,7 +2789,7 @@ void remake_shortest_path_list_naname(){
 				enqueue(11);
 	            enqueue(1);
 				
-				if(queue_next() == 0){//R R (S) //スラロームにする
+				if(queue_next(1) == 0){//R R (S) //スラロームにする
 					naname_cnt = 0;
 					enqueue(1);
 	           		enqueue(1);
@@ -2846,24 +2846,26 @@ void run_shortest_path_fin(	char naname){
     comand = dequeue();path_num = dequeue();
     switch(comand){
       case -1://L
-		if(queue_next() == -1){//Uターン
-			L_curve(sl90,true);
-			ESmotor(230,30,true,true);//距離、スピード
-		/*	
+		if(comand_old == 0 && queue_next(1) == -1 && queue_next(3) == 0){//Uターン
+		
 			L_curveU(ul180,true);
 			comand = dequeue();
 			path_num = dequeue();
-		*/	
-		}else if(queue_next() == 1){//Sターン
+			
+		}else if(queue_next(1) == -1){//上のUターンが無効の時に発動する
+			L_curve(sl90,true);
+			ESmotor(230,30,true,true);//距離、スピード
+		
+		}else if(queue_next(1) == 1){//Sターン
 			L_curve(sl90,true);
 			ESmotor(180,30,true,true);//距離、スピード
 		
-		}else if(queue_next() == -11 || queue_next() == 11){
+		}else if(queue_next(1) == -11 || queue_next(1) == 11){
 			L_curve(sl90,true);
 			//ESmotor(50,30,true,true);//距離、スピード
 			
 		}else{
-			/*if(queue_next() == 0 && comand_old == 0){//直線、L、直線の時は大曲
+			/*if(queue_next(1) == 0 && comand_old == 0){//直線、L、直線の時は大曲
         			L_curveBIG(sl90BIG,true);
 			}else{
 				L_curve(sl90,true);
@@ -2874,15 +2876,15 @@ void run_shortest_path_fin(	char naname){
         break;
       case -11://L45
 	  	
-		if(queue_next() == -11){//Vターン
+		if(queue_next(1) == -11){//Vターン
 			 L_rotate_naname(l45 * path_num * 0.95,true);//0.75
 			 
-		}else if(queue_next() == -1 || queue_next() == 1){//45からの90ターン
+		}else if(queue_next(1) == -1 || queue_next(1) == 1){//45からの90ターン
 			L_rotate_naname(l45 * path_num  * 0.95,true);
 			
 			ESmotor(145,25,true,true);//距離、スピード
 			
-		}else if(queue_next() == 0){//45から直線 = 斜め終わり
+		}else if(queue_next(1) == 0){//45から直線 = 斜め終わり
 			 L_rotate_naname(l45 * path_num * 1.00,false);
 			 
 		}else{//斜め始まり
@@ -2926,12 +2928,12 @@ void run_shortest_path_fin(	char naname){
 		  	  else  S_run((h1 * (long long)path_num)  - over_run ,80 + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
 			  
 			  
-			  if(queue_next() == -11 || queue_next() == 11){//直線後に45ターン
-				  if(queue_next() < 0){//次　左
+			  if(queue_next(1) == -11 || queue_next(1) == 11){//直線後に45ターン
+				  if(queue_next(1) < 0){//次　左
 			      	  	 S_run_kabe2(30,true,1);
 					  //S_run_kabe2(20,4,1);// w_flag = 4 串の壁補正あり
 						
-				  }else if(queue_next() > 0){//次　右
+				  }else if(queue_next(1) > 0){//次　右
 				  	  S_run_kabe2(30,true,2);
 					  //S_run_kabe2(20,4,2);// w_flag = 4 串の壁補正あり
 				  }else{
@@ -2939,11 +2941,11 @@ void run_shortest_path_fin(	char naname){
 					  //S_run_kabe2(20,4,3);// w_flag = 4 串の壁補正あり
 				  }
 			  }else{
-				  if(queue_next() < 0){//次　左
+				  if(queue_next(1) < 0){//次　左
 			      	  	 S_run_kabe(30,true,1);
 					  //S_run_kabe(35,4,1);// w_flag = 4 串の壁補正あり
 						
-				  }else if(queue_next() > 0){//次　右
+				  }else if(queue_next(1) > 0){//次　右
 				  	  S_run_kabe(30,true,2);
 					  //S_run_kabe(35,4,2);// w_flag = 4 串の壁補正あり
 				  }else{
@@ -2955,10 +2957,10 @@ void run_shortest_path_fin(	char naname){
 			  
 			  
 		  }else{//半マスだけ＝スタート直後に壁切れ　
-			  if(queue_next() < 0){//次　左
+			  if(queue_next(1) < 0){//次　左
 	          	 	 S_run_kabe(40,false,1);
 				
-			  }else if(queue_next() > 0){//次　右
+			  }else if(queue_next(1) > 0){//次　右
 				  S_run_kabe(40,false,2);
 			  }else{
 				  S_run_kabe(40,false,3);
@@ -2989,10 +2991,10 @@ void run_shortest_path_fin(	char naname){
 		}
 		
 		
-		if(queue_next() < 0){//次　左
+		if(queue_next(1) < 0){//次　左
         		S_run_kabe_naname(45,3,1);
 			
-		}else if(queue_next() > 0){//次　右
+		}else if(queue_next(1) > 0){//次　右
 			S_run_kabe_naname(45,3,2);
 		}else{
 			S_run_kabe_naname(45,3,3);
@@ -3002,24 +3004,26 @@ void run_shortest_path_fin(	char naname){
         //my_y = ny;
         break;
       case 1://R
-		if(queue_next() == -1){//Sターン
+		if(queue_next(1) == -1){//Sターン
 			R_curve(sr90,true);
 			ESmotor(180,30,true,true);//距離、スピード
 			
-		}else if(queue_next() == 1){//Uターン
-			R_curve(sr90,true);
-			ESmotor(230,30,true,true);//距離、スピード
-		/*	
+		}else if(comand_old == 0 && queue_next(1) == 1 && queue_next(3) == 0){//Uターン
+		
 			R_curveU(ur180,true);
 			comand = dequeue();
 			path_num = dequeue();
-		*/	
-		}else if(queue_next() == -11 || queue_next() == 11){
+		
+		}else if(queue_next(1) == 1){//上のUターンが無効の時に発動する
+			R_curve(sr90,true);
+			ESmotor(230,30,true,true);//距離、スピード
+		
+		}else if(queue_next(1) == -11 || queue_next(1) == 11){
 			R_curve(sr90,true);
 			//ESmotor(50,30,true,true);//距離、スピード
 			
 		}else{
-			/*if(queue_next() == 0 && comand_old == 0){//直線、R、直線の時は大曲
+			/*if(queue_next(1) == 0 && comand_old == 0){//直線、R、直線の時は大曲
         			R_curveBIG(sr90BIG,true);
 			}else{
 				R_curve(sr90,true);
@@ -3029,15 +3033,15 @@ void run_shortest_path_fin(	char naname){
         break;
       case 11://R45
         
-  		if(queue_next() == 11){//Vターン
+  		if(queue_next(1) == 11){//Vターン
 			R_rotate_naname(r45 * path_num * 0.95,true);//0.75
 			
-		}else if(queue_next() == 1 || queue_next() == -11){//45からの90ターン
+		}else if(queue_next(1) == 1 || queue_next(1) == -11){//45からの90ターン
 			R_rotate_naname(r45 * path_num * 0.95,true);
 			
 			ESmotor(145,25,true,true);//距離、スピード
 			
-		}else if(queue_next() == 0){//45から直線 =　斜め終わり
+		}else if(queue_next(1) == 0){//45から直線 =　斜め終わり
 			R_rotate_naname(r45 * path_num * 1.00,false);
 			
 		}else{//斜め始まり

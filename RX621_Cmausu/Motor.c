@@ -332,7 +332,7 @@ void Smotor(int M,char w_flag){
 		
 		//ŽÎ‚ß‘Îô
 		if(w_flag == 3){
-			if((get_encoder_L() > 20 && get_encoder_R() > 20) && abs(GyroSum_get()) < 800){
+			if((get_encoder_L() > 30 && get_encoder_R() > 30) && abs(GyroSum_get()) < 1000){
 				//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//¶‘O‚Ì‚Ý
 				if(   get_IR(IR_FL) > 35 ){//¶‘O‚Ì‚Ý
 					cnt3++;
@@ -1134,6 +1134,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 
 }
 
+
 /*
 void ETmotorBIG(long long A, long long E, char non_stop){
 	GyroSum_reset();
@@ -1517,10 +1518,10 @@ void Tmotor_naname(long long A ,char inout){
 		 
 		if(A > 0){//R
 			//motor(LM ,-get_encoder_total_R() * 2);
-			motor(LM ,-4);
+			motor(LM ,-6);
 		}else{//L
 			//motor(-get_encoder_total_L() * 2 ,RM);
-			motor(-4 ,RM);
+			motor(-6 ,RM);
 		}
 
 		LM_prev = LM;
