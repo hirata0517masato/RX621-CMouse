@@ -496,9 +496,9 @@ void Smotor(int M,char w_flag){
 				powor_max = 100;
 				
 			}else{
-				if(  (get_encoder_L()+get_encoder_R())/2 < 60){//速度が遅い時はジャイロ弱める
+				if(  (get_encoder_L()+get_encoder_R())/2 < 30){//速度が遅い時はジャイロ弱める
 		
-					if((get_encoder_L()+get_encoder_R())/2 < 30){
+					if((get_encoder_L()+get_encoder_R())/2 < 10){
 						powor = powor * 2 / 4;
 			
 					}else{
@@ -578,7 +578,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		if(h1 < A){//距離が半マス以上
 			non_stop_min_M = 50;
 		}else{
-			non_stop_min_M = 30;
+			non_stop_min_M = 25;
 		}
 	}
 	
@@ -619,11 +619,22 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				
 				M = min_M_use + ( (A - enc_now) / 8);
 			
-			}else if(enc_now < 50){//出だしは加速しすぎないように
-				M = min_M_use + (enc_now / 9);
-				
 			}else{
-				M = min_M_use + (enc_now / 6);	
+				if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
+					if(enc_now < 50){//出だしは加速しすぎないように
+						M = min_M_use + (enc_now / 9);
+				
+					}else{
+						M = min_M_use + (enc_now / 6);
+					}
+				}else{//高速
+					if(enc_now < 350){//出だしは加速しすぎないように
+						M = min_M_use ;
+				
+					}else{
+						M = min_M_use + (enc_now / 6);
+					}
+				}
 			}
 			
 			
@@ -1274,9 +1285,9 @@ void ETmotor(long long A, long long E, char non_stop){
 	GyroSum_reset();
 	//Encoder_reset();
 	
-	int M_kabe = 30;
-	int M 		= 30;
-	int M_kabe2 = 30;
+	int M_kabe = 25;
+	int M 		= 25;
+	int M_kabe2 = 25;
 	
 //	char flag = 0;
 	
