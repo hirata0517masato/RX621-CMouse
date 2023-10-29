@@ -1212,7 +1212,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 	
 	if(LR == 3 || LR == 1){//両方 || Lだけ
 	    if(Lflag == 0){
-		if(get_IR(IR_L) > 50){
+		if(get_IR(IR_L) > 60){
 		    led(8);
 		    Lflag = 1;
 		}
@@ -1245,7 +1245,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
 	    if(Rflag == 0){
-		if(get_IR(IR_R) > 50){
+		if(get_IR(IR_R) > 60){
 		    led(1);
 		    Rflag = 1;
 		}
@@ -2949,14 +2949,14 @@ void run_shortest_path_fin(	char naname){
 			  
 		    if(queue_next(1) == -11 || queue_next(1) == 11){//直線後に45ターン
 			if(queue_next(1) < 0){//次　左
-			    S_run_kabe2(30,true,1);
+			    S_run_kabe2(20,true,1);
 			    //S_run_kabe2(20,4,1);// w_flag = 4 串の壁補正あり
 						
 			}else if(queue_next(1) > 0){//次　右
-			    S_run_kabe2(30,true,2);
+			    S_run_kabe2(20,true,2);
 			    //S_run_kabe2(20,4,2);// w_flag = 4 串の壁補正あり
 			}else{
-			    S_run_kabe2(30,true,3);
+			    S_run_kabe2(20,true,3);
 			    //S_run_kabe2(20,4,3);// w_flag = 4 串の壁補正あり
 			}
 		    }else{
@@ -2994,29 +2994,38 @@ void run_shortest_path_fin(	char naname){
 	    path_num-=2;
 		 
 	    if(path_num <= 0){
-		//存在しないはず
+		
 		if(run_fin_speed_offset > 0){//速度オフセットがプラスの時は無効化
 		    S_run(s45 /2 ,60,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
 		}else{
 		    S_run(s45 /2 ,60 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
 		}
+		
+		//距離が短いので少し速度高めに設定する
+		if(queue_next(1) < 0){//次　左
+		    S_run_kabe_naname(55,3,1);
 			
+	        }else if(queue_next(1) > 0){//次　右
+		    S_run_kabe_naname(55,3,2);
+	        }else{
+		    S_run_kabe_naname(55,3,3);
+	        }
+		
 	    }else{
 		if(run_fin_speed_offset > 0){//速度オフセットがプラスの時は無効化
 		    S_run(s45 * (long long)path_num + s45/2 ,60,true,3); // w_flag = 3 斜めの壁補正あり
 		}else{
 		    S_run(s45 * (long long)path_num + s45/2 ,60 + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり
 		}
-	    }
 		
-		
-	    if(queue_next(1) < 0){//次　左
-		S_run_kabe_naname(45,3,1);
+		if(queue_next(1) < 0){//次　左
+		    S_run_kabe_naname(45,3,1);
 			
-	    }else if(queue_next(1) > 0){//次　右
-		S_run_kabe_naname(45,3,2);
-	    }else{
-		S_run_kabe_naname(45,3,3);
+	        }else if(queue_next(1) > 0){//次　右
+		    S_run_kabe_naname(45,3,2);
+	        }else{
+		    S_run_kabe_naname(45,3,3);
+	        }
 	    }
 		
 	    //my_x = nx;

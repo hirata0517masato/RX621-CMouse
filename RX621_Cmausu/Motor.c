@@ -188,6 +188,7 @@ void Smotor(int M,char w_flag){
     static float kp = 0,kd = 0;
 	
     int kusi_flag = 0;
+    int naname_flag = 0;
 	
     int LM,RM;
 	
@@ -267,7 +268,7 @@ void Smotor(int M,char w_flag){
 		kp = 0.5;
 		kd = 0.0;
 	    }else{//高速
-		ir_core = 55;//左右の差の許容範囲
+		ir_core = 45;//左右の差の許容範囲
 				
 		kp = 0.5;
 		kd = 20.0;
@@ -332,18 +333,24 @@ void Smotor(int M,char w_flag){
 		
 	//斜め対策
 	if(w_flag == 3){
-	    if((get_encoder_L() > 30 && get_encoder_R() > 30) && abs(GyroSum_get()) < 1000){
+	    if((get_encoder_L() > 30 && get_encoder_R() > 30) && abs(GyroSum_get()) < 600){
 		//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
-		if(   get_IR(IR_FL) > 35 ){//左前のみ
+		if(   get_IR(IR_FL) > 40 ){//左前のみ
 		    cnt3++;
 		    if(cnt3 > 0){
 			cnt3 = 0;
 			if(get_IR(IR_FL) > 100){
 			    GyroSum_add(50);
+			    naname_flag = 1;
+			     
 			}else if(get_IR(IR_FL) > 65){
 			    GyroSum_add(30);
-			}else if(get_IR(IR_FL) > 45){
+			    naname_flag = 1;
+			    
+			}else if(get_IR(IR_FL) > 50){
 			    GyroSum_add(10);
+			    naname_flag = 1;
+			    
 			}else{
 			    GyroSum_add(1);
 			}
@@ -352,16 +359,22 @@ void Smotor(int M,char w_flag){
 		}else cnt3 = 0;
 				
 		//if(get_IR(IR_FL) < 30 &&  get_IR(IR_FR) > 35  ){//右前のみ
-		if(get_IR(IR_FR) > 35  ){//右前のみ
+		if(get_IR(IR_FR) > 40  ){//右前のみ
 		    cnt4++;
 		    if(cnt4 > 0){
 			cnt4 = 0;
 			if(get_IR(IR_FR) > 100){
 			    GyroSum_add(-50);
+			    naname_flag = 1;
+			     
 			}else if(get_IR(IR_FR) > 65){
 			    GyroSum_add(-30);
-			}else if(get_IR(IR_FR) > 45){
+			    naname_flag = 1;
+			     
+			}else if(get_IR(IR_FR) > 50){
 			    GyroSum_add(-10);
+			    naname_flag = 1;
+			    
 			}else{
 			    GyroSum_add(-1);
 			}
@@ -519,7 +532,7 @@ void Smotor(int M,char w_flag){
 	powor /= 2;
 	}*/
 	
-    if((0 < M &&  F_max < get_IR(IR_F)) ){// || (kusi_flag == 1)){//(前進　かつ　前壁が近すぎる場合は) || 串対策が反応しているとき
+    if((0 < M &&  F_max < get_IR(IR_F))  || (kusi_flag == 1) || ( naname_flag == 1)){ //(前進　かつ　前壁が近すぎる場合は) || 串対策が反応しているとき || ななめが強めに反応しているとき
 	M /= 2; //速度を下げる
     }
 	
@@ -1286,9 +1299,9 @@ void ETmotor(long long A, long long E, char non_stop){
     GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 30;
-    int M 		= 30;
-    int M_kabe2 = 30;
+    int M_kabe = 25;
+    int M 		= 25;
+    int M_kabe2 = 25;
 	
     //	char flag = 0;
 	
@@ -1530,10 +1543,10 @@ void Tmotor_naname(long long A ,char inout){
 		 
 	if(A > 0){//R
 	    //motor(LM ,-get_encoder_total_R() * 2);
-	    motor(LM ,-6);
+	    motor(LM ,10);
 	}else{//L
 	    //motor(-get_encoder_total_L() * 2 ,RM);
-	    motor(-6 ,RM);
+	    motor(10 ,RM);
 	}
 
 	LM_prev = LM;

@@ -42,18 +42,18 @@
 #define s45 (795)		//45度１マス直進 タイヤ削れた時：800
 #define h1 (525)		//半マス直進 	タイヤ削れた時：525
 
-#define rslsl90 	(970)	//スラローム 664
+#define rslsl90 	(980)	//スラローム 664
 #define rslsl90_offset  (-30)
-#define rslsr90 	(970)	//スラローム 664
+#define rslsr90 	(980)	//スラローム 664
 #define rslsr90_offset  (-30)
 
 #define rslsl90_BIG (1000)	//スラローム 大700
 #define rslsr90_BIG (1000)	//スラローム 大 680
 
-#define usll180     (2100)	//Uターン
-#define usll180_fin (-50)	//Uターン 微調整
-#define uslr180     (2100)	//Uターン
-#define uslr180_fin (-50)	//Uターン　微調整
+#define usll180     (2150)	//Uターン
+#define usll180_fin (0)	//Uターン 微調整
+#define uslr180     (2150)	//Uターン
+#define uslr180_fin (0)	//Uターン　微調整
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 
