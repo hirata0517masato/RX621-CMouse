@@ -145,14 +145,14 @@ void motor(int LM,int RM){
   
     //if(((LM - RM) > 50) || ((RM - LM) > 50))motor_stop();
 
-    if(abs(LM) > 10){
+    if(abs(LM) > 8){
 	if(abs(get_encoder_L()) < 3){
 	    safe_cnt ++;
 	    if(safe_cnt > 20000)motor_stop();
 	}else safe_cnt = 0;
     }else safe_cnt = 0;
 
-    if(abs(RM) > 10){
+    if(abs(RM) > 8){
 	if(abs(get_encoder_R()) < 3){
 	    safe_cnt ++;
 	    if(safe_cnt > 20000)motor_stop();
@@ -268,10 +268,10 @@ void Smotor(int M,char w_flag){
 		kp = 0.5;
 		kd = 0.0;
 	    }else{//高速
-		ir_core = 45;//左右の差の許容範囲
+		ir_core = 55;//左右の差の許容範囲
 				
-		kp = 0.5;
-		kd = 20.0;
+		kp = 0.4;
+		kd = 15.0;
 	    }
 			
 			
@@ -468,15 +468,15 @@ void Smotor(int M,char w_flag){
 			    cnt5 = 0;
 							
 			    if(get_IR(IR_F) > 250){
-				if(diff > 5)diff = 5;
-				if(diff < -5)diff = -5;
+				if(diff > 3)diff = 3;
+				if(diff < -3)diff = -3;
 								
 			    }else if(get_IR(IR_F) > 200){
-				if(diff > 10)diff = 10;
-				if(diff < -10)diff = -10;
+				if(diff > 8)diff = 8;
+				if(diff < -8)diff = -8;
 			    }else{
-				if(diff > 20)diff = 20;
-				if(diff < -20)diff = -20;
+				if(diff > 15)diff = 15;
+				if(diff < -15)diff = -15;
 			    }
 							
 			    GyroSum_add(diff);
@@ -491,7 +491,7 @@ void Smotor(int M,char w_flag){
     int powor = gyro_powor_L();
 	
     if(motor_pid_mode == 0){//低速
-	powor_max = 30;	
+	powor_max = 20;	
     }else{//高速
 	if( w_flag == 3){ //斜め中は壁をよけるために数値を大きくする
 	    /*if(  (get_encoder_L()+get_encoder_R())/2 < 40){//速度が遅い時はジャイロ弱める
@@ -503,7 +503,7 @@ void Smotor(int M,char w_flag){
 	      }
 	      }
 	    */
-	    powor_max = 80;
+	    powor_max = 70;
 	}else{
 	    if(kusi_flag == 1){//串対策が反応しているとき
 		powor_max = 100;
@@ -564,7 +564,7 @@ void Smotor(int M,char w_flag){
 
 
 void ESmotor(long long A, int max_M,char non_stop,char w_flag){
-    Encoder_reset();
+//    Encoder_reset();
 	
     long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
     long long enc_now = 0;
@@ -582,21 +582,21 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     //	int kame_hosei = 0;
     long long enc_kabe_L,enc_kabe_R;
 	
-    int p = 5,min_M = 5,M = 5;
+    int p = 5,min_M = 3,M = 3;
     int min_M_use = 0;
 	
-    int non_stop_min_M = 20;//探索の既知区間用
+    int non_stop_min_M = 15;//探索の既知区間用
 	
     if(motor_pid_mode == 1){//高速モード
 	if(h1 < A){//距離が半マス以上
-	    non_stop_min_M = 50;
+	    non_stop_min_M = 30;
 	}else{
-	    non_stop_min_M = 25;
+	    non_stop_min_M = 20;
 	}
     }
 	
 	
-    int M_max_safe = 60;//横壁が近すぎる場合は減速
+    int M_max_safe = 50;//横壁が近すぎる場合は減速
 	
     //	kame_hosei = 510;
 	
@@ -628,24 +628,24 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }
 			
 			
-	    if(enc_now > A * 5/8){// 進んだ距離 < 目標距離 * 3/4 = //減速区間
+	    if(enc_now > A * 6/8){// 進んだ距離 < 目標距離 * 3/4 = //減速区間
 				
-		M = min_M_use + ( (A - enc_now) / 8);
+		M = min_M_use + ( (A - enc_now) / 10);
 			
 	    }else{
 		if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
 		    if(enc_now < 50){//出だしは加速しすぎないように
-			M = min_M_use + (enc_now / 9);
+			M = min_M_use + (enc_now / 10);
 				
 		    }else{
-			M = min_M_use + (enc_now / 6);
+			M = min_M_use + (enc_now / 7);
 		    }
 		}else{//高速
 		    if(enc_now < 350){//出だしは加速しすぎないように
 			M = min_M_use ;
 				
 		    }else{
-			M = min_M_use + (enc_now / 6);
+			M = min_M_use + (enc_now / 7);
 		    }
 		}
 	    }
@@ -804,7 +804,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 
     motor(0,0);
     //	GyroSum_reset();
-    Encoder_reset();
+//    Encoder_reset();
 }
 
 
@@ -820,10 +820,10 @@ void Tmotor(long long A){
 
     int sa = 0;
     int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
-    int MA = 1,min_M = 4;
+    int MA = 1,min_M = 2;
 	
     //	int cnt = 0;
-    int powor_max = 10;
+    int powor_max = 8;
     int powor;
 
     while(1){
@@ -890,7 +890,7 @@ void ETmotorU(long long A, long long E, char non_stop){
     GyroSum_reset();
     //Encoder_reset();
 
-    int M_kabe = 30;
+    int M_kabe = 25;
     int M 		= 30;
 	
     //壁切れ
@@ -1299,9 +1299,9 @@ void ETmotor(long long A, long long E, char non_stop){
     GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 25;
-    int M 		= 25;
-    int M_kabe2 = 25;
+    int M_kabe = 20;
+    int M 		= 20;
+    int M_kabe2 = 20;
 	
     //	char flag = 0;
 	
@@ -1460,7 +1460,7 @@ void ETmotor(long long A, long long E, char non_stop){
 void Tmotor_naname(long long A ,char inout){
     //GyroSum_reset();
     GyroSum_add(A);
-    Encoder_reset();
+//    Encoder_reset();
 
     //	static int cnt1 = 0;
 		
@@ -1498,7 +1498,7 @@ void Tmotor_naname(long long A ,char inout){
 	PORTA.DR.BIT.B0 = 1;
     }
 	
-    Encoder_reset();
+ //   Encoder_reset();
     while(1){
 	/*	if(A > 0){//R
 		if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 ){ //左壁近い || 右壁が近い
@@ -1543,10 +1543,10 @@ void Tmotor_naname(long long A ,char inout){
 		 
 	if(A > 0){//R
 	    //motor(LM ,-get_encoder_total_R() * 2);
-	    motor(LM ,10);
+	    motor(LM ,-4);
 	}else{//L
 	    //motor(-get_encoder_total_L() * 2 ,RM);
-	    motor(10 ,RM);
+	    motor(-4 ,RM);
 	}
 
 	LM_prev = LM;
@@ -1571,5 +1571,5 @@ void Tmotor_naname(long long A ,char inout){
       }
     */	
     //GyroSum_reset();
-    Encoder_reset();
+ //   Encoder_reset();
 }

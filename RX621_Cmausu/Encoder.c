@@ -49,6 +49,14 @@ int get_encoder_R(){
 }
 
 long long get_encoder_total_R(){
+	
+	static char flag = 0;
+	
+	if(flag == 1){
+	    return R_enc_total;
+	}
+	flag = 1;
+	
 	short tmp = RencData;
 	short sa = tmp - R_enc_base;
 	
@@ -63,10 +71,19 @@ long long get_encoder_total_R(){
 	R_enc_total += sa;
 	R_enc_base = tmp;
 	
+	flag = 0;
 	return R_enc_total;
 }
 
 long long get_encoder_total_L(){
+	
+	static char flag = 0;
+	
+	if(flag == 1){
+	    return L_enc_total;
+	}
+	flag = 1;
+	
 	short tmp = LencData;
 	short sa = tmp - L_enc_base;
 	
@@ -80,6 +97,8 @@ long long get_encoder_total_L(){
 	
 	L_enc_total += sa;
 	L_enc_base = tmp;
+	
+	flag = 0;
 	
 	return L_enc_total;
 }
