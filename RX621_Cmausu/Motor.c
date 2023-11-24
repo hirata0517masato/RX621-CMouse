@@ -1442,7 +1442,6 @@ void ETmotor(long long A, long long E, char non_stop){
 
 void Tmotor_naname(long long A ,char inout){
     //GyroSum_reset();
-    GyroSum_add(A);
     //    Encoder_reset();
 
     //	static int cnt1 = 0;
@@ -1488,6 +1487,8 @@ void Tmotor_naname(long long A ,char inout){
 	PORTA.DR.BIT.B0 = 1;
     }
 	
+    GyroSum_add(A);
+    
     //   Encoder_reset();
     while(1){
 	/*	if(A > 0){//R
