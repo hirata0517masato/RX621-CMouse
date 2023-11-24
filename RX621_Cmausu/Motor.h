@@ -12,6 +12,7 @@ char get_pwm_buff_L(void);
 char get_pwm_buff_R(void);
 void motor_pid_flag_reset(void);
 void Set_motor_pid_mode(char);
+int Get_motor_pid_mode();
 
 void motor_stop(void);
 void motor(int,int);

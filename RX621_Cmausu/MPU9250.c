@@ -245,16 +245,26 @@ void read_acc()
 
 void read_gyro()
 {
-    uint8_t response[6];
+    //uint8_t response[6];
+    uint8_t response[2];
     int16_t bit_data;
     float data;
+  /*
     int i;
+    
     ReadRegs(MPUREG_GYRO_XOUT_H,response,6);
     for(i = 0; i < 3; i++) {
         bit_data = (((int16_t)response[i*2])<<8) | response[i*2+1];
         data = (float)bit_data;
         gyro_data[i] = data/gyro_divider - g_bias[i];
     }
+    */
+    ReadRegs(MPUREG_GYRO_ZOUT_H,response,2);
+   
+    bit_data = (((int16_t)response[0])<<8) | response[1];
+    data = (float)bit_data;
+    gyro_data[2] = data/gyro_divider - g_bias[2];
+    
 }
 
 
