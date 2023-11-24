@@ -1,13 +1,15 @@
 品質記録情報
-2023年11月24日 18:36:44
+2023年11月24日 23:47:35
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+RX621_Cmausu.c(2947):W0520550:Variable "comand_old" was set but never used
+RX621_Cmausu.c(2947):W0520550:Variable "path_num_old" was set but never used
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:2個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:4個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -44,8 +46,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: bb3fb8b29279fd27b485a733a28bc93965963641
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 79cadec4ea9e1088a6ae976caccf35ef086528f6
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 6dacbd51ba0e5caab3c1b7a30760c20a5f00e1ee
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 944900b275592f5d6bf64429d07c97e32a466ae4
 
 
 --- システム情報 ---
@@ -71,9 +73,9 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 79cadec4ea9e1088a6ae976
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  375 MB
+  401 MB
  *GDIオブジェクト数
-  2157
+  2156
  *USERオブジェクト数
   1085
  *開いているファイル

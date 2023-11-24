@@ -1200,12 +1200,12 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 	  }
 	  }
 	  }*/
-	/*	
-		if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (h1 + h1/2) ){
+		
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (h1 + h1/2) ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
-		}
-	*/
+	}
+	
     }
   
     ESmotor(40,powor,true,false);//1cmくらい？
@@ -1248,12 +1248,11 @@ void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５タ
     
     	Smotor(powor,flag);
 	
-	/*	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (h1+ h1/2 )){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (h1+ h1/2 )){
 		led(9);
 		break; //壁切れが来なかったらブレーク
-		}
-	*/
-    }
+	}
+   }
   
     ESmotor(40,powor,true,false);//　直線からの４５ターン 勢いがあるので不要
     led(0);
@@ -1272,7 +1271,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 	
 	if(LR == 3 || LR == 1){//両方 || Lだけ
 	    if(Lflag == 0){
-		if(get_IR(IR_L) > 70){
+		if(get_IR(IR_L) > 60){
 		    led(8);
 		    Lflag = 1;
 		}
@@ -1305,7 +1304,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
 	    if(Rflag == 0){
-		if(get_IR(IR_R) > 70){
+		if(get_IR(IR_R) > 60){
 		    led(1);
 		    Rflag = 1;
 		}
@@ -1339,11 +1338,11 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 	
 	
 	
-	/*	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45 )  ){
+	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45/2 )  ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
-		}
-	*/
+	}
+	
     }
  
     if(Lflag == 3 && get_IR(IR_L) > 70){//壁切れが遅かった場合
@@ -1353,7 +1352,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 	ESmotor(250,powor,true,false);///222
 	
     }else{
-  	ESmotor(250,powor,true,false);///222
+  	ESmotor(270,powor,true,false);///222
     }
     led(0);
 }
@@ -2951,7 +2950,7 @@ void run_shortest_path_fin(	char naname){
     int over_run = 0;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
     int over_run2 = -400; // 直線距離が短い時に使用する
 
-    int run_speed = 80;
+    int run_speed = 100;
     int run_speed_naname = 80;
     
     /*   
@@ -3078,26 +3077,55 @@ void run_shortest_path_fin(	char naname){
 			  
 		    if(queue_next(1) == -11 || queue_next(1) == 11){//直線後に45ターン
 			if(queue_next(1) < 0){//次　左
-			    S_run_kabe2(30,true,1);
+			    if(path_num == 1){
+				 S_run_kabe2(35,true,1);  
+			    }else{
+				 S_run_kabe2(20,true,1);   
+			    }
+			    
 			    //S_run_kabe2(20,4,1);// w_flag = 4 串の壁補正あり
 						
 			}else if(queue_next(1) > 0){//次　右
-			    S_run_kabe2(30,true,2);
+			    if(path_num == 1){
+				 S_run_kabe2(35,true,2); 
+			    }else{
+				 S_run_kabe2(20,true,2);  
+			    }
+			    
 			    //S_run_kabe2(20,4,2);// w_flag = 4 串の壁補正あり
 			}else{
-			    S_run_kabe2(30,true,3);
+			    if(path_num == 1){
+				 S_run_kabe2(35,true,3);  
+			    }else{
+				 S_run_kabe2(20,true,3);   
+			    }
+			    
 			    //S_run_kabe2(20,4,3);// w_flag = 4 串の壁補正あり
 			}
 		    }else{
 			if(queue_next(1) < 0){//次　左
-			    S_run_kabe(30,true,1);
+			    if(path_num == 1){
+				S_run_kabe(40,true,1);
+			    }else{
+			    	S_run_kabe(30,true,1);
 			    //S_run_kabe(35,4,1);// w_flag = 4 串の壁補正あり
+			    }
 						
 			}else if(queue_next(1) > 0){//次　右
-			    S_run_kabe(30,true,2);
+			    if(path_num == 1){
+				S_run_kabe(40,true,2);    
+			    }else{
+				S_run_kabe(30,true,2);   
+			    }
+			    
 			    //S_run_kabe(35,4,2);// w_flag = 4 串の壁補正あり
 			}else{
-			    S_run_kabe(30,true,3);
+			    if(path_num == 1){
+				S_run_kabe(40,true,3);  
+			    }else{
+				S_run_kabe(30,true,3); 
+			    }
+			    
 			    //S_run_kabe(35,4,3);// w_flag = 4 串の壁補正あり
 			}
 				  
@@ -3123,23 +3151,23 @@ void run_shortest_path_fin(	char naname){
 	    path_num-=2;
 		 
 	    if(path_num <= 0){//２マスだけの斜め
-		
+		/*	
 		if(run_fin_speed_offset > 0){//速度オフセットがプラスの時は無効化
-		    //S_run(s45 /2 ,run_speed_naname,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
-		    S_run(s45 /2 ,run_speed_naname,true,0); //壁補正無し
+		    S_run(s45 /4 ,run_speed_naname,true,0); //壁補正無し
+		    S_run(s45 /4 ,run_speed_naname,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
 		}else{
-		   // S_run(s45 /2 ,run_speed_naname + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
-		    S_run(s45 /2 ,run_speed_naname + run_fin_speed_offset,true,0);//壁補正無し
+		    S_run(s45 /4 ,run_speed_naname + run_fin_speed_offset,true,0);//壁補正無し
+		    S_run(s45 /4 ,run_speed_naname + run_fin_speed_offset,true,3); // w_flag = 3 斜めの壁補正あり 少しだけ前に移動した方が安全
 		}
-		
+		*/
 		//距離が短いので少し速度高めに設定する
 		if(queue_next(1) < 0){//次　左
-		    S_run_kabe_naname(45,3,1);
+		    S_run_kabe_naname(55,3,1);
 			
 	        }else if(queue_next(1) > 0){//次　右
-		    S_run_kabe_naname(45,3,2);
+		    S_run_kabe_naname(55,3,2);
 	        }else{
-		    S_run_kabe_naname(45,3,3);
+		    S_run_kabe_naname(55,3,3);
 	        }
 		
 	    }else{
@@ -3159,12 +3187,12 @@ void run_shortest_path_fin(	char naname){
 			}
 		}
 		if(queue_next(1) < 0){//次　左
-		    S_run_kabe_naname(45,3,1);
+		    S_run_kabe_naname(50,3,1);
 			
 	        }else if(queue_next(1) > 0){//次　右
-		    S_run_kabe_naname(45,3,2);
+		    S_run_kabe_naname(50,3,2);
 	        }else{
-		    S_run_kabe_naname(45,3,3);
+		    S_run_kabe_naname(50,3,3);
 	        }
 	    }
 		
