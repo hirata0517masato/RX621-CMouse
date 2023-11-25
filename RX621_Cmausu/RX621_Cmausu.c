@@ -3006,12 +3006,12 @@ void run_shortest_path_fin(	char naname){
 	case -11://L45
 	  	
 	    if(queue_next(1) == -11){//Vターン
-		L_rotate_naname(l45 * path_num * 0.95,true);//0.75
+		L_rotate_naname(l45 * path_num * 1.00,true);//0.75
 			 
 	    }else if(queue_next(1) == -1 || queue_next(1) == 1){//45からの90ターン
 		L_rotate_naname(l45 * path_num  * 0.95,true);
 			
-		ESmotor(145,25,true,true);//距離、スピード
+		ESmotor(100,25,true,true);//距離、スピード
 			
 	    }else if(queue_next(1) == 0){//45から直線 = 斜め終わり
 		L_rotate_naname(l45 * path_num * 1.00,false);
@@ -3168,9 +3168,9 @@ void run_shortest_path_fin(	char naname){
 			S_run(s45 ,run_speed_naname,true,0); //壁補正なし 
 		}else{
 			S_run(s45 ,run_speed_naname + run_fin_speed_offset,true,0); //壁補正なし 
-		}
-			
+		}	
 		path_num--;
+		
 		if( path_num >= 0){     
 			if(run_fin_speed_offset > 0){//速度オフセットがプラスの時は無効化
 			    S_run(s45 * (long long)path_num + s45/2 ,run_speed_naname,true,3); // w_flag = 3 斜めの壁補正あり
@@ -3226,12 +3226,12 @@ void run_shortest_path_fin(	char naname){
 	case 11://R45
         
 	    if(queue_next(1) == 11){//Vターン
-		R_rotate_naname(r45 * path_num * 0.95,true);//0.75
+		R_rotate_naname(r45 * path_num * 1.00,true);//0.75
 			
 	    }else if(queue_next(1) == 1 || queue_next(1) == -11){//45からの90ターン
 		R_rotate_naname(r45 * path_num * 0.95,true);
 			
-		ESmotor(145,25,true,true);//距離、スピード
+		ESmotor(100,25,true,true);//距離、スピード
 			
 	    }else if(queue_next(1) == 0){//45から直線 =　斜め終わり
 		R_rotate_naname(r45 * path_num * 1.00,false);

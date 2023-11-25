@@ -295,11 +295,11 @@ void Smotor(int M,char w_flag){
 			    
 			}else if(get_IR(IR_FL) > 45){
 			    GyroSum_add(10);
-			    //naname_flag = 1;
+			    naname_flag = 1;
 			    
 			}else{
 			    GyroSum_add(5);
-			   // naname_flag = 1;
+			    naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B3 = 1;
 		    }	
@@ -320,11 +320,11 @@ void Smotor(int M,char w_flag){
 			     
 			}else if(get_IR(IR_FR) > 45){
 			    GyroSum_add(-10);
-			    //naname_flag = 1;
+			    naname_flag = 1;
 			    
 			}else{
 			    GyroSum_add(-5);
-			    //naname_flag = 1;
+			    naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B0 = 1;
 		    }	
