@@ -217,7 +217,7 @@ void Smotor(int M,char w_flag){
 		ir_core = 55;//左右の差の許容範囲
 				
 		kp = 0.5;
-		kd = 20.0;
+		kd = 10.0;
 	    }
 			
 			
@@ -279,7 +279,7 @@ void Smotor(int M,char w_flag){
 		
 	//斜め対策
 	if(w_flag == 3){
-	    if((get_encoder_L() > 20 && get_encoder_R() > 20) && abs(GyroSum_get()) < 700){
+	    if((get_encoder_L() > 0 && get_encoder_R() > 0) && abs(GyroSum_get()) < 1000){
 		//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
 		if(   get_IR(IR_FL) > 35 ){//左前のみ
 		    cnt3++;
@@ -295,11 +295,11 @@ void Smotor(int M,char w_flag){
 			    
 			}else if(get_IR(IR_FL) > 45){
 			    GyroSum_add(10);
-			    naname_flag = 1;
+			    //naname_flag = 1;
 			    
 			}else{
-			    GyroSum_add(1);
-			    naname_flag = 1;
+			    GyroSum_add(5);
+			   // naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B3 = 1;
 		    }	
@@ -320,11 +320,11 @@ void Smotor(int M,char w_flag){
 			     
 			}else if(get_IR(IR_FR) > 45){
 			    GyroSum_add(-10);
-			    naname_flag = 1;
+			    //naname_flag = 1;
 			    
 			}else{
-			    GyroSum_add(-1);
-			    naname_flag = 1;
+			    GyroSum_add(-5);
+			    //naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B0 = 1;
 		    }	
@@ -514,7 +514,9 @@ void Smotor(int M,char w_flag){
 void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     //    Encoder_reset();
 	
-    long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
+    //long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
+    long long enc_base_L = get_encoder_total_L();
+    long long enc_base_R = get_encoder_total_R();
     long long enc_now = 0;
 	
 
@@ -526,8 +528,8 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     int ir_L_flag = 0,ir_R_flag = 0;
     int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
     int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
-    int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
-    int kame_hosei;
+//    int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
+//    int kame_hosei;
     long long enc_kabe_L,enc_kabe_R;
 	
     int p = 5,min_M = 5,M = 5;
@@ -546,7 +548,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	
     int M_max_safe = 60;//横壁が近すぎる場合は減速
 	
-    kame_hosei = 530;
+ //   kame_hosei = 530;
 	
 	
     GyroSum_reset();
@@ -591,11 +593,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				M = min_M_use + ( (A - enc_now) / 4);
 				
 			}else{
-				if((A - enc_now) < 150){
+				if((A - enc_now) < 200){
 					M = min_M_use;
 				
 				}else{
-					M = min_M_use + ( (A - enc_now -150) / 10);
+					M = min_M_use + ( (A - enc_now -200) / 20);
 				}
 			}
 		}
@@ -616,7 +618,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			    M = min_M_use ;
 					
 			}else{
-		            M = min_M_use + ((enc_now-150) / 10);
+		            M = min_M_use + ((enc_now-150) / 20);
 			}
 		    }
 		}
@@ -674,10 +676,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			(non_stop == 1 && ((enc_now - h1) % s1) < s1 * 2 / 3)	){
 					
 			if(path_cnt == path_cnt_save_R){//左より先に右が壁切れ補正していた場合
-			    if(Get_motor_pid_mode() == 0){//探索モード
+/*			    if(Get_motor_pid_mode() == 0){//探索モード
 
-				enc_base -= hosei_kyori_R;//右での補正を無かったことにする
-				enc_now = (get_encoder_total_L() + get_encoder_total_R())/2 - enc_base;
+				enc_base_L -= hosei_kyori_R;//右での補正を無かったことにする
+				enc_base_R -= hosei_kyori_R;//右での補正を無かったことにする
+				enc_now = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 							
 				if( non_stop == 0){//迷路探索時
 				    hosei_kyori_L = (enc_now % s1) - kame_hosei;
@@ -685,26 +688,30 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				    hosei_kyori_L = ((enc_now - h1) % s1) - kame_hosei;
 				}
 				hosei_kyori_L = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
-			    }							
+			    }
+*/
 			    //壁切れタイミングの違いで角度補正
-			    enc_kabe_L = (get_encoder_total_L() + get_encoder_total_R())/2;
+			    enc_kabe_L = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			    if(abs( (enc_kabe_L - enc_kabe_R) ) < 500){
 				GyroSum_add( (enc_kabe_L - enc_kabe_R) * 30);
 			    }
 			}else{
-			    if(Get_motor_pid_mode() == 0){//探索モード
+/*			    if(Get_motor_pid_mode() == 0){//探索モード
 			    	if( non_stop == 0){//迷路探索時
 				    hosei_kyori_L = (enc_now % s1) - kame_hosei;
 				}else if(non_stop == 1 && enc_now > h1){
 				    hosei_kyori_L = ((enc_now - h1) % s1) - kame_hosei;
 				}
-			    }	
-			    enc_kabe_L = (get_encoder_total_L() + get_encoder_total_R())/2;
+			    }
+*/
+			    enc_kabe_L = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			}
 			
-			if(Get_motor_pid_mode() == 0){//探索モード
-			    enc_base += hosei_kyori_L;
-			}		
+/*			if(Get_motor_pid_mode() == 0){//探索モード
+			    enc_base_L += hosei_kyori_L;
+			    enc_base_R += hosei_kyori_L;
+			}
+*/
 		    }
 		    ir_L_flag = 0;
 		    path_cnt_save_L = path_cnt;
@@ -722,9 +729,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 					
 			if(path_cnt == path_cnt_save_L){//右より先に左が壁切れ補正していた場合
 							
-			    if(Get_motor_pid_mode() == 0){//探索モード
-			    	enc_base -= hosei_kyori_L;//左での補正を無かったことにする
-				enc_now = (get_encoder_total_L() + get_encoder_total_R())/2 - enc_base;
+/*			    if(Get_motor_pid_mode() == 0){//探索モード
+			    	enc_base_L -= hosei_kyori_L;//左での補正を無かったことにする
+				enc_base_R -= hosei_kyori_L;//左での補正を無かったことにする
+				enc_now = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 							
 				if( non_stop == 0){//迷路探索時
 				    hosei_kyori_R = (enc_now % s1) - kame_hosei;
@@ -732,28 +740,32 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				    hosei_kyori_R = ((enc_now - h1) % s1) - kame_hosei;
 				}
 							
-				hosei_kyori_R = (hosei_kyori_L + hosei_kyori_R) / 2;//左右の平均値を使用する
+				hosei_kyori_R = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 							
-			    }							
+			    }
+*/
 			    //壁切れタイミングの違いで角度補正
-			    enc_kabe_R = (get_encoder_total_L() + get_encoder_total_R())/2;
+			    enc_kabe_R = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			    if(abs( (enc_kabe_L - enc_kabe_R) ) < 500){
 				GyroSum_add( (enc_kabe_L - enc_kabe_R) * 30);
 			    }
 			}else{
-			    if(Get_motor_pid_mode() == 0){//探索モード
+/*			    if(Get_motor_pid_mode() == 0){//探索モード
 			    	if( non_stop == 0){//迷路探索時
 				    hosei_kyori_R = (enc_now % s1) - kame_hosei;
 				}else if(non_stop == 1 && enc_now > h1){
 				    hosei_kyori_R = ((enc_now - h1) % s1) - kame_hosei;
 				}
 			    }
-			    enc_kabe_R = (get_encoder_total_L() + get_encoder_total_R())/2;
+*/
+			    enc_kabe_R = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			}
 						
-			if(Get_motor_pid_mode() == 0){//探索モード
-			    enc_base += hosei_kyori_R;
-			}	
+/*			if(Get_motor_pid_mode() == 0){//探索モード
+			    enc_base_L += hosei_kyori_R;
+			    enc_base_R += hosei_kyori_R;
+			}
+*/
 		    }
 		    ir_R_flag = 0;
 		    path_cnt_save_R = path_cnt;
@@ -761,11 +773,13 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }
 	}
 			
-		
+	/*	
 	if(F_min-50 < get_IR(IR_F)){//前壁が近い場合はストップ
 	    break;
 			
-	}else if(non_stop != 0){
+	}else 
+	*/
+	if(non_stop != 0){
 	    if(A - enc_now  < 30)break; 
 	}else{
 	    if(abs(enc_now - A) < 30){
@@ -777,8 +791,8 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	}
 		
 		
-	enc_now = (get_encoder_total_L() + get_encoder_total_R())/2 - enc_base;
-	//enc_now = min(get_encoder_total_L() , get_encoder_total_R());
+	//enc_now = (get_encoder_total_L() + get_encoder_total_R())/2 - enc_base;
+	enc_now = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
     }
 
     motor(0,0);
@@ -1287,14 +1301,14 @@ void ETmotor(long long A, long long E, char non_stop){
     //壁切れ
     if(A > 0){//R 
 	//while(get_IR(IR_R) > 10){
-	while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 10 && (get_IR(IR_FL) < 20 && get_IR(IR_FR) < 20 )  ) ){ //前壁補正は斜めになると悪影響がある
+	while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 10 && (get_IR(IR_FL) < 15 && get_IR(IR_FR) < 15 )  ) ){ //前壁補正は斜めになると悪影響がある
 	    Smotor(M_kabe,true);
 	    //			flag = 1;
 	}
 	//		if(flag)ESmotor(25,M_kabe,true,false);
     }else{//L
 	//while(get_IR(IR_L) > 10){
-	while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 10 && (get_IR(IR_FL) < 20 && get_IR(IR_FR) < 20 ) )){
+	while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 10 && (get_IR(IR_FL) < 15 && get_IR(IR_FR) < 15 ) )){
 	    Smotor(M_kabe,true);
 	    //			flag = 1;
 	}
@@ -1463,7 +1477,7 @@ void Tmotor_naname(long long A ,char inout){
     if(inout == 1){//斜めのはじめのみ有効
 	if(A > 0){//R
 	    //while(get_IR(IR_R) > 15){
-	    while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 25 ) ){ //前壁補正は斜めになると悪影響がある
+	    while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
 	  
 		Smotor(M_kabe,true);
 		//	flag = 1;
@@ -1471,14 +1485,14 @@ void Tmotor_naname(long long A ,char inout){
 	    //if(flag)ESmotor(115,M_kabe,true,false);
 	}else{//L
 	    //while(get_IR(IR_L) > 15){
-	    while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 25 ) ){ //前壁補正は斜めになると悪影響がある
+	    while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
 		Smotor(M_kabe,true);
 		//	flag = 1;
 	    }
 	    //if(flag)ESmotor(115,M_kabe,true,false);
 	}
 	    
-	while( 30 < get_IR(IR_F) ){//前壁が近すぎる
+	while( 28 < get_IR(IR_F) ){//前壁が近すぎる
 		Smotor(-M_kabe,0); //バックする
 	}
     }
