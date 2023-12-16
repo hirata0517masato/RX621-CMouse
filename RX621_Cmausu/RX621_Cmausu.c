@@ -102,7 +102,7 @@ char log_start = 0;
 int log_cnt = 0;
 int log_save_cnt = 0;
 int log_block_num = 1; //max 15
-
+short status_log = 99;
 
 /***********************************************************************/
 /* メインプログラム                                                    */
@@ -140,26 +140,27 @@ void main(void)
       while(1);
       }
       }*/
-    /*
+ 
+   /*   
       while(1){
-      led(0);
-      //ir(0x10);
-      ir_flag = 1;//赤外線ON
-      //motor(10,10);
+	      led(0);
+	      //ir(0x10);
+	      ir_flag = 1;//赤外線ON
+	      //motor(10,10);
 
-      //printf2("%d\t%d\t%d\t%d\t%d :",get_IR_base(4),get_IR_base(3),get_IR_base(2),get_IR_base(1),get_IR_base(0));
-		
-      //printf2("\t%d\t%d\t%d\t%d\t%d\n",get_IR(4),get_IR(3),get_IR(2),get_IR(1),get_IR(0));
-		
-      printf2("%ld\n",get_encoder_total_R());
-		
-      //printf2("%ld\n",GyroSum_get());
-      if(get_sw() == 1){
-      Encoder_reset();
+	      printf2("%d\t%d\t%d\t%d\t%d\t%d\t%d :",get_IR_base(5),get_IR_base(4),get_IR_base(3),get_IR_base(2),get_IR_base(1),get_IR_base(0),get_IR_base(6));
+			
+	      printf2("\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",get_IR(5),get_IR(4),get_IR(3),get_IR(2),get_IR(1),get_IR(0),get_IR(6));
+			
+	      //printf2("%ld\n",get_encoder_total_R());
+			
+	      //printf2("%ld\n",GyroSum_get());
+	      if(get_sw() == 1){
+	      	Encoder_reset();
+	      }
+	      delay(100);
       }
-      delay(100);
-      }
-    */			
+  */  			
     while(1){
 		
 	Encoder_reset();
@@ -564,7 +565,7 @@ void IO_init(void)
     //PORTC.DDR.BYTE = 0xff;           // PCを出力に設定
     //  PORTC.PCR.BYTE   = 0x03;        // PC0,1をプルアップ指定
 	
-    PORTD.DDR.BYTE = 0xff;           // 4:IR5 3:IR4	2:IR3	1:IR2	0:IR1
+    PORTD.DDR.BYTE = 0xff;           // 6:IR7 5:IR6 4:IR5 3:IR4	2:IR3	1:IR2	0:IR1
 	
     PORTE.DDR.BYTE = 0x70; 	     	 // 7:SPI_SDO	6:SPI_SDI	5:SPI_SCL	4:SPI_CS    (6,7のIOはジャイロ目線)
     PORTE.PCR.BYTE = 0x70;           // PE7をプルアップ指定
@@ -586,7 +587,10 @@ void AD_init(void)
     //MSTP(S12AD) = 0;//モジュールストップ状態を解除
 
     S12AD.ADCSR.BYTE = 0x0c;//動作モード、変換開始要件、クロックの設定
-    S12AD.ADANS.WORD = 0x001f;//スキャン変換端子の設定 AN0-7の全て使用する場合は0xff
+
+    S12AD.ADANS.WORD = 0x007f;//スキャン変換端子の設定 AN0-7の全て使用する場合は0xff
+    //高速化のためAD変換前に必要なポートのみに更新している
+    
     S12AD.ADSTRGR.BYTE = 0x0000;//A/D 変換開始要件の設定
 	
 }
@@ -859,8 +863,10 @@ int log_minus(uint8_t data){//符号がマイナスの値を修正する
 void log_load(){
     int i = 0;
     int block_num = 1;
-	
-    printf2("X\tY\tS4\tS3\tS2\tS1\tS0\tPWM_L\tPWM_R\n\n");
+
+    int cnt = 0;
+    
+    printf2("status\tX\tY\tA\t  S5\tS4\tS3\tS2\tS1\tS0\tS6\t   PWM_L PWM_R\tENC_L ENC_R\n\n");
 	
     while(block_num < 16){
 	DataFlash_read(block_num,log,sizeof(log));
@@ -874,11 +880,31 @@ void log_load(){
 			
 	    if((log[i]>>4) > 16 || (log[i]&0x000F) > 16)break;//X,Y座標が範囲外なら終了
 				
-	    printf2("%d\t%d\t\t%d\t%d\t%d\t%d\t%d\t\t%d\t%d\t\n",log[i]>>4,log[i]&0x000F
-		    ,(((int)log[i+1]) << 2),(((int)log[i+2]) << 2),(((int)log[i+3]) << 2),(((int)log[i+4]) << 2),(((int)log[i+5]) << 2)
-		    ,log_minus(log[i+6]),log_minus(log[i+7]) );	
+	    printf2("%3d : %2d %2d %2d\t",log_minus(log[i+13]),log[i]>>4,log[i]&0x000F,log[i+12] );	
 														
-	    i += 8;
+	    cnt++;
+	    if(cnt > 16){
+		    cnt = 0;
+		    delay(1);//printfを高速、連続で使用すると動作が不安定
+	    }
+	    
+	    printf2(" : \t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t", (((int)log[i+1]) << 2),(((int)log[i+2]) << 2),(((int)log[i+3]) << 2),(((int)log[i+4]) << 2),(((int)log[i+5]) << 2),(((int)log[i+6]) << 2),(((int)log[i+7]) << 2));	
+														
+	    cnt++;
+	    if(cnt > 16){
+		    cnt = 0;
+		    delay(1);//printfを高速、連続で使用すると動作が不安定
+	    }
+	    
+	    printf2(" : \t%3d\t%3d\t : %3d\t%3d\n",log_minus(log[i+8]),log_minus(log[i+9]),log_minus(log[i+10]) <<1,log_minus(log[i+11]) <<1  );	
+														
+	    cnt++;
+	    if(cnt > 16){
+		    cnt = 0;
+		    delay(1);//printfを高速、連続で使用すると動作が不安定
+	    }
+	    
+	    i += 16;
 	}
 	block_num++;
     }
@@ -912,7 +938,7 @@ void maze_update(char x,char y,char angle, char type){
         case -1://L
 	    //if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
 				
-	    if(get_IR(IR_L) > 20){
+	    if(get_IR(IR_L) > 40){
 		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 							
 		    //if(type == 3){
@@ -949,7 +975,7 @@ void maze_update(char x,char y,char angle, char type){
 	    //if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
 				
 				 
-	    if(get_IR(IR_F) > 20 ){
+	    if(get_IR(IR_F) > 40 ){
 		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 							
 		    //if(type == 3){
@@ -1002,7 +1028,7 @@ void maze_update(char x,char y,char angle, char type){
         case 1://R
 	    //if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//未確定の場合
 				 
-	    if(get_IR(IR_R) > 20){
+	    if(get_IR(IR_R) > 40){
 		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//確定の場合 && 過去の記録が今回と値が異なる
 							
 		    //if(type == 3){
@@ -1402,7 +1428,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	    break;
 	}
 		
-	if( path_cnt < path-1 && get_IR(IR_F) > 50){//目標まで１マス以上残ってる　＆＆　前壁が出現
+	if( path_cnt < path-1 && get_IR(IR_F) > 100){//目標まで１マス以上残ってる　＆＆　前壁が出現
 		
 	    //マスの中心まで移動
 	    while(enc_now - ((long long)s1 * path_cnt ) < s1 && get_IR(IR_F) < F_min){
@@ -1448,9 +1474,9 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 		led_num = 0;
 		led(led_num);
 				
-		if(maza_update_flag != 2){//なぜか壁の更新ができていなければ
+		//if(maza_update_flag != 2){//なぜか壁の更新ができていなければ
 		    maze_update(my_x + dx[my_angle],my_y + dy[my_angle],my_angle,3);//迷路情報の更新
-		}
+		//}
 		//現在地の更新
 		my_x += dx[my_angle];
 		my_y += dy[my_angle];
@@ -1461,7 +1487,8 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 		ir_R_flag = 0;
 	    }
 	}	
-		
+
+	/*
 	if(maza_update_flag == 0){//まだ横壁の更新をしていなければ
 	    if(enc_now - ((long long)s1 * path_cnt ) > s1 - 100){//マスの中心ではなく少し手前で壁をチェックする メモ：横壁センサーが少し斜め前を向いているため
 			
@@ -1477,7 +1504,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 		maza_update_flag = 2;
 	    }
 	}
-		
+*/		
 		
 	if(enc_now < (long long)path * s1 /4){// 進んだ距離 < 目標距離 * 1/4　＝ 加速区間
 	    M_pwm = M_pwm_min + (enc_now / 8);	
@@ -1514,7 +1541,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	ir_R_now = get_IR(IR_R);
 	if(path_cnt_save_L !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 		
-	    if(ir_L_flag == 0 && ir_L_now > 23 && ir_R_now < 160){//左壁がある　&& 右壁に近すぎない
+	    if(ir_L_flag == 0 && ir_L_now > 30 && ir_R_now < 160){//左壁がある　&& 右壁に近すぎない
 		ir_L_flag = 1;
 				
 		led_num |= 8;
@@ -1539,7 +1566,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 			//壁切れタイミングの違いで角度補正
 			enc_kabe_L = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			if(abs( (enc_kabe_L - enc_kabe_R) ) < 500){
-			    GyroSum_add( (enc_kabe_L - enc_kabe_R) * 30);
+			    GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
 			}
 		    }else{
 /*			if(Get_motor_pid_mode() == 0){//探索モード
@@ -1562,7 +1589,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 		
 	if(path_cnt_save_R !=  path_cnt){//現在のマスで壁切れ処理を実行していなければ
 			
-	    if(ir_R_flag == 0 && ir_R_now > 23 && ir_L_now < 160){//右壁がある　&& 左壁に近すぎない
+	    if(ir_R_flag == 0 && ir_R_now > 30 && ir_L_now < 160){//右壁がある　&& 左壁に近すぎない
 				
 		ir_R_flag = 1;
 				
@@ -1588,7 +1615,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 			//壁切れタイミングの違いで角度補正
 			enc_kabe_R = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			if(abs( (enc_kabe_L - enc_kabe_R) ) < 500){
-			    GyroSum_add( (enc_kabe_L - enc_kabe_R) * 30);
+			    GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
 			}
 		    }else{
 /*			if(Get_motor_pid_mode() == 0){//探索モード
@@ -1878,7 +1905,7 @@ void run_shortest_path(){
     int time = 100;
     
     int run_speed = 25;
-    int run_speed_up = 45;    //未知区間加速
+    int run_speed_up = 40;    //未知区間加速
     int run_speed_boost = 60; //既知区間加速
     
     int run_speed_kabe = 25;
@@ -1886,8 +1913,10 @@ void run_shortest_path(){
   
     while(!queue_empty()){
 	comand = dequeue();path_num = dequeue();
+	status_log = comand;
 	
 	switch(comand){
+	
 	case -1://L
 	    delay(time);
 		
@@ -1945,7 +1974,7 @@ void run_shortest_path(){
 		}
 	    }
 		
-	    if(get_IR(IR_F) > 100){
+	    if(get_IR(IR_F) > 40){
 		cnt= 0;
 		while(1){//前壁補正
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
@@ -1990,7 +2019,7 @@ void run_shortest_path(){
 		S_run_maze_search(path_num,run_speed + run_fin_speed_offset,run_speed_up + run_fin_speed_offset ,  6);
 	    }
 		
-	    if(get_IR(IR_F) > 100){
+	    if(get_IR(IR_F) > 40){
 		cnt= 0;
 		while(1){//前壁補正
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
@@ -2027,6 +2056,7 @@ void run_shortest_path(){
 	    break;
 	}
     }
+    status_log = 99;
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -2966,6 +2996,7 @@ void run_shortest_path_fin(	char naname){
  
     while(!queue_empty()){
 	comand = dequeue();path_num = dequeue();
+	status_log = comand;
 	switch(comand){
 	case -1://L
 	    /*
@@ -3246,6 +3277,7 @@ void run_shortest_path_fin(	char naname){
 	comand_old = comand;
 	path_num_old = path_num;
     }
+    status_log = 99;
     motor(0,0);
     led_up();
 }
@@ -3330,28 +3362,42 @@ void Excep_CMT0_CMI0(void)
     case 0:
     case 10:
     case 20:
+    case 30:
 	encoder_update();
         break;
    
     case 1:
 	if(log_start != 0){
+	    if(log_flag != 1)log_cnt = 0;
 	    log_flag = 1;
 				
 			
-	    if((LOG_BUF_MAX * log_save_cnt) + log_cnt +8 <= LOG_MAX){
+	    if((LOG_BUF_MAX * log_save_cnt) + log_cnt +16 <= LOG_MAX){
 		log_buff[log_cnt++] =( my_x << 4) +( my_y & 0x0F);
 			
+		log_buff[log_cnt++] = (char)(get_IR(IR_LT) >>2);
+		
 		log_buff[log_cnt++] = (char)(get_IR(IR_L) >>2);
 		log_buff[log_cnt++] = (char)(get_IR(IR_FL) >>2);
 		log_buff[log_cnt++] = (char)(get_IR(IR_F) >>2);
 		log_buff[log_cnt++] = (char)(get_IR(IR_FR) >>2);
 		log_buff[log_cnt++] = (char)(get_IR(IR_R) >>2);
+		
+		log_buff[log_cnt++] = (char)(get_IR(IR_RT) >>2);
 				
-		//log_buff[log_cnt++] = get_encoder_L()/10;
-		//log_buff[log_cnt++] = get_encoder_R()/10;
+		
 		
 		log_buff[log_cnt++] = get_pwm_buff_L();
 		log_buff[log_cnt++] = get_pwm_buff_R();
+		
+		log_buff[log_cnt++] = get_encoder_L() >>1;
+		log_buff[log_cnt++] = get_encoder_R() >>1;
+		
+		log_buff[log_cnt++] = my_angle;
+		
+		log_buff[log_cnt++] = status_log;
+		
+		log_cnt+=2;//合計16個になるように調整する
 				
 		if(log_cnt >= LOG_BUF_MAX-2){//たまったら保存する
 		    log_save();

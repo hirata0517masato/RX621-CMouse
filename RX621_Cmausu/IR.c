@@ -7,9 +7,11 @@
 #define AD_2	S12AD.ADDR2	     // CN3-11 :AN2(0～4069)
 #define AD_3	S12AD.ADDR3	     // CN3-12 :AN3(0～4069)
 #define AD_4	S12AD.ADDR4	     // AN4(0～4069)
+#define AD_5	S12AD.ADDR5	     // AN5(0～4069)
+#define AD_6	S12AD.ADDR6	     // AN6(0～4069)
 
-int S[5] = {0,0,0,0,0};	//IRセンサー値
-int s[5] = {0,0,0,0,0};//IRセンサー値(IR発光なし）
+int S[7] = {0,0,0,0,0,0,0};	//IRセンサー値
+int s[7] = {0,0,0,0,0,0,0};//IRセンサー値(IR発光なし）
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：A/D値の更新                                                                         */
@@ -45,6 +47,13 @@ void ir(char n){
 	
 	if((n & 0x10) > 0)PORTD.DR.BIT.B0 = 1;
 	else PORTD.DR.BIT.B0 = 0;
+	
+	if((n & 0x20) > 0)PORTD.DR.BIT.B5 = 1;
+	else PORTD.DR.BIT.B5 = 0;
+	
+	if((n & 0x40) > 0)PORTD.DR.BIT.B6 = 1;
+	else PORTD.DR.BIT.B6 = 0;
+
 }
 
 void ir_update(){
@@ -61,8 +70,8 @@ void ir_update(){
 			s[0] = AD_4;
 			s[3] = AD_1;
 			
-			ir(0);// 0 0000
-			
+			ir(0);// 000 0000
+			S12AD.ADANS.WORD = 0x001B;//0001 1011
 			num = 1;
 			break;
 		
@@ -70,7 +79,8 @@ void ir_update(){
 			S[0] = (AD_4 - s[0]) /10;
 			S[3] = (AD_1 - s[3]) /10;
 			
-			ir(0x12);// 1 0010
+			ir(0x12);// 001 0010
+			//S12AD.ADANS.WORD = 0x0009;//0000 1001
 			
 			num = 2;
 			break;
@@ -79,7 +89,8 @@ void ir_update(){
 			s[1] = AD_3;
 			s[4] = AD_0;
 			
-			ir(0);// 0 0000
+			ir(0);// 000 0000
+			S12AD.ADANS.WORD = 0x006D;//0110 1101
 			
 			num = 3;
 			break;
@@ -88,21 +99,30 @@ void ir_update(){
 			S[4] = (AD_0 - s[4]) /10 * 6 /10;//センサーのばらつきを微調整（本当は自動でやりたい）
 			
 			
-			ir(0x04);//0 0100
+			//ir(0x04);//000 0100
+			ir(0x64);//110 0100
+			//S12AD.ADANS.WORD = 0x0064;//0110 0100
 			
 			num = 4;
 			break;
-		case 4:// F
+		case 4:// LT F RT
 			s[2] = AD_2;
+			s[5] = AD_5;
+			s[6] = AD_6;
 			
-			ir(0);// 0 0000
+			ir(0);// 000 0000
+			S12AD.ADANS.WORD = 0x0076;//0111 0110
 			
 			num = 5;
 			break;
 		case 5://
 			S[2] = (AD_2 - s[2]) /10;
 			
-			ir(0x09);// 0 1001
+			S[5] = (AD_5 - s[5])  * 6 /10;//センサーのばらつきを微調整;
+			S[6] = (AD_6 - s[6]) ;
+			
+			ir(0x09);// 000 1001
+			//S12AD.ADANS.WORD = 0x0012;//0001 0010
 			
 			num = 0;
 			break;

@@ -1,15 +1,13 @@
 品質記録情報
-2023年11月25日 22:39:48
+2023年12月17日 0:29:14
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
-RX621_Cmausu.c(2939):W0520550:Variable "comand_old" was set but never used
-RX621_Cmausu.c(2939):W0520550:Variable "path_num_old" was set but never used
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c IR.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:4個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:2個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -46,8 +44,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 54546d8b475d7d4ba4a88f83fb1099af7e94afa5
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 8cc4ff32979035d5d78847784fe58d307e9c5d59
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: e150c685311f99e00141555b1ce9db465b8491b0
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 8870c04b457b1e72f2c914eee6fca2c59cbea746
 
 
 --- システム情報 ---
@@ -73,13 +71,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 8cc4ff32979035d5d788477
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  318 MB
+  346 MB
  *GDIオブジェクト数
-  2111
+  2116
  *USERオブジェクト数
-  1014
+  1024
  *開いているファイル
-  7 editors, 7 files, 156 KB
+  7 editors, 7 files, 138 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン
