@@ -58,7 +58,7 @@ void ir(char n){
 
 void ir_update(){
 	
-	static int num = 0;
+	static int num = 0,tmp,tmp_old;
 	
 	//IRを光らせた 次の次 が発光タイミング
 	AD_update();
@@ -118,9 +118,15 @@ void ir_update(){
 		case 5://
 			S[2] = (AD_2 - s[2]) /10;
 			
-			S[5] = (AD_5 - s[5])  * 6 /10;//センサーのばらつきを微調整;
-			S[6] = (AD_6 - s[6]) ;
+			S[5] = ((AD_5 - s[5])  * 6 /10 /2) + (S[5] / 2);      //センサーのばらつきを微調整;
 			
+			tmp = (AD_6 - s[6])/2; 
+			if(abs(tmp -  tmp_old) > 20){//調子が悪いので極端に値が変化したときはノイズと考える
+				S[6] = S[6];
+			}else{
+				S[6] = (tmp)  + (S[6] / 2) ;
+			}
+			tmp_old = tmp;
 			ir(0x09);// 000 1001
 			//S12AD.ADANS.WORD = 0x0012;//0001 0010
 			
