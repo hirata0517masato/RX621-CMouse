@@ -1307,7 +1307,9 @@ void ETmotor(long long A, long long E, char non_stop){
     */
 }
 
-void Tmotor_naname(long long A ,char inout){
+
+ 
+void Tmotor_naname_in(long long A){
     //GyroSum_reset();
     //    Encoder_reset();
 
@@ -1324,9 +1326,8 @@ void Tmotor_naname(long long A ,char inout){
     //	char flag = 0;
 
 	
-    //壁切れ
-    if(inout == 1){//斜めのはじめのみ有効
-	if(A > 0){//R
+   
+    if(A > 0){//R
 	    //while(get_IR(IR_R) > 15){
 	    while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
 	  
@@ -1334,19 +1335,19 @@ void Tmotor_naname(long long A ,char inout){
 		//	flag = 1;
 	    }
 	    //if(flag)ESmotor(115,M_kabe,true,false);
-	}else{//L
+    }else{//L
 	    //while(get_IR(IR_L) > 15){
 	    while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
 		Smotor(M_kabe,true);
 		//	flag = 1;
 	    }
 	    //if(flag)ESmotor(115,M_kabe,true,false);
-	}
-	    
-	while( 28 < get_IR(IR_F) ){//前壁が近すぎる
-		Smotor(-M_kabe,0); //バックする
-	}
     }
+	    
+    while( 35 < get_IR(IR_F) ){//前壁が近すぎる
+	Smotor(-M_kabe,0); //バックする
+    }
+    
 	
     if(A > 0){//R
 	PORTA.DR.BIT.B3 = 1;
@@ -1358,25 +1359,7 @@ void Tmotor_naname(long long A ,char inout){
     
     //   Encoder_reset();
     while(1){
-	/*	if(A > 0){//R
-		if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 ){ //左壁近い || 右壁が近い
-		cnt1++;
-		if(cnt1 > 5){
-		cnt1 = 0;
-		GyroSum_add(1);
-		}
-		}else cnt1 = 0;
-		
-		}else{//L
-		if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 ){ //右壁近い
-		cnt1++;
-		if(cnt1 > 5){
-		cnt1 = 0;
-		GyroSum_add(-1);
-		}
-		}else cnt1 = 0;
-		}
-	*/	
+
 	powor = gyro_powor_L();
 		
 	if(powor > powor_max)powor = powor_max;
@@ -1398,14 +1381,16 @@ void Tmotor_naname(long long A ,char inout){
 
 	if(0 < RM && RM < min_M)RM = min_M;
 	if(0 > RM && RM > -min_M)RM = -min_M;
-		 
+	
+	
 	if(A > 0){//R
-	    //motor(LM ,-get_encoder_total_R() * 2);
-	    motor(LM ,-4);
+	        //motor(LM ,-get_encoder_total_R() * 2);
+	        motor(LM ,-4);
 	}else{//L
-	    //motor(-get_encoder_total_L() * 2 ,RM);
-	    motor(-4 ,RM);
+	        //motor(-get_encoder_total_L() * 2 ,RM);
+	        motor(-4 ,RM);
 	}
+	
 
 	LM_prev = LM;
 	RM_prev = RM;
@@ -1421,13 +1406,85 @@ void Tmotor_naname(long long A ,char inout){
 	
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
-    /*
-      if(A > 0){//R
-      GyroSum_add( 200);
-      }else{//L
-      GyroSum_add( -200);
-      }
-    */	
+
+}
+
+void Tmotor_naname_out(long long A ){
     //GyroSum_reset();
+    //    Encoder_reset();
+
+    //	static int cnt1 = 0;
+		
+    int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
+    int MA = 5,min_M = 20;
+	
+    int powor_max = 30;
+    int powor;
+
+    int M = 5;
+
+	
+    if(A > 0){//R
+	PORTA.DR.BIT.B3 = 1;
+    }else{//L
+	PORTA.DR.BIT.B0 = 1;
+    }
+	
+    GyroSum_add(A);
+    
     //   Encoder_reset();
+    while(1){
+	
+	powor = gyro_powor_L();
+		
+	if(powor > powor_max)powor = powor_max;
+	else if(-powor_max > powor)powor = -powor_max;
+		
+		
+	LM = powor;
+	RM = -powor;
+		
+
+	if(LM_prev + MA < LM)LM = LM_prev + MA;
+	if(LM_prev - MA > LM)LM = LM_prev - MA;
+		
+	if(RM_prev + MA < RM)RM = RM_prev + MA;
+	if(RM_prev - MA > RM)RM = RM_prev - MA;
+		
+	if(0 < LM && LM < min_M)LM = min_M;
+	if(0 > LM && LM > -min_M)LM = -min_M;
+
+	if(0 < RM && RM < min_M)RM = min_M;
+	if(0 > RM && RM > -min_M)RM = -min_M;
+	
+	if(A > 0){//R
+	    motor(LM + M ,10 + M);
+	}else{//L
+	    motor(10 + M ,RM + M);
+	}
+	
+	
+	LM_prev = LM;
+	RM_prev = RM;
+		
+	if(A > 0){//R
+	    if(GyroSum_get() < 0)break;
+	}else{//L
+	    if(GyroSum_get() > 0)break;
+	}
+    }
+    GyroSum_reset();
+    //motor(0,0);
+	
+    PORTA.DR.BIT.B0 = 0;
+    PORTA.DR.BIT.B3 = 0;
+ 
+}
+void Tmotor_naname(long long A ,char inout){
+   
+    if(inout == 1){
+	Tmotor_naname_in(A);	
+    }else{
+	Tmotor_naname_out(A);   
+    }
 }
