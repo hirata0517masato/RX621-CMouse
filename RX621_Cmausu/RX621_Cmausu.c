@@ -1490,7 +1490,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 	
 	if(LR == 3 || LR == 1){//—¼•û || L‚¾‚¯
 	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 100){
+		if(get_IR(IR_LT) > 80){
 		    led(8);
 		    Lflag = 1;
 		}
@@ -1507,7 +1507,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 
 	if(LR == 3 || LR == 2){//—¼•û || R‚¾‚¯
 	    if(Rflag == 0){
-		if(get_IR(IR_RT) > 100){
+		if(get_IR(IR_RT) > 80){
 		    led(1);
 		    Rflag = 1;
 		}
@@ -3521,7 +3521,7 @@ void run_shortest_path_fin(	char naname){
 	case 10://Snaname
 	    path_num-=2;
 		 
-	    if(path_num <= 0){//‚Qƒ}ƒX‚¾‚¯‚ÌÎ‚ß
+	    if((path_num <= 0 && comand_old != 14 && comand_old != -14 ) || (path_num <= -1 && (comand_old == 14 || comand_old == -14) )){//‚Qƒ}ƒX‚¾‚¯‚ÌÎ‚ß
 		/*	
 		if(run_fin_speed_offset > 0){//‘¬“xƒIƒtƒZƒbƒg‚ªƒvƒ‰ƒX‚Ì‚Í–³Œø‰»
 		    S_run(s45 /4 ,run_speed_naname,true,0); //•Ç•â³–³‚µ
@@ -3533,6 +3533,9 @@ void run_shortest_path_fin(	char naname){
 		*/
 		
 		status_log = 3;//ƒƒO‚É•ÇØ‚êŠJn‚ğ‹L˜^‚·‚é‚½‚ß
+		
+		v2_flag = 1;
+		
 		//‹——£‚ª’Z‚¢‚Ì‚Å­‚µ‘¬“x‚‚ß‚Éİ’è‚·‚é
 		if(queue_next(1) == -11){//Ÿ@¶
 		    S_run_kabe_naname(55,3,1);
