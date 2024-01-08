@@ -1,13 +1,14 @@
 品質記録情報
-2024年1月8日 16:18:21
+2024年1月8日 17:01:37
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+RX621_Cmausu.c(1559):W0520550:Variable "maza_update_flag" was set but never used
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:2個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:3個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -44,8 +45,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 7484b68a953556d634a53565c4c0cc0adf8e3925
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 661833fa28b7e76cc93b125e5dd16915bb337261
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 5f91a407ca9e920f492088fb72c3ac5948fdc4a3
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 9898e0a87792543d2231bcd9b91ae5f21e708b5a
 
 
 --- システム情報 ---
@@ -75,9 +76,9 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 661833fa28b7e76cc93b125
  *GDIオブジェクト数
   2075
  *USERオブジェクト数
-  1024
+  1028
  *開いているファイル
-  4 editors, 4 files, 143 KB
+  4 editors, 4 files, 144 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン
