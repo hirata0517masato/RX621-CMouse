@@ -15,12 +15,12 @@
 #define Start_y  0
 #define Start_angle 1 // スタートする時の向き　
 
-#define Goal_x  0
-#define Goal_y  1
+#define Goal_x  6
+#define Goal_y  0
 #define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版
-#define Pickup_x  1	
+#define Pickup_x  0	
 #define Pickup_y  1
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
@@ -33,7 +33,7 @@
 //ジャイロ関連
 #define r45  (11500)	//45度 右回転 11500 10500
 #define l45  (11500)	//45度 左回転 11500
-#define r90  (21470) 	//90度 右回転
+#define r90  (21370) 	//90度 右回転
 #define l90  (21300)	//90度 左回転
 #define r180  (-43000)	//180度 右回転
 #define sr90  (25000)	//スラローム 23000 //左右で同じ値でないと連続時にずれていく
@@ -58,7 +58,7 @@
 
 #define rslsl90_BIG (1500)	//スラローム 大700
 #define rslsl90_BIG_offset  (-50)
-#define rslsr90_BIG (1580)	//スラローム 大 680
+#define rslsr90_BIG (1550)	//スラローム 大 680
 #define rslsr90_BIG_offset  (-50)
 
 #define usll180     (2250)	//Uターン

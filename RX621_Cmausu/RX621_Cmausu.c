@@ -1212,7 +1212,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 	
 	
 	  if(Lflag == 0 && Rflag == 0){
-		if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1 + h1) ){
+		if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1 + h1/2) ){
 			led(9);
 			break; //壁切れが来なかったらブレーク
 		}
@@ -1272,8 +1272,9 @@ void S_run_kabe2(int powor, char flag, int LR){//壁切れまで走行 直線からの４５タ
     led(0);
 }
 
-void S_run_kabe_BIG(int powor, char flag, int LR){//壁切れまで走行
+void S_run_kabe_BIG(int powor, char flag, int LR){//壁切れまで走行 斜めセンサー用
     int Lflag = 0,Rflag = 0;
+    int Lflag2 = 0,Rflag2 = 0;
     long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
     //   int cnt2 = 0;
 	
@@ -1281,29 +1282,76 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//壁切れまで走行
     while(1){
 	if(LR == 3 || LR == 1){//両方 || Lだけ
 	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 35){
+		if(get_IR(IR_LT) > 25){// || (get_IR(IR_LT) > 15 && get_IR(IR_R) > 140)){
 		    Lflag = 1;
 		    led(8);
 		}
-	    }else if(Lflag == 1){
-		if(get_IR(IR_LT) < 10){
-		    led(0);
-		    break;
+		
+		/*
+		if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1) ){
+			if(Lflag2 == 0){ //斜めセンサーが壁切れする前に横センサーが壁切れした
+			    if(get_IR(IR_L) > 25){
+				Lflag2 = 1;
+				led(4);
+	 		    }
+			}else if(Lflag2 == 1){
+			    if(get_IR(IR_L) < 10){
+				led(0);
+				break;
+			    }
+			}
 		}
+		*/
+	    }else if(Lflag == 1){
+		/* if(get_IR(IR_R) > 140){
+			if(get_IR(IR_LT) < 8){
+			    led(0);
+			    break;
+			} 
+		 }else{*/
+			if(get_IR(IR_LT) < 10){
+			    led(0);
+			    break;
+			}
+		 //}
 	    }
+	    
+	    
 	}
 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
 	    if(Rflag == 0){
-		if(get_IR(IR_RT) > 35){
+		if(get_IR(IR_RT) > 25 ){// || (get_IR(IR_RT) > 15 && get_IR(IR_L) > 140)){
 		    Rflag = 1;
 		    led(1);
 		}
-	    }else if(Rflag == 1){
-		if(get_IR(IR_RT) < 6){//Rはノイズ対策で数値を小さめにする
-		    led(0);
-		    break;
+		/*
+		if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1) ){
+			if(Rflag2 == 0){ //斜めセンサーが壁切れする前に横センサーが壁切れした
+			    if(get_IR(IR_R) > 25){
+				Rflag2 = 1;
+				led(2);
+	 		    }
+			}else if(Rflag2 == 1){
+			    if(get_IR(IR_R) < 10){
+				led(0);
+				break;
+			    }
+			}
 		}
+		*/
+	    }else if(Rflag == 1){
+		/* if(get_IR(IR_L) > 140){
+			if(get_IR(IR_RT) < 8){
+			    led(0);
+			    break;
+			} 
+		 }else{*/
+			if(get_IR(IR_RT) < 10){
+			    led(0);
+			    break;
+			}
+		// }
 	    }
 	}
     
@@ -1330,7 +1378,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//壁切れまで走行
 
 void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
     int Lflag = 0,Rflag = 0;
-    long long enc_base = get_encoder_total_L();
+    long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
     int LMax = 0, RMax = 0;
   
     led(6);
@@ -1376,7 +1424,7 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 	
 	
 	
-	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45/2 )  ){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s45 + s45/2 )  ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
@@ -1397,52 +1445,20 @@ void S_run_kabe_naname(int powor, char flag, int LR){//壁切れまで走行
 
 void S_run_kabe_naname2(int powor, char flag, int LR){//壁切れまで走行
     int Lflag = 0,Rflag = 0;
-    long long enc_base = get_encoder_total_L();
+    long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
     int LMax = 0, RMax = 0;
    
+    int Rtmp = 0;
     led(6);
   
     while(1){
-/*
-	if(LR == 3 || LR == 1){//両方 || Lだけ
-	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 50){
-		    led(8);
-		    Lflag = 1;
-		}
-	    }else if(Lflag == 1){
-			
-		if(get_IR(IR_LT) < 10){
-		    led(0);
-		    Lflag = 2;
-		    break;
-		}
-		
-	    }
-	}
 
-	if(LR == 3 || LR == 2){//両方 || Rだけ
-	    if(Rflag == 0){
-		if(get_IR(IR_RT) > 50){
-		    led(1);
-		    Rflag = 1;
-		}
-	    }else if(Rflag == 1){
-		if(get_IR(IR_RT) < 6){
-		    led(0);
-		    Rflag = 2;
-		    break;
-		}
-	
-	    }
-	}
- */   
 	LMax = max(LMax,get_IR(IR_LT));
 	RMax = max(RMax,get_IR(IR_RT));
 	
 	if(LR == 3 || LR == 1){//両方 || Lだけ
 	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 80){
+		if(get_IR(IR_LT) > 100){
 		    led(8);
 		    Lflag = 1;
 		}
@@ -1459,7 +1475,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR){//壁切れまで走行
 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
 	    if(Rflag == 0){
-		if(get_IR(IR_RT) > 80){
+		if(get_IR(IR_RT) > 100){
 		    led(1);
 		    Rflag = 1;
 		}
@@ -1467,9 +1483,20 @@ void S_run_kabe_naname2(int powor, char flag, int LR){//壁切れまで走行
 		if(RMax -35 > get_IR(IR_RT)){
 		    led(0);
 		    Rflag = 2;
+		    Rtmp = get_IR(IR_RT);
 		    break;
 		}
-	
+	/*
+	    }else if(Rflag == 2){
+		if( Rtmp != get_IR(IR_RT)){
+			if(RMax -35 > get_IR(IR_RT)){
+		    		led(0);
+		    		Rflag = 2;
+		    		break;
+			}else{
+				Rflag = 1;
+			}
+		}*/
 	    }
 	}
 	
@@ -1477,14 +1504,14 @@ void S_run_kabe_naname2(int powor, char flag, int LR){//壁切れまで走行
 	
 	
 	
-	if(abs(get_encoder_total_L() -  enc_base) > (s45 + s45/2 )  ){
+	if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s45 + s45/2 )  ){
 		led(9);
 		break; //壁切れが来なかったらブレーク
 	}
 	
     }
  
-    ESmotor(180,powor,true,false);
+    ESmotor(200,powor,true,false);
     
     led(0);
 }
@@ -3120,8 +3147,32 @@ void path_compression(){
 				enqueue(1);
 				
 				next_num_add = -1;
+			
+			}else if(queue_next(1) == 11){//直線からのR45
+				dequeue();
+				dequeue();
 				
-			}else{//元に戻す
+				enqueue(mode);
+				enqueue(num -1);
+				
+				enqueue(14);
+				enqueue(1);
+				
+				next_num_add = -1;
+				
+			}else if(queue_next(1) == -11){//直線からのL45
+				dequeue();
+				dequeue();
+				
+				enqueue(mode);
+				enqueue(num -1);
+				
+				enqueue(-14);
+				enqueue(1);
+				
+				next_num_add = -1;
+				
+			}else{//変更なし
 				enqueue(mode);
 				enqueue(num);
 			}
@@ -3172,6 +3223,7 @@ void run_shortest_path_fin(	char naname){
     int cnt = 0;
     int comand_old = 0 ,path_num_old = 0;
     int BIG_NG_flag = 0;
+    int path_add; //前回が大曲だった時の距離補正
     
     //１マスでは無効
     int over_run = 0;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
@@ -3258,6 +3310,11 @@ void run_shortest_path_fin(	char naname){
 	    L_rotate_naname(l45 * path_num,true);
 	    
 	    break;
+	case -14://直線からのL45 
+	  	
+	    L_rotate_naname(l45 * path_num,2);
+	    
+	    break;
 	case -13://L45 出るとき
 	  	
 	    if(queue_next(1) == -11){//Vターン
@@ -3302,27 +3359,33 @@ void run_shortest_path_fin(	char naname){
 	    }else {
          	path_num--;
           	if(path_num > 0){
+		
+		    if(comand_old == 12 || comand_old == -12){//前回が大曲だったら
+			  path_add = 150;  
+		    }
 		    //if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,run_speed + run_fin_speed_offset,3,true); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ
 		    //else S_run((h1 * (long long)path_num)  - over_run ,run_speed + run_fin_speed_offset,true,true);
 			 
 		   
 		    if(path_num == 1){
-			if(first_flag == 0)S_run((h1 *(long long) path_num) ,run_speed + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
-			else  S_run((h1 * (long long)path_num) ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
+			if(first_flag == 0)S_run((h1 *(long long) path_num)+path_add ,run_speed + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
+			else  S_run((h1 * (long long)path_num)+path_add ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
 			
 		    }else if(path_num > 10){
 				  
-			if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run ,run_speed + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
-			else  S_run((h1 * (long long)path_num)  - over_run ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
+			if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run+path_add ,run_speed + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
+			else  S_run((h1 * (long long)path_num)  - over_run+path_add ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり
 		    }else{
-			if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run2 ,run_speed + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
-			else  S_run((h1 * (long long)path_num)  - over_run2 ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり  
+			if(first_flag == 0)S_run((h1 *(long long) path_num) - over_run2+path_add ,run_speed + run_fin_speed_offset,3,4); // memo : non_stop = 3 加速はゆっくり　減速はすくなめ// w_flag = 4 串の壁補正あり
+			else  S_run((h1 * (long long)path_num)  - over_run2+path_add ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 串の壁補正あり  
 		    }
+		    
+		    path_add = 0;
 		}	  
 		
 		
 		
-		if(get_IR(IR_L) > 190 || get_IR(IR_R) > 190 || ((abs(get_IR(IR_L) - get_IR(IR_R)) > 50) &&  get_IR(IR_L) > 20 && get_IR(IR_R) > 20)){//左右の差が大きい && 左右に壁がある
+		if(get_IR(IR_L) > 190 || get_IR(IR_R) > 190 || ((abs(get_IR(IR_L) - get_IR(IR_R)) > 120) &&  get_IR(IR_L) > 20 && get_IR(IR_R) > 20)){//左右の差が大きい && 左右に壁がある
     			
 			if(queue_next(1) == -12 || queue_next(1) == 12){//次は大曲予定
     				BIG_NG_flag = 1;//ずれが大きいので大曲禁止
@@ -3352,6 +3415,22 @@ void run_shortest_path_fin(	char naname){
 			    }
 			    
 			    //S_run_kabe2(20,4,2);// w_flag = 4 串の壁補正あり
+			}
+		}else if(queue_next(1) == -14 || queue_next(1) == 14){//直線後に45ターン 斜めセンサー版
+			if(queue_next(1) < 0){//次　左
+			    if(path_num <= 1){
+				 S_run_kabe_BIG(50,true,1); 
+			    }else{
+				 S_run_kabe_BIG(40,true,1);   
+			    }
+					
+			}else if(queue_next(1) > 0){//次　右
+			    if(path_num <= 1){
+				 S_run_kabe_BIG(50,true,2);  
+			    }else{
+				 S_run_kabe_BIG(40,true,2);  
+			    }
+
 			}
 		}else if(BIG_NG_flag == 0 && (queue_next(1) == 12 || queue_next(1) == -12)){//直線後に大曲
 			if(queue_next(1) < 0){//次　左
@@ -3499,6 +3578,11 @@ void run_shortest_path_fin(	char naname){
 	    R_rotate_naname(r45 * path_num,true);
 	    
 	    break;
+	case 14://直線からのR45
+        
+	    R_rotate_naname(r45 * path_num,2);
+	    
+	    break;
 	case 13://R45 出る時
         
 	    if(queue_next(1) == 11){//Vターン
@@ -3610,6 +3694,7 @@ void Excep_CMT0_CMI0(void)
         break;
    
     case 1:
+//    case 6:////////最短のログを細かく取得したいときに有効化する　基本は無効
 	if(log_start != 0){
 	    if(log_flag != 1)log_cnt = 0;
 	    log_flag = 1;

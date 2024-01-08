@@ -214,10 +214,10 @@ void Smotor(int M,char w_flag){
 		kp = 0.5;
 		kd = 0.0;
 	    }else{//高速
-		ir_core = 25;//左右の差の許容範囲
+		ir_core = 15;//左右の差の許容範囲
 				
-		kp = 0.5;
-		kd = 10.0;
+		kp = 0.6;
+		kd = 8.0;
 	    }
 			
 			
@@ -233,14 +233,14 @@ void Smotor(int M,char w_flag){
 		    }
 		
 		}else if(motor_pid_mode == 0 && get_IR(IR_LT) > 20 && get_IR(IR_RT) > 20 && get_IR(IR_F) < 50){//斜め45度センサー 低速モードのみ
-		    if(abs(get_IR(IR_LT) - get_IR(IR_RT))*3 > ir_core){//  左右の差が小さきすぎない
+		    if(abs(get_IR(IR_LT) - get_IR(IR_RT))*2 > ir_core){//  左右の差が小さきすぎない
 					
-			ir_sa =  (get_IR(IR_LT) - get_IR(IR_RT)) *3;
+			ir_sa =  (get_IR(IR_LT) - get_IR(IR_RT)) *2;
 						
 			motor_pid_flag = 1;
 		    }
 	
-		}else if(get_IR(IR_L) > 20 && get_IR(IR_L) - get_IR(IR_R) > 0){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある && 左の方が壁が近い
+		}else if(get_IR(IR_L) > 20 && get_IR(IR_R) < 20){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core) {// 左右の差が小さきすぎない
 						
@@ -250,12 +250,12 @@ void Smotor(int M,char w_flag){
 		    }else{//高速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core/2) {// 左右の差が小さきすぎない
 						
-			    ir_sa =  (get_IR(IR_L) - ir_wall) * 15 /10;
+			    ir_sa =  (get_IR(IR_L) - ir_wall);// * 20 /10;
 			    motor_pid_flag = 1;
 			}
 		    }
 					
-		}else if(get_IR(IR_R) > 20  && get_IR(IR_L) - get_IR(IR_R) < 0){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある && 右の方が壁が近い
+		}else if(get_IR(IR_L) < 20 && get_IR(IR_R) > 20){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core ){//左右の差が小さきすぎない
 					
@@ -265,7 +265,7 @@ void Smotor(int M,char w_flag){
 		    }else{//高速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//左右の差が小さきすぎない
 					
-			    ir_sa =  (ir_wall - get_IR(IR_R))  * 15 /10;
+			    ir_sa =  (ir_wall - get_IR(IR_R));//  * 20 /10;
 			    motor_pid_flag = 1;
 			}
 		    }
@@ -273,7 +273,7 @@ void Smotor(int M,char w_flag){
 		}
 				
 		if(motor_pid_flag == 1){
-		    ir_sa = max(min(ir_sa,80),-80);
+		    ir_sa = max(min(ir_sa,100),-100);
 					
 		    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 					
@@ -287,7 +287,7 @@ void Smotor(int M,char w_flag){
 		
 	//斜め対策
 	if(w_flag == 3){
-	    if((get_encoder_L() > 0 && get_encoder_R() > 0) && abs(GyroSum_get()) < 1000){
+	    if((get_encoder_L() > 10 && get_encoder_R() > 10) && abs(GyroSum_get()) < 2000){
 		//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
 		if(   get_IR(IR_FL) > 35 ){//左前のみ
 		    cnt3++;
@@ -302,11 +302,11 @@ void Smotor(int M,char w_flag){
 			    naname_flag = 1;
 			    
 			}else if(get_IR(IR_FL) > 45){
-			    GyroSum_add(8);
+			    GyroSum_add(10);
 			    naname_flag = 1;
 			    
 			}else{
-			    GyroSum_add(2);
+			    GyroSum_add(5);
 			    naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B3 = 1;
@@ -327,11 +327,11 @@ void Smotor(int M,char w_flag){
 			    naname_flag = 1;
 			     
 			}else if(get_IR(IR_FR) > 45){
-			    GyroSum_add(-8);
+			    GyroSum_add(-10);
 			    naname_flag = 1;
 			    
 			}else{
-			    GyroSum_add(-2);
+			    GyroSum_add(-5);
 			    naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B0 = 1;
@@ -476,7 +476,7 @@ void Smotor(int M,char w_flag){
 
 		}
 				
-		powor_max = 50;
+		powor_max = 60;
 	    }
 	}
     }
@@ -494,7 +494,7 @@ void Smotor(int M,char w_flag){
 	
     LM = M + powor;
     RM = M - powor;
-	
+
     if(motor_pid_mode == 1){//高速モード
 	if(LM != 0 || RM != 0){// 0,0でなければ //斜め時のマイナスは有効　
 	    if(0 < LM && LM < 10){
@@ -1131,7 +1131,9 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     }
 
     GyroSum_reset();
-		
+	
+   // ESmotor(140,M,true,true);//距離、速度
+    
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 }
@@ -1409,6 +1411,78 @@ void Tmotor_naname_in(long long A){
 
 }
 
+void Tmotor_naname_in_BIG(long long A ){
+    //GyroSum_reset();
+    //    Encoder_reset();
+
+    //	static int cnt1 = 0;
+		
+    int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
+    int MA = 5,min_M = 20;
+	
+    int powor_max = 30;
+    int powor;
+
+    int M = 5;
+
+	
+    if(A > 0){//R
+	PORTA.DR.BIT.B3 = 1;
+    }else{//L
+	PORTA.DR.BIT.B0 = 1;
+    }
+	
+    GyroSum_add(A);
+    
+    //   Encoder_reset();
+    while(1){
+	
+	powor = gyro_powor_L();
+		
+	if(powor > powor_max)powor = powor_max;
+	else if(-powor_max > powor)powor = -powor_max;
+		
+		
+	LM = powor;
+	RM = -powor;
+		
+
+	if(LM_prev + MA < LM)LM = LM_prev + MA;
+	if(LM_prev - MA > LM)LM = LM_prev - MA;
+		
+	if(RM_prev + MA < RM)RM = RM_prev + MA;
+	if(RM_prev - MA > RM)RM = RM_prev - MA;
+		
+	if(0 < LM && LM < min_M)LM = min_M;
+	if(0 > LM && LM > -min_M)LM = -min_M;
+
+	if(0 < RM && RM < min_M)RM = min_M;
+	if(0 > RM && RM > -min_M)RM = -min_M;
+	
+	if(A > 0){//R
+	    motor(LM + M ,10 + M);
+	}else{//L
+	    motor(10 + M ,RM + M);
+	}
+	
+	
+	LM_prev = LM;
+	RM_prev = RM;
+		
+	if(A > 0){//R
+	    if(GyroSum_get() < 0)break;
+	}else{//L
+	    if(GyroSum_get() > 0)break;
+	}
+    }
+    GyroSum_reset();
+    //motor(0,0);
+	
+    PORTA.DR.BIT.B0 = 0;
+    PORTA.DR.BIT.B3 = 0;
+ 
+}  
+
 void Tmotor_naname_out(long long A ){
     //GyroSum_reset();
     //    Encoder_reset();
@@ -1483,7 +1557,9 @@ void Tmotor_naname_out(long long A ){
 void Tmotor_naname(long long A ,char inout){
    
     if(inout == 1){
-	Tmotor_naname_in(A);	
+	Tmotor_naname_in(A);
+    }else if(inout == 2){
+	Tmotor_naname_in_BIG(A);
     }else{
 	Tmotor_naname_out(A);   
     }
