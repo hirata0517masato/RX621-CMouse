@@ -188,7 +188,7 @@ void Smotor(int M,char w_flag){
     static int cnt5 = 0;
 	
     static int ir_sa = 0,ir_sa_buf = 0;
-    static int ir_wall = 125,ir_core = 0;
+    static int ir_wall = 125,ir_core = 0,ir_wall2 = 40;
     static float kp = 0,kd = 0;
 	
     int kusi_flag = 0;
@@ -207,6 +207,13 @@ void Smotor(int M,char w_flag){
 		    ir_wall = ir_wall*1/10 + ((get_IR(IR_L) + get_IR(IR_R))/2)*9/10 ; //マス中央でのセンサー値を更新
 		}
 	    }
+	    
+	    if(get_IR(IR_LT) > 20 && get_IR(IR_RT) > 20 &&  get_encoder_L() > 5 &&  get_encoder_R() > 5){//左右に壁がある &&  動いている
+				
+		if(abs(get_IR(IR_LT) - get_IR(IR_RT)) < 30 && abs(GyroSum_get()) < 550 ){//左右の差が少ない && まっすぐ
+		    ir_wall2 = ir_wall2*1/10 + ((get_IR(IR_LT) + get_IR(IR_RT))/2)*9/10 ; //マス中央でのセンサー値を更新
+		}
+	    }
 			
 	    if(motor_pid_mode == 0){//低速
 		ir_core = 15;//左右の差の許容範囲
@@ -214,7 +221,7 @@ void Smotor(int M,char w_flag){
 		kp = 0.5;
 		kd = 0.0;
 	    }else{//高速
-		ir_core = 15;//左右の差の許容範囲
+		ir_core = 20;//左右の差の許容範囲
 				
 		kp = 0.6;
 		kd = 8.0;
@@ -270,6 +277,34 @@ void Smotor(int M,char w_flag){
 			}
 		    }
 					
+		}else if(get_IR(IR_LT) > 20){//斜め左だけ壁がある
+		    if(motor_pid_mode == 0){//低速
+			if(abs(get_IR(IR_LT) - ir_wall2) > ir_core) {// 左右の差が小さきすぎない
+						
+			    ir_sa =  (get_IR(IR_LT) - ir_wall2);
+			    motor_pid_flag = 1;
+			}
+		    }else{//高速
+			if(abs(get_IR(IR_LT) - ir_wall2) > ir_core/2) {// 左右の差が小さきすぎない
+						
+			    ir_sa =  (get_IR(IR_LT) - ir_wall2);// * 20 /10;
+			    motor_pid_flag = 1;
+			}
+		    }	
+		}else if(get_IR(IR_RT) > 20){//斜め右だけ壁がある
+		    if(motor_pid_mode == 0){//低速
+			if(abs(ir_wall2 - get_IR(IR_RT)) > ir_core ){//左右の差が小さきすぎない
+					
+			    ir_sa =  (ir_wall2 - get_IR(IR_RT));
+			    motor_pid_flag = 1;
+			}
+		    }else{//高速
+			if(abs(ir_wall2 - get_IR(IR_RT)) > ir_core/2 ){//左右の差が小さきすぎない
+					
+			    ir_sa =  (ir_wall2 - get_IR(IR_RT));//  * 20 /10;
+			    motor_pid_flag = 1;
+			}
+		    }	
 		}
 				
 		if(motor_pid_flag == 1){
@@ -298,7 +333,7 @@ void Smotor(int M,char w_flag){
 			    naname_flag = 1;
 			     
 			}else if(get_IR(IR_FL) > 55){
-			    GyroSum_add(30);
+			    GyroSum_add(20);
 			    naname_flag = 1;
 			    
 			}else if(get_IR(IR_FL) > 45){
@@ -306,8 +341,8 @@ void Smotor(int M,char w_flag){
 			    naname_flag = 1;
 			    
 			}else{
-			    GyroSum_add(5);
-			    naname_flag = 1;
+			    GyroSum_add(2);
+			    //naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B3 = 1;
 		    }	
@@ -323,7 +358,7 @@ void Smotor(int M,char w_flag){
 			    naname_flag = 1;
 			     
 			}else if(get_IR(IR_FR) > 55){
-			    GyroSum_add(-30);
+			    GyroSum_add(-20);
 			    naname_flag = 1;
 			     
 			}else if(get_IR(IR_FR) > 45){
@@ -331,8 +366,8 @@ void Smotor(int M,char w_flag){
 			    naname_flag = 1;
 			    
 			}else{
-			    GyroSum_add(-5);
-			    naname_flag = 1;
+			    GyroSum_add(-2);
+			    //naname_flag = 1;
 			}
 			//PORTA.DR.BIT.B0 = 1;
 		    }	
