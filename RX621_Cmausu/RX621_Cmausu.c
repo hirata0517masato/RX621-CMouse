@@ -105,6 +105,8 @@ int log_save_cnt = 0;
 int log_block_num = 1; //max 15
 short status_log = 99;
 
+long t_1ms = 0;
+
 /***********************************************************************/
 /* ƒƒCƒ“ƒvƒƒOƒ‰ƒ€                                                    */
 /***********************************************************************/
@@ -997,7 +999,8 @@ void maze_update(char x,char y,char angle, char type){
 		}
 			
 		cnt = 0;
-		while(1){
+		t_1ms = 0;
+		while(t_1ms < F_max_time){
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 			Smotor(-F_pow,false);
 
@@ -1012,7 +1015,8 @@ void maze_update(char x,char y,char angle, char type){
 		    }
 		    if(cnt > F_cnt)break;
 		}
-			
+		motor(0,0);
+		
 	    }else{
 		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 						
@@ -1150,8 +1154,8 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 		ESmotor(-15,powor,true,false);//‚¿‚å‚Á‚Æ‰º‚ª‚é
 	    }
 			
-		
-	    while(1){
+	    t_1ms = 0;
+	    while(t_1ms < F_max_time){
 		if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 		    Smotor(-F_pow,false);
 
@@ -1166,6 +1170,7 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 		}
 		if(cnt2 > F_cnt)break;
 	    }
+	    motor(0,0);
 	}
     }
 	
@@ -1282,11 +1287,24 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//•ÇØ‚ê‚Ü‚Å‘–s Î‚ßƒZƒ“ƒT[—
     while(1){
 	if(LR == 3 || LR == 1){//—¼•û || L‚¾‚¯
 	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 25){// || (get_IR(IR_LT) > 15 && get_IR(IR_R) > 140)){
+		if(get_IR(IR_LT) > 25){// || (get_IR(IR_LT) > 14 && get_IR(IR_R) > 140)){
 		    Lflag = 1;
 		    led(8);
 		}
 		
+		
+		if(Lflag2 == 0){
+			if(get_IR(IR_LT) > 14){
+			    Lflag2 = 1;
+			    led(4);
+			}
+		}else if(Lflag2 == 1){
+			if(get_IR(IR_LT) < 4){
+			    Lflag2 = 2;
+			    led(0);
+			    break;
+			}
+		}
 		/*
 		if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1) ){
 			if(Lflag2 == 0){ //Î‚ßƒZƒ“ƒT[‚ª•ÇØ‚ê‚·‚é‘O‚É‰¡ƒZƒ“ƒT[‚ª•ÇØ‚ê‚µ‚½
@@ -1325,6 +1343,21 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//•ÇØ‚ê‚Ü‚Å‘–s Î‚ßƒZƒ“ƒT[—
 		    Rflag = 1;
 		    led(1);
 		}
+		
+		
+		if(Rflag2 == 0){
+			if(get_IR(IR_RT) > 14){
+			    Rflag2 = 1;
+			    led(2);
+			}
+		}else if(Rflag2 == 1){
+			if(get_IR(IR_RT) < 4){
+			    Rflag2 = 2;
+			    led(0);
+			    break;
+			}
+		}
+		
 		/*
 		if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1) ){
 			if(Rflag2 == 0){ //Î‚ßƒZƒ“ƒT[‚ª•ÇØ‚ê‚·‚é‘O‚É‰¡ƒZƒ“ƒT[‚ª•ÇØ‚ê‚µ‚½
@@ -1553,7 +1586,8 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	    }
 			
 	    if(get_IR(IR_F) > 30 ){//‘O•Ç‚ª‚ ‚Á‚½ê‡‚Í
-		while(1){//‘O•Ç•â³
+	    	t_1ms = 0;
+		while(t_1ms < F_max_time){//‘O•Ç•â³
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 			Smotor(-F_pow,false);
 
@@ -1568,6 +1602,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 		    }
 		    if(cnt2 > F_cnt)break;
 		}
+		motor(0,0);
 	    }
 			
 	    //Œ»İ’n‚ÌXV
@@ -1592,7 +1627,8 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 		}
 	    }
 		
-	    while(1){//‘O•Ç•â³
+	    t_1ms = 0;
+	    while(t_1ms < F_max_time){//‘O•Ç•â³
 		if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 		    Smotor(-F_pow,false);
 
@@ -1607,7 +1643,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 		}
 		if(cnt2 > F_cnt)break;
 	    }
-			
+	    motor(0,0);	
 			
 	    //Œ»İ’n‚ÌXV
 	    my_x += dx[my_angle];
@@ -2127,7 +2163,8 @@ void run_shortest_path(){
 		
 	    if(get_IR(IR_F) > 40){
 		cnt= 0;
-		while(1){//‘O•Ç•â³
+		t_1ms = 0;
+		while(t_1ms < F_max_time){//‘O•Ç•â³
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 			Smotor(-F_pow,false);
 
@@ -2142,6 +2179,7 @@ void run_shortest_path(){
 		    }
 		    if(cnt > F_cnt)break;
 		}
+		motor(0,0);
 	    }
 		
 	    switch(my_angle){
@@ -2172,7 +2210,8 @@ void run_shortest_path(){
 		
 	    if(get_IR(IR_F) > 40){
 		cnt= 0;
-		while(1){//‘O•Ç•â³
+		t_1ms = 0;
+		while(t_1ms < F_max_time){//‘O•Ç•â³
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 			Smotor(-F_pow,false);
 
@@ -2187,6 +2226,7 @@ void run_shortest_path(){
 		    }
 		    if(cnt > F_cnt)break;
 		}
+		motor(0,0);
 	    }
 		
 	    break;
@@ -2238,7 +2278,8 @@ void maze_search_adachi(short target_x,short target_y){
 				
 		GyroSum_reset();
 				
-		while(1){//ƒXƒ^[ƒg‚Ì‰œ‚Ü‚Åi‚Ş ‘O•Ç•â³
+		t_1ms = 0;
+		while(t_1ms < F_max_time){//ƒXƒ^[ƒg‚Ì‰œ‚Ü‚Åi‚Ş ‘O•Ç•â³
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 			Smotor(-F_pow,false);
 
@@ -2253,6 +2294,7 @@ void maze_search_adachi(short target_x,short target_y){
 		    }
 		    if(cnt > F_cnt)break;
 		}
+		motor(0,0);
 		Tmotor(r180);
 		my_angle = (4+my_angle+2)%4;
 	    }
@@ -3340,7 +3382,8 @@ void run_shortest_path_fin(	char naname){
 		GyroSum_reset();
 		
 		//if(get_IR(IR_FL) > 10 || get_IR(IR_FR) > 10){
-		while(1){//ƒS[ƒ‹‚Ì‰œ‚Ü‚Åi‚Ş ‘O•Ç•â³
+		t_1ms = 0;
+		while(t_1ms < F_max_time){//ƒS[ƒ‹‚Ì‰œ‚Ü‚Åi‚Ş ‘O•Ç•â³
 		    if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
 			Smotor(-F_pow,false);
 
@@ -3355,6 +3398,7 @@ void run_shortest_path_fin(	char naname){
 		    }
 		    if(cnt > F_cnt)break;
 		}
+		motor(0,0);
 		//}
 	    }else {
          	path_num--;
@@ -3385,7 +3429,7 @@ void run_shortest_path_fin(	char naname){
 		
 		
 		
-		if(get_IR(IR_L) > 190 || get_IR(IR_R) > 190 || ((abs(get_IR(IR_L) - get_IR(IR_R)) > 120) &&  get_IR(IR_L) > 20 && get_IR(IR_R) > 20)){//¶‰E‚Ì·‚ª‘å‚«‚¢ && ¶‰E‚É•Ç‚ª‚ ‚é
+		if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 || ((abs(get_IR(IR_L) - get_IR(IR_R)) > 120) &&  get_IR(IR_L) > 20 && get_IR(IR_R) > 20)){//¶‰E‚Ì·‚ª‘å‚«‚¢ && ¶‰E‚É•Ç‚ª‚ ‚é
     			
 			if(queue_next(1) == -12 || queue_next(1) == 12){//Ÿ‚Í‘å‹È—\’è
     				BIG_NG_flag = 1;//‚¸‚ê‚ª‘å‚«‚¢‚Ì‚Å‘å‹È‹Ö~
@@ -3659,7 +3703,9 @@ void Excep_CMT0_CMI0(void)
     static int task = 0;
     static char log_flag = 0;
 
-	
+    t_1ms++;
+    if(t_1ms > 99999)t_1ms = 99999;
+    
     task ++;                         // ƒ^ƒXƒN‚ÌXV						
     if (log_start != 2 && task >= 30) task = 0;       
     if (log_start == 2 && task >= 10) task = 0;       

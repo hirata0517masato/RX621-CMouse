@@ -74,6 +74,7 @@
 #define F_min 235
 #define F_pow 5
 #define F_cnt 600
+#define F_max_time 2000
 
 
 #endif
