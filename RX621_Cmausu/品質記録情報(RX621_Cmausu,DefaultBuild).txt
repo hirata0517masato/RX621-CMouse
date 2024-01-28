@@ -1,13 +1,14 @@
 品質記録情報
-2024年1月8日 18:30:28
+2024年1月29日 0:23:32
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+RX621_Cmausu.c(1583):W0520550:Variable "maza_update_flag" was set but never used
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:2個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:3個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -44,8 +45,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 366a3dd425e1b990cc4f7257e720b30ba2856489
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 9b44f40cbb7aa2f87d29eadf8c4bdb5df3dc735c
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 4cc0f4d849206a1936dfc1a3c15d4b7e9c8e1bfb
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: b67e09861551958a0fa0aaa682783743a0801b01
 
 
 --- システム情報 ---
@@ -71,13 +72,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 9b44f40cbb7aa2f87d29ead
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  357 MB
+  336 MB
  *GDIオブジェクト数
-  2076
+  2072
  *USERオブジェクト数
-  1026
+  983
  *開いているファイル
-  4 editors, 4 files, 144 KB
+  4 editors, 4 files, 147 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン
