@@ -1,9 +1,9 @@
 品質記録情報
-2024年1月29日 0:23:32
+2024年2月1日 0:43:15
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
-RX621_Cmausu.c(1583):W0520550:Variable "maza_update_flag" was set but never used
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+RX621_Cmausu.c(1585):W0520550:Variable "maza_update_flag" was set but never used
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
@@ -45,8 +45,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 4cc0f4d849206a1936dfc1a3c15d4b7e9c8e1bfb
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: b67e09861551958a0fa0aaa682783743a0801b01
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 2bbd2034a4e20fd4f6d0554069dd9f177096ad33
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: e7e3b56a6ffa8af9fa13d58a6be67e69de3ba496
 
 
 --- システム情報 ---
@@ -72,13 +72,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: b67e09861551958a0fa0aaa
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  336 MB
+  286 MB
  *GDIオブジェクト数
-  2072
+  2062
  *USERオブジェクト数
-  983
+  951
  *開いているファイル
-  4 editors, 4 files, 147 KB
+  4 editors, 4 files, 148 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン

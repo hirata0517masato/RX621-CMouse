@@ -33,8 +33,8 @@
 //ジャイロ関連
 #define r45  (11500)	//45度 右回転 11500 10500
 #define l45  (11500)	//45度 左回転 11500
-#define r90  (21370) 	//90度 右回転
-#define l90  (21300)	//90度 左回転
+#define r90  (21270) 	//90度 右回転
+#define l90  (21200)	//90度 左回転
 #define r180  (-43000)	//180度 右回転
 #define sr90  (25000)	//スラローム 23000 //左右で同じ値でないと連続時にずれていく
 #define sl90  (25000)	//スラローム 23000
@@ -51,8 +51,8 @@
 #define h1 (500)		//半マス直進 	タイヤ削れた時：525　最短用
 #define h1_2 (500)		//半マス直進 	タイヤ削れた時：525  探索の壁切れ用
 
-#define s45_V2 (430)		//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
-#define s45_V2not (600)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2 (80)		//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2not (200)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 
 #define rslsl90 	(980)	//スラローム 664
 #define rslsl90_offset  (0)
@@ -60,9 +60,9 @@
 #define rslsr90_offset  (-0)
 
 #define rslsl90_BIG (1490)	//スラローム 大700
-#define rslsl90_BIG_offset  (-50)
+#define rslsl90_BIG_offset  (-100)
 #define rslsr90_BIG (1550)	//スラローム 大 680
-#define rslsr90_BIG_offset  (-50)
+#define rslsr90_BIG_offset  (-100)
 
 #define usll180     (2250)	//Uターン
 #define usll180_fin (0)	//Uターン 微調整
