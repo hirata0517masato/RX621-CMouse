@@ -383,7 +383,7 @@ void Smotor(int M,char w_flag){
 		ir_core = 25;//左右の差の許容範囲
 				
 		kp = 0.5;
-		kd = 5.0;
+		kd = 15.0;
 	    }
 			
 			
@@ -667,13 +667,13 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		    }
 		}else{//高速
 		    if(A <= s1){//距離が１マス以下の場合
-		    	 M = min_M_use + ((enc_now) / 4);
+		    	 M = min_M_use + ((enc_now) / 2);
 		    }else{
-			if(enc_now < 150){//出だしは加速しすぎないように
+			if(enc_now < 100){//出だしは加速しすぎないように
 			    M = min_M_use ;
 					
 			}else{
-		            M = min_M_use + ((enc_now-150) / 15);
+		            M = min_M_use + ((enc_now-100) / 10);
 			}
 		    }
 		}

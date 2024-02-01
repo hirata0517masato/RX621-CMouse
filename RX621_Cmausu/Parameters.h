@@ -52,7 +52,8 @@
 #define h1_2 (500)		//半マス直進 	タイヤ削れた時：525  探索の壁切れ用
 
 #define s45_V2 (80)		//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
-#define s45_V2not (200)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2_out (130)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2not (300)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 
 #define rslsl90 	(980)	//スラローム 664
 #define rslsl90_offset  (0)
@@ -75,7 +76,7 @@
 //前壁補正のパラメータ
 #define F_max 250
 #define F_min 235
-#define F_pow 5
+#define F_pow 10
 #define F_cnt 600
 #define F_max_time 1000
 
