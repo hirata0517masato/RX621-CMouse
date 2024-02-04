@@ -261,7 +261,7 @@ void Smotor(int M,char w_flag){
 			if(cnt3 > 0){
 			    cnt3 = 0;
 							
-			    if(get_IR(IR_FL) > 50){
+			    if(get_IR(IR_FL) > 30){
 				GyroSum_add(20);
 				kusi_flag = 1;
 			    }else{
@@ -748,7 +748,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			    //壁切れタイミングの違いで角度補正
 			    enc_kabe_L = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			    if(abs( (enc_kabe_L - enc_kabe_R) ) < 500){
-				GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
+				GyroSum_add( (enc_kabe_L - enc_kabe_R) * 5);
 			    }
 			}else{
 /*			    if(Get_motor_pid_mode() == 0){//探索モード
@@ -802,7 +802,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			    //壁切れタイミングの違いで角度補正
 			    enc_kabe_R = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
 			    if(abs( (enc_kabe_L - enc_kabe_R) ) < 500){
-				GyroSum_add( (enc_kabe_L - enc_kabe_R) * 10);
+				GyroSum_add( (enc_kabe_L - enc_kabe_R) * 5);
 			    }
 			}else{
 /*			    if(Get_motor_pid_mode() == 0){//探索モード
@@ -1378,7 +1378,7 @@ void Tmotor_naname_in(long long A){
    
     if(A > 0){//R
 	    //while(get_IR(IR_R) > 15){
-	    while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
+	    while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 15 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
 	  
 		Smotor(M_kabe,true);
 		//	flag = 1;
@@ -1386,7 +1386,7 @@ void Tmotor_naname_in(long long A){
 	    //if(flag)ESmotor(115,M_kabe,true,false);
     }else{//L
 	    //while(get_IR(IR_L) > 15){
-	    while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 8 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
+	    while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 15 && get_IR(IR_F) < 23 ) ){ //前壁補正は斜めになると悪影響がある
 		Smotor(M_kabe,true);
 		//	flag = 1;
 	    }
