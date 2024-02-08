@@ -1,19 +1,20 @@
 品質記録情報
-2024年2月4日 23:36:32
+2024年2月9日 0:32:42
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
-RX621_Cmausu.c(1289):W0520177:Variable "Lflag2" was declared but never referenced
-RX621_Cmausu.c(1289):W0520177:Variable "Rflag2" was declared but never referenced
-RX621_Cmausu.c(1580):W0520550:Variable "maza_update_flag" was set but never used
-RX621_Cmausu.c(2462):W0520177:Variable "target_x_buf" was declared but never referenced
-RX621_Cmausu.c(2462):W0520177:Variable "target_y_buf" was declared but never referenced
-RX621_Cmausu.c(2462):W0520177:Variable "angle_buf" was declared but never referenced
+RX621_Cmausu.c(1325):W0520177:Variable "Lflag2" was declared but never referenced
+RX621_Cmausu.c(1325):W0520177:Variable "Rflag2" was declared but never referenced
+RX621_Cmausu.c(1616):W0520550:Variable "maza_update_flag" was set but never used
+RX621_Cmausu.c(2498):W0520177:Variable "target_x_buf" was declared but never referenced
+RX621_Cmausu.c(2498):W0520177:Variable "target_y_buf" was declared but never referenced
+RX621_Cmausu.c(2498):W0520177:Variable "angle_buf" was declared but never referenced
+RX621_Cmausu.c(3149):W0520550:Variable "last" was set but never used
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:8個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:9個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -50,8 +51,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 9f8ab6f397c0acf3aa165a017b204728625d5d7a
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: a6b0d89616eb6a889ce4328ba35b4563eef9497f
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 4cd9cf1a6a96b6cc920deb070aaf6368bef423c4
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 019ab521d594aa55525726f4be0f01a30270b770
 
 
 --- システム情報 ---
@@ -77,13 +78,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: a6b0d89616eb6a889ce4328
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  298 MB
+  242 MB
  *GDIオブジェクト数
-  2060
+  2029
  *USERオブジェクト数
-  1012
+  913
  *開いているファイル
-  3 editors, 3 files, 145 KB
+  3 editors, 3 files, 154 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン
