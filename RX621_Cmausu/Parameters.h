@@ -18,12 +18,12 @@
 
 
 
-#define Goal_x  1
+#define Goal_x  0
 #define Goal_y  3
-#define Goal_angle 1 //ゴールした直後の向き スタートの向きが1
+#define Goal_angle 2 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版
-#define Pickup_x  0	
+#define Pickup_x  1	
 #define Pickup_y  1
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
@@ -64,7 +64,7 @@
 #define rslsr90 	(980)	//スラローム 664
 #define rslsr90_offset  (-0)
 
-#define rslsl90_BIG (1490)	//スラローム 大700
+#define rslsl90_BIG (1550)	//スラローム 大700
 #define rslsl90_BIG_offset  (-100)
 #define rslsr90_BIG (1550)	//スラローム 大 680
 #define rslsr90_BIG_offset  (-100)
@@ -78,7 +78,7 @@
 
 
 //前壁補正のパラメータ
-#define F_max 250
+#define F_max 255
 #define F_min 235
 #define F_pow 10
 #define F_cnt 600

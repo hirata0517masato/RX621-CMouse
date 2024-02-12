@@ -201,9 +201,9 @@ void Smotor(int M,char w_flag){
 			
 	//斜め対策
 	if(w_flag == 3){
-	    if((get_encoder_L() > 10 && get_encoder_R() > 10) && abs(GyroSum_get()) < 2000){
+	    if((get_encoder_L() > 10 && get_encoder_R() > 10) ){// && abs(GyroSum_get()) < 2000){
 		//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
-		if(   get_IR(IR_FL) > 40 ){//左前のみ
+		if(   get_IR(IR_FL) > 35  && GyroSum_get() < 1000 ){//左前のみ
 		    cnt3++;
 		    if(cnt3 > 0){
 			cnt3 = 0;
@@ -211,7 +211,7 @@ void Smotor(int M,char w_flag){
 			    GyroSum_add(50);
 			    naname_flag = 1;
 			     
-			}else if(get_IR(IR_FL) > 55){
+			}else if(get_IR(IR_FL) > 50){
 			    GyroSum_add(20);
 			    naname_flag = 1;
 			    
@@ -228,7 +228,7 @@ void Smotor(int M,char w_flag){
 		}else cnt3 = 0;
 				
 		//if(get_IR(IR_FL) < 30 &&  get_IR(IR_FR) > 35  ){//右前のみ
-		if(get_IR(IR_FR) > 40  ){//右前のみ
+		if(get_IR(IR_FR) > 35 && GyroSum_get() > -1000  ){//右前のみ
 		    cnt4++;
 		    if(cnt4 > 0){
 			cnt4 = 0;
@@ -236,7 +236,7 @@ void Smotor(int M,char w_flag){
 			    GyroSum_add(-50);
 			    naname_flag = 1;
 			     
-			}else if(get_IR(IR_FR) > 55){
+			}else if(get_IR(IR_FR) > 50){
 			    GyroSum_add(-20);
 			    naname_flag = 1;
 			     

@@ -1333,7 +1333,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//•ÇØ‚ê‚Ü‚Å‘–s Î‚ßƒZƒ“ƒT[—
     while(1){
 	if(LR == 3 || LR == 1){//—¼•û || L‚¾‚¯
 	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 27){// || (get_IR(IR_LT) > 14 && get_IR(IR_R) > 140)){
+		if(get_IR(IR_LT) > 23){// || (get_IR(IR_LT) > 14 && get_IR(IR_R) > 140)){
 		    Lflag = 1;
 		    led(8);
 		}
@@ -1359,7 +1359,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//•ÇØ‚ê‚Ü‚Å‘–s Î‚ßƒZƒ“ƒT[—
 			    break;
 			} 
 		 }else{*/
-			if(get_IR(IR_LT) < 10){
+			if(get_IR(IR_LT) < 6){
 			    led(0);
 			    break;
 			}
@@ -1371,7 +1371,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//•ÇØ‚ê‚Ü‚Å‘–s Î‚ßƒZƒ“ƒT[—
 
 	if(LR == 3 || LR == 2){//—¼•û || R‚¾‚¯
 	    if(Rflag == 0){
-		if(get_IR(IR_RT) > 27 ){// || (get_IR(IR_RT) > 15 && get_IR(IR_L) > 140)){
+		if(get_IR(IR_RT) > 23 ){// || (get_IR(IR_RT) > 15 && get_IR(IR_L) > 140)){
 		    Rflag = 1;
 		    led(1);
 		}
@@ -1398,7 +1398,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR){//•ÇØ‚ê‚Ü‚Å‘–s Î‚ßƒZƒ“ƒT[—
 			    break;
 			} 
 		 }else{*/
-			if(get_IR(IR_RT) < 10){
+			if(get_IR(IR_RT) < 6){
 			    led(0);
 			    break;
 			}
@@ -1514,7 +1514,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 	
 	if(LR == 3 || LR == 1){//—¼•û || L‚¾‚¯
 	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 80){
+		if(get_IR(IR_LT) > 60){
 		    led(8);
 		    Lflag = 1;
 		}
@@ -1531,7 +1531,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 
 	if(LR == 3 || LR == 2){//—¼•û || R‚¾‚¯
 	    if(Rflag == 0){
-		if(get_IR(IR_RT) > 80){
+		if(get_IR(IR_RT) > 60){
 		    led(1);
 		    Rflag = 1;
 		}
@@ -3823,7 +3823,7 @@ void run_shortest_path_fin(	char naname){
 			L_rotate_naname(l45 * path_num * 2.05,false);//0.75
 			v2_flag = 1;
 		}else{
-			L_rotate_naname(l45 * path_num * 2.00,false);//0.75
+			L_rotate_naname(l45 * path_num * 1.95,false);//0.75
 			GyroSum_reset();
 		}
 		comand = dequeue();
@@ -3993,7 +3993,7 @@ void run_shortest_path_fin(	char naname){
 	    //my_y = ny;
 	    break;
 	case 10://Snaname
-	    path_num-=2;
+	    path_num-=2;//Œã‚ÅŒ³‚É–ß‚·‚±‚Æ
 		 
 	    if((path_num <= 0 && comand_old != 14 && comand_old != -14 ) || (path_num <= -1 && (comand_old == 14 || comand_old == -14) )){//‚Qƒ}ƒX‚¾‚¯‚ÌÎ‚ß
 			
@@ -4095,6 +4095,9 @@ void run_shortest_path_fin(	char naname){
 	    v2_flag = 0;
 	    //my_x = nx;
 	    //my_y = ny;
+	    
+	    path_num +=2;
+	     
 	    break;
 	case 1://R
 	    if(queue_next(1) == -1){//Sƒ^[ƒ“
@@ -4152,7 +4155,7 @@ void run_shortest_path_fin(	char naname){
 			R_rotate_naname(r45 * path_num * 2.05,false);//0.75
 			v2_flag = 1;
 		}else{
-			R_rotate_naname(r45 * path_num * 2.00,false);//0.75
+			R_rotate_naname(r45 * path_num * 1.95,false);//0.75
 			GyroSum_reset();
 		}
 		comand = dequeue();
