@@ -64,9 +64,9 @@
 #define rslsr90 	(980)	//スラローム 664
 #define rslsr90_offset  (-0)
 
-#define rslsl90_BIG (1550)	//スラローム 大700
+#define rslsl90_BIG (1650)	//スラローム 大700
 #define rslsl90_BIG_offset  (-100)
-#define rslsr90_BIG (1550)	//スラローム 大 680
+#define rslsr90_BIG (1650)	//スラローム 大 680
 #define rslsr90_BIG_offset  (-100)
 
 #define usll180     (2250)	//Uターン
