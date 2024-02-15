@@ -2148,11 +2148,11 @@ void run_shortest_path(){
     short comand ,path_num;
     int time = 1;
     
-    int run_speed = 25;
-    int run_speed_up = 50;    //未知区間加速
+    int run_speed = 30;
+    int run_speed_up = 60;    //未知区間加速
     int run_speed_boost = 60; //既知区間加速
     
-    int run_speed_kabe = 25;
+    int run_speed_kabe = 30;
 
   
     while(!queue_empty()){
@@ -2199,7 +2199,7 @@ void run_shortest_path(){
 					
 		}else{
 		
-		    Set_motor_pid_mode(1);//高速
+		 //   Set_motor_pid_mode(1);//高速
 		    
 		    //S_run(s1 * ((long long)path_num - 1),run_speed_boost + run_fin_speed_offset,3,true);//non_stop = 3
 		    S_run(s1 * ((long long)path_num - 1),run_speed_boost + run_fin_speed_offset,3,4);//non_stop = 3 // w_flag = 4 串の壁補正あり
@@ -2219,7 +2219,7 @@ void run_shortest_path(){
 		    S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
 		    //S_run(h1,run_speed + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 串の壁補正あり
 		    
-		    Set_motor_pid_mode(0);//低速
+		//    Set_motor_pid_mode(0);//低速
 		}
 	    }
 		
@@ -2633,7 +2633,7 @@ void maze_search_all(){
     short target_x,target_y;
     int Goal_Start = 0;//0:ゴールに近いほうから 1:スタートに近いほうから
     
-    time_limit = 90000;//90秒
+    time_limit = 60000;//60秒
 	
     while(time_limit > 0){//制限時間の間走行可能
 	
@@ -3724,8 +3724,8 @@ void run_shortest_path_fin(	char naname){
     int over_run = -200;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
     int over_run2 = -400; // 直線距離が短い時に使用する
 
-    int run_speed = 85;
-    int run_speed_naname = 80;
+    int run_speed = 90;
+    int run_speed_naname = 90;
     
     /*   
 	 R_curveU(ur180,true);
@@ -4016,10 +4016,10 @@ void run_shortest_path_fin(	char naname){
 		
 		//距離が短いので少し速度高めに設定する
 		if(queue_next(1) == -11){//次　左
-		    S_run_kabe_naname(50,3,1);
+		    S_run_kabe_naname(60,3,1);
 			
 	        }else if(queue_next(1) == 11){//次　右
-		    S_run_kabe_naname(50,3,2);
+		    S_run_kabe_naname(60,3,2);
 		
 		}else if(queue_next(1) == -13){//次　左
 		
@@ -4036,7 +4036,7 @@ void run_shortest_path_fin(	char naname){
 		    	v2_flag = 1;  	
 		    }	
 		    
-		    S_run_kabe_naname2(50,3,1,v2_flag);
+		    S_run_kabe_naname2(60,3,1,v2_flag);
 	        }else if(queue_next(1) == 13){//次　右
 		
 		    if(v2_flag == 1 && queue_next(3) != 11){//2マスVターンの出るとき
@@ -4051,7 +4051,7 @@ void run_shortest_path_fin(	char naname){
 		    	v2_flag = 1;
 		    }
 		    
-		    S_run_kabe_naname2(50,3,2,v2_flag);
+		    S_run_kabe_naname2(60,3,2,v2_flag);
 	        }
 		
 		//ESmotor(100,40,true,false);//距離、スピード
@@ -4086,13 +4086,13 @@ void run_shortest_path_fin(	char naname){
 		    if(queue_next(3) == -11){//Vターン
 			 v2_flag = 3;   
 		    }
-		    S_run_kabe_naname2(45,3,1,v2_flag);
+		    S_run_kabe_naname2(50,3,1,v2_flag);
 			
 	        }else if(queue_next(1) == 13){//次　右
 		    if(queue_next(3) == 11){//Vターン
 			 v2_flag = 3;   
 		    }
-		    S_run_kabe_naname2(45,3,2,v2_flag);
+		    S_run_kabe_naname2(50,3,2,v2_flag);
 		    
 	        }
 	    }
