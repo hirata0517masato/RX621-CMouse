@@ -713,6 +713,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		    }else{
 			M = min_M_use + (enc_now / 6);
 		    }
+		    
+		    if(motor_pid_mode == 1 && enc_now > s45){//半マス進んだらモード変更
+			  non_stop = 1;  
+		    }
 		}else{//高速
 		    if(A <= s1){//距離が１マス以下の場合
 		    	 M = min_M_use + ((enc_now) / 2);
@@ -919,7 +923,7 @@ void Tmotor(long long A){
     int MA = 1,min_M = 4;
 	
     //	int cnt = 0;
-    int powor_max = 20;
+    int powor_max = 15;
     int powor;
 
     while(1){
@@ -1156,7 +1160,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     while(1){
 		
 	if(A > 0){//R
-	    if(get_IR(IR_FR) > 50){ //左壁近い //どうしても以外は使わない方がよい
+	    if(get_IR(IR_FR) > 5000){ //左壁近い //どうしても以外は使わない方がよい
 		cnt1++;
 		if(cnt1 > 5){
 		    cnt1 = 0;
@@ -1169,7 +1173,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	    E_sum += (L - L_prev);
 			
 	}else{//L
-	    if(get_IR(IR_FL) > 50 ){ //右壁近い //どうしても以外は使わない方がよい
+	    if(get_IR(IR_FL) > 5000 ){ //右壁近い //どうしても以外は使わない方がよい
 		cnt1++;
 		if(cnt1 > 5){
 		    cnt1 = 0;
@@ -1282,6 +1286,141 @@ void ETmotor(long long A, long long E, char non_stop){
 	PORTA.DR.BIT.B1 = 0;
 	}
     */	
+    long long L = get_encoder_total_L();
+    long long R = get_encoder_total_R();
+    long long L_prev = L, R_prev = R;
+    long long E_sum = 0;
+    long long E_add = 0;
+    long long E_offset = 0;	
+	
+    int powor_max = 20;
+    int powor;
+	
+    int LM = 0, RM = 0;
+    if(non_stop){
+	LM = M;
+	RM = M;
+    }
+    int LM_prev = LM, RM_prev = RM;
+    int MA = 10,min_M = 5;
+	
+
+    static int cnt1 = 0;
+	
+    if(A > 0){//R
+	GyroSum_add(5);
+		
+	PORTA.DR.BIT.B3 = 1;
+    }else{//L
+	GyroSum_add(-5);
+		
+	PORTA.DR.BIT.B0 = 1;
+    }
+    while(1){
+		
+	if(A > 0){//R
+	    if(get_IR(IR_L) > 2000){ //左壁近い //どうしても以外は使わない方がよい
+		cnt1++;
+		if(cnt1 > 5){
+		    cnt1 = 0;
+		    GyroSum_add(1);
+		    E_add += 1;
+		}
+	    }else cnt1 = 0;
+		
+	    GyroSum_add((A * (((L - L_prev)*100000) / E)) / 100000);
+	    E_sum += (L - L_prev);
+			
+	}else{//L
+	    if(get_IR(IR_R) > 2000 ){ //右壁近い //どうしても以外は使わない方がよい
+		cnt1++;
+		if(cnt1 > 5){
+		    cnt1 = 0;
+		    GyroSum_add(-1);
+		    E_add += 1;//マイナスでもプラスを設定
+		}
+	    }else cnt1 = 0;
+		
+	    GyroSum_add((A * (((R - R_prev)*100000) / E)) / 100000);
+	    E_sum += (R - R_prev);
+	}
+		
+		
+	powor = gyro_powor_L();
+		
+	if(powor > powor_max)powor = powor_max;
+	else if(-powor_max > powor)powor = -powor_max; 
+		
+		
+	LM = M + powor;
+	RM = M + -powor;
+	
+
+	if(LM_prev + MA < LM)LM = LM_prev + MA;
+	if(LM_prev - MA > LM)LM = LM_prev - MA;
+		
+	if(RM_prev + MA < RM)RM = RM_prev + MA;
+	if(RM_prev - MA > RM)RM = RM_prev - MA;
+		
+	if(0 < LM && LM < min_M)LM = min_M;
+	if(0 > LM && LM > -min_M)LM = -min_M;
+
+	if(0 < RM && RM < min_M)RM = min_M;
+	if(0 > RM && RM > -min_M)RM = -min_M;
+		 
+	motor(LM ,RM);
+	//delay(1);
+		
+	LM_prev = LM;
+	RM_prev = RM;
+	L_prev = L;
+	R_prev = R;
+	L = get_encoder_total_L();
+	R = get_encoder_total_R();
+
+	if(A > 0){//R
+	    E_offset = rslsr90_offset;
+	}else{//L
+	    E_offset = rslsl90_offset;
+	}
+		
+	if(E + E_offset - E_add - E_sum < 0)break;
+		
+    }
+
+    GyroSum_reset();
+		
+    PORTA.DR.BIT.B0 = 0;
+    PORTA.DR.BIT.B3 = 0;
+	
+    //ESmotor(45,M_kabe2,true,true);//60
+    ESmotor(45,M_kabe2,true,false);//60
+	
+    //motor(0,0);
+    GyroSum_reset();
+    //Encoder_reset();
+    /*	
+	if(A > 0){//R
+	GyroSum_add(-30);
+	}else{//L
+	GyroSum_add( 30);
+	}
+    */
+}
+
+void ETmotor_afterNaname(long long A, long long E, char non_stop){
+    GyroSum_reset();
+    //Encoder_reset();
+	
+    //int M_kabe = 30; //不要　これが無い版のカーブだから
+    int M 		= 30;
+    int M_kabe2 = 30;
+	
+    //	char flag = 0;
+
+
+    GyroSum_reset();
+		
     long long L = get_encoder_total_L();
     long long R = get_encoder_total_R();
     long long L_prev = L, R_prev = R;

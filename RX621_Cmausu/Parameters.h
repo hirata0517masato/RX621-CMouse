@@ -1,11 +1,6 @@
 #ifndef PARAM_H
 #define PARAM_H
 
-/*
-中央に置いたとき
-横壁は60　前壁は50 くらい
-*/
-
 #define maze_d_max	9999
 
 #define W	16 //X
@@ -16,15 +11,15 @@
 #define Start_angle 1 // スタートする時の向き　
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define Goal_x  0
 #define Goal_y  3
 #define Goal_angle 2 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版
-#define Pickup_x  1	
-#define Pickup_y  1
+//#define Pickup_x  1	
+//#define Pickup_y  1
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
 #define Not_Pickup_x_min  3		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
@@ -66,7 +61,7 @@
 
 #define rslsl90_BIG (1650)	//スラローム 大700
 #define rslsl90_BIG_offset  (-100)
-#define rslsr90_BIG (1650)	//スラローム 大 680
+#define rslsr90_BIG (1670)	//スラローム 大 680
 #define rslsr90_BIG_offset  (-100)
 
 #define usll180     (2250)	//Uターン
