@@ -438,7 +438,7 @@ void Smotor(int M,char w_flag){
 	    if((get_encoder_L() > 5 || get_encoder_R() > 5)  && (w_flag != 3) ){
 				
 		//左右に壁がある 
-		if(get_IR(IR_L) > 30 && get_IR(IR_R) > 30 ){
+		if(get_IR(IR_L) > 40 && get_IR(IR_R) > 40 ){
 		    if(abs(get_IR(IR_L) - get_IR(IR_R)) > ir_core){//  左右の差が小さきすぎない
 					
 			ir_sa =  get_IR(IR_L) - get_IR(IR_R);
@@ -454,7 +454,7 @@ void Smotor(int M,char w_flag){
 			motor_pid_flag = 1;
 		    }
 	
-		}else if(get_IR(IR_L) > 60 && get_IR(IR_R) < 20){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
+		}else if(get_IR(IR_L) > 70 && get_IR(IR_R) < 20){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core /2) {// 左右の差が小さきすぎない
 						
@@ -472,7 +472,7 @@ void Smotor(int M,char w_flag){
 			}
 		    }
 					
-		}else if(get_IR(IR_L) < 20 && get_IR(IR_R) > 60){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
+		}else if(get_IR(IR_L) < 20 && get_IR(IR_R) > 70){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core /2){//左右の差が小さきすぎない
 					
@@ -489,7 +489,7 @@ void Smotor(int M,char w_flag){
 			}
 		    }
 					
-		}else if(get_IR(IR_LT) > 35 && get_IR(IR_RT) < 25){//斜め左だけ壁がある
+		}else if(get_IR(IR_LT) > 40 && get_IR(IR_RT) < 25){//斜め左だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(get_IR(IR_LT) - ir_wall2) > ir_core/2) {// 左右の差が小さきすぎない
 						
@@ -505,7 +505,7 @@ void Smotor(int M,char w_flag){
 			    motor_pid_flag = 1;
 			}
 		    }	
-		}else if(get_IR(IR_LT) < 25 && get_IR(IR_RT) > 35){//斜め右だけ壁がある
+		}else if(get_IR(IR_LT) < 25 && get_IR(IR_RT) > 40){//斜め右だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(ir_wall2 - get_IR(IR_RT)) > ir_core/2 ){//左右の差が小さきすぎない
 					
@@ -721,11 +721,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		    if(A <= s1){//距離が１マス以下の場合
 		    	 M = min_M_use + ((enc_now) / 2);
 		    }else{
-			if(enc_now < 50){//出だしは加速しすぎないように
+			if(enc_now < 150){//出だしは加速しすぎないように
 			    M = min_M_use ;
 					
 			}else{
-		            M = min_M_use + ((enc_now-50) / 5);
+		            M = min_M_use + ((enc_now-150) / 5);
 			}
 		    }
 		}
@@ -880,12 +880,14 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }
 	}
 			
-	/*	
-	if(F_min-50 < get_IR(IR_F)){//前壁が近い場合はストップ
-	    break;
-			
-	}else 
-	*/
+	if(motor_pid_mode == 0){//探索中
+		if((A - enc_now) < h1 && 180 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
+		    break; //激突防止
+				
+		}
+	}
+	
+	
 	if(non_stop != 0){
 	    if(A - enc_now  < 30)break; 
 	}else{
@@ -923,7 +925,7 @@ void Tmotor(long long A){
     int MA = 1,min_M = 4;
 	
     //	int cnt = 0;
-    int powor_max = 15;
+    int powor_max = 13;
     int powor;
 
     while(1){
