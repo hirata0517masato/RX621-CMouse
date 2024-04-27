@@ -15,7 +15,7 @@
 
 #define Goal_x  8
 #define Goal_y  7
-#define Goal_angle 1 //ゴールした直後の向き スタートの向きが1
+#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版
 //#define Pickup_x  1	

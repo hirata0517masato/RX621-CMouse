@@ -207,7 +207,7 @@ void Smotor(int M,char w_flag){
 		    cnt3++;
 		    if(cnt3 > 0){
 			cnt3 = 0;
-			if(get_encoder_L() > 60 && get_encoder_R() > 60){
+			if(get_encoder_L() > 30 && get_encoder_R() > 30){
 				if( GyroSum_get() < 0){
 					GyroSum_reset();
 				}
@@ -248,7 +248,7 @@ void Smotor(int M,char w_flag){
 		    cnt4++;
 		    if(cnt4 > 0){
 			cnt4 = 0;
-			if(get_encoder_L() > 60 && get_encoder_R() > 60){
+			if(get_encoder_L() > 30 && get_encoder_R() > 30){
 				
 				if( GyroSum_get() > 0){
 					GyroSum_reset();
@@ -386,15 +386,15 @@ void Smotor(int M,char w_flag){
 			    cnt5 = 0;
 							
 			    if(get_IR(IR_F) > 250){
-				if(diff > 3)diff = 3;
-				if(diff < -3)diff = -3;
+				if(diff > 5)diff = 5;
+				if(diff < -5)diff = -5;
 								
 			    }else if(get_IR(IR_F) > 200){
-				if(diff > 8)diff = 8;
-				if(diff < -8)diff = -8;
-			    }else{
 				if(diff > 15)diff = 15;
 				if(diff < -15)diff = -15;
+			    }else{
+				if(diff > 23)diff = 23;
+				if(diff < -23)diff = -23;
 			    }
 			    
 			    mae_flag = 1;
@@ -423,7 +423,7 @@ void Smotor(int M,char w_flag){
 	    }
 			
 	    if(motor_pid_mode == 0){//低速
-		ir_core = 2;//左右の差の許容範囲
+		ir_core = 10;//左右の差の許容範囲
 				
 		kp = 0.3;
 		kd = 0.0;
@@ -435,7 +435,7 @@ void Smotor(int M,char w_flag){
 	    }
 			
 			
-	    if((get_encoder_L() > 5 || get_encoder_R() > 5)  && (w_flag != 3) ){
+	    if((get_encoder_L() > 10 && get_encoder_R() > 10)  && (w_flag != 3) ){
 				
 		//左右に壁がある 
 		if(get_IR(IR_L) > 40 && get_IR(IR_R) > 40 ){
@@ -454,7 +454,7 @@ void Smotor(int M,char w_flag){
 			motor_pid_flag = 1;
 		    }
 	
-		}else if(get_IR(IR_L) > 70 && get_IR(IR_R) < 20){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
+		}else if(get_IR(IR_L) > 30 && get_IR(IR_R) < 20){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core /2) {// 左右の差が小さきすぎない
 						
@@ -472,7 +472,7 @@ void Smotor(int M,char w_flag){
 			}
 		    }
 					
-		}else if(get_IR(IR_L) < 20 && get_IR(IR_R) > 70){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
+		}else if(get_IR(IR_L) < 20 && get_IR(IR_R) > 30){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core /2){//左右の差が小さきすぎない
 					
@@ -925,7 +925,7 @@ void Tmotor(long long A){
     int MA = 1,min_M = 4;
 	
     //	int cnt = 0;
-    int powor_max = 13;
+    int powor_max = 15;
     int powor;
 
     while(1){
@@ -1246,9 +1246,9 @@ void ETmotor(long long A, long long E, char non_stop){
     GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 30;
-    int M 		= 30;
-    int M_kabe2 = 30;
+    int M_kabe = 25;
+    int M 		= 25;
+    int M_kabe2 = 25;
 	
     //	char flag = 0;
 	

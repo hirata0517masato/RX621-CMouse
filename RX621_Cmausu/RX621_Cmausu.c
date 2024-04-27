@@ -1371,7 +1371,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 			    break;
 			} 
 		 }else{*/
-			if(get_IR(IR_LT) < 10){
+			if(get_IR(IR_LT) < 15){
 			    led(0);
 			    break;
 			}
@@ -1410,7 +1410,8 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 			    break;
 			} 
 		 }else{*/
-			if(get_IR(IR_RT) < 10){
+			if(get_IR(IR_RT) < 15
+			){
 			    led(0);
 			    break;
 			}
