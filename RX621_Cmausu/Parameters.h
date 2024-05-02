@@ -71,6 +71,8 @@
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 
+#define r45_cost 1		//迷路の重み　45度回転の場合
+
 
 //前壁補正のパラメータ
 #define F_max 250

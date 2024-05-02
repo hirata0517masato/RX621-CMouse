@@ -47,6 +47,7 @@ void led_down(void);
 int get_sw(void);
 
 short get_r_cost(void);
+short get_r45_cost(void);
 
 void maze_save(void);
 void maze_load(void);
@@ -84,6 +85,8 @@ short maze_d[H][W][4] = {0};	//4方向分の重み
 short maze_d_perfect[H][W] = {0};
 
 short r_cost_offset = 0;
+
+short r45_cost_offset = 0;
 
 short dx[4] = {0,1,0,-1},dy[4] = {-1,0,1,0};
 
@@ -419,9 +422,10 @@ void main(void)
 	    maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
 				
 	    break;
-	    //8以降は走行以外の調整モード
+	    
+	//8以降は走行以外の調整モード
 			
-	case 9://速度調整モード（調整値は保存しない、本番での微調整用）
+	case 8://速度調整モード（調整値は保存しない、本番での微調整用）
 	    Encoder_reset();
 		
 	    led(6);
@@ -442,7 +446,7 @@ void main(void)
 		
 	    break;
 			
-	case 10://90度回転の重み調整（調整値は保存しない、本番での微調整用）
+	case 9://90度回転の重み調整（調整値は保存しない、本番での微調整用）
 	    Encoder_reset();
 		
 	    led(9);
@@ -462,7 +466,28 @@ void main(void)
 	    }
 		
 	    break;
+	
+	case 10://45度回転の重み調整（調整値は保存しない、本番での微調整用）
+	    Encoder_reset();
+		
+	    led(9);
+	    delay(500);
 				
+	    //モード選択
+	    while(1){
+		led(get_r45_cost());
+			
+		r45_cost_offset = get_encoder_total_R() / 60;
+					
+		if(get_sw() == 1){
+		    led_up();
+		    while(get_sw() == 1)nop();
+		    break;
+		}
+	    }
+		
+	    break;
+	    
 	case 11://迷路情報リセットモード
 	    for(int i = 0; i < H;i++)for(int j = 0; j < W; j++)maze_w[i][j] = 0;
 				
@@ -768,6 +793,16 @@ void MTU1_init(void){
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 short get_r_cost(void){
     return max(1,r_cost + r_cost_offset);//１より小さくしない
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：45度回転の重みを取得										  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 													    */
+/* 戻  り   値：なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+short get_r45_cost(void){
+    return max(1,r45_cost + r45_cost_offset);//１より小さくしない
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -3143,8 +3178,11 @@ void shortest_path_search_perfect(){
 			}else if(comand == 10){//斜め直線
 				maze_d_perfect[i][j] += path_num;  //斜め１マス
 				
-			}else{
-				maze_d_perfect[i][j] += path_num * r_cost;
+			}else if(comand == -11 || comand == -13 || comand == -14 || comand == 11 || comand == 13 || comand == 14){//斜め45
+				maze_d_perfect[i][j] += get_r45_cost();  //１マス
+				
+			}else{//カーブ
+				maze_d_perfect[i][j] += path_num * get_r_cost();
 			}
 			
 		} 
@@ -3188,6 +3226,18 @@ void shortest_path_search_perfect(){
 			if(num > maze_d_perfect[ny][nx]){//ゴールに近いマスを見つけた
 				num = maze_d_perfect[ny][nx];
 				n_num = i;
+				
+			 }else if(num == maze_d_perfect[ny][nx]){// LとRが同じ重み　斜めを優先したい
+			 
+				if(last == -1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == 1   ){//前回がL かつ　今回はR  
+					n_num = i;
+						 
+				}else if(last == 1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == -1   ){//前回がR　かつ　今回はL
+					n_num = i;
+						 
+				}else{//前回がSなら今回は?
+					//わからんから先に見つかった方にする
+				}
 			}
 		}
 	}
