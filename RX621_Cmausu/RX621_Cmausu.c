@@ -58,6 +58,7 @@ void search_pickup(int*,int*);
 void maze_update(char,char,char,char);
 void maze_search_adachi(short,short);
 void maze_search_all(void);
+char shortest_path_search_check(void);
 void shortest_path_search_fin(void);
 void shortest_path_search_perfect(void);
 void remake_shortest_path_list_naname(void);
@@ -196,6 +197,21 @@ void main(void)
 	my_angle = Start_angle;
 		
 	if(mode < 8){//各種調整モードでなければ
+	
+	   
+	    if(mode != 1 && mode != 4 && shortest_path_search_check() == 1){//最短走行時に最短経路が見つからない時
+		led(16); 
+		delay(500);
+		led(0); 
+		delay(500);
+		led(16); 
+		delay(500);
+		led(0); 
+		delay(500);
+		
+		continue;
+	    }
+	    
 	    ir_flag = 1;//赤外線ON
 			
 	    led(6);
@@ -863,13 +879,24 @@ int get_sw(){
 void maze_save(){
     uint8_t buff[H*W];
 	
-    for(int i = 0; i < H;i++){
-	for(int j = 0; j < W; j++){
-	    buff[i*W + j] = maze_w[i][j];
-	}
+    if(shortest_path_search_check() == 1){//最短経路が見つからない時
+		led(16); 
+		delay(500);
+		led(0); 
+		delay(500);
+		led(16); 
+		delay(500);
+		led(0); 
+		delay(500);
+    }else{
+	    for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++){
+		    buff[i*W + j] = maze_w[i][j];
+		}
+	    }
+		
+	    DataFlash_write(0,buff,sizeof(buff));
     }
-	
-    DataFlash_write(0,buff,sizeof(buff));
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -2755,6 +2782,76 @@ void maze_search_all(){
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路が存在するか確認する											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+char shortest_path_search_check(){
+    queue_reset();
+    for(int i = 0; i < H;i++){
+	for(int j = 0;j < W; j++){
+	    for(int k = 0; k < 4; k++){
+		maze_d[i][j][k] = maze_d_max;
+	    }
+	}
+    }
+    for(int k = 0; k < 4; k++){
+	if(((maze_w[Goal_y][Goal_x] & (1<<k)) == 0 ) && ((maze_w[Goal_y][Goal_x] & (1<<(4+k))) != 0 )){
+	    maze_d[Goal_y][Goal_x][k] = 0;
+	}
+    }
+    enqueue(Goal_x*100 + Goal_y);
+  
+    while(!queue_empty()){
+	short x = dequeue(),y;
+	y = x%100;
+	x /=100;
+
+	for(char i =0;i<4;i++){
+	    char update_flag = 0;
+	    short nx = x+dx[i],ny = y+dy[i];
+	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){//未確定の壁は通過しない
+
+		short num = maze_d[y][x][i];
+		for(int k = 0; k < 4; k++){
+           
+		    if(i == k){//S
+			if(maze_d[ny][nx][k] > num + 1){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num + 1;
+			}
+		    }else if((i+2+4)%4 == k){//B
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()*2){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost()*2;
+			}
+		    }else{// L or R
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost();
+			}
+		    }
+		}
+		if(update_flag)enqueue(nx*100 + ny);
+	    }
+	}
+    }
+    
+    char ng_flag = 1;
+    for(int k = 0; k < 4; k++){
+    	if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+    		ng_flag = 0;
+    	}
+    }
+    if(ng_flag == 1){
+	return 1;    
+    }
+    
+    return 0;
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：最短経路探索（最終版）											  			            */
 /* 関 数 詳 細：												                                   */
 /* 引       数： なし														    */
@@ -2960,6 +3057,7 @@ void shortest_path_search_fin(){
 	 printf2("\n");
 	 }*/
     //////////////////////////////////
+
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */

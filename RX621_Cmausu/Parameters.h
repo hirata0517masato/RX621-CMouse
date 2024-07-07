@@ -3,7 +3,7 @@
 
 #define maze_d_max	9999
 
-#define W	16 //X
+#define W	16 //X  •ÏX‚·‚é‚Æ–À˜Hî•ñ‚Ì•Û‘¶‚ª‚Å‚«‚È‚­‚È‚éƒoƒO‚ ‚è
 #define H	16 //Y
 
 #define Start_x  0
