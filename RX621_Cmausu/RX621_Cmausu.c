@@ -200,11 +200,19 @@ void main(void)
 	
 	   
 	    if(mode != 1 && mode != 4 && shortest_path_search_check() == 1){//最短走行時に最短経路が見つからない時
-		led(16); 
+		led(15); 
 		delay(500);
 		led(0); 
 		delay(500);
-		led(16); 
+		led(15); 
+		delay(500);
+		led(0); 
+		delay(500);
+		led(15); 
+		delay(500);
+		led(0); 
+		delay(500);
+		led(15); 
 		delay(500);
 		led(0); 
 		delay(500);
@@ -552,11 +560,30 @@ void main(void)
 	//スイッチ入力待ち
 	while(get_sw() == 0) nop();
 	while(get_sw() == 1) nop();
+	
+	if(shortest_path_search_check() == 1){//最短経路が見つからない時
+		led(15); 
+		delay(500);
+		led(0); 
+		delay(500);
+		led(15); 
+		delay(500);
+		led(0); 
+		delay(500);
+		led(15); 
+		delay(500);
+		led(0); 
+		delay(500);
+		led(15); 
+		delay(500);
+		led(0); 
+		delay(500);
+    	}else{ 
+		maze_save();
 		
-	maze_save();
-		
-	led_up();
-	led_down();
+		led_up();
+		led_down();
+	}
 		
 	//スイッチ入力待ち
 	while(get_sw() == 0) nop();
@@ -878,25 +905,16 @@ int get_sw(){
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void maze_save(){
     uint8_t buff[H*W];
-	
-    if(shortest_path_search_check() == 1){//最短経路が見つからない時
-		led(16); 
-		delay(500);
-		led(0); 
-		delay(500);
-		led(16); 
-		delay(500);
-		led(0); 
-		delay(500);
-    }else{
-	    for(int i = 0; i < H;i++){
+   
+
+	for(int i = 0; i < H;i++){
 		for(int j = 0; j < W; j++){
 		    buff[i*W + j] = maze_w[i][j];
 		}
-	    }
+	}
 		
-	    DataFlash_write(0,buff,sizeof(buff));
-    }
+	DataFlash_write(0,buff,sizeof(buff));
+   
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -1750,7 +1768,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	    my_y += dy[my_angle];
 			
 	    maze_update(my_x,my_y,my_angle,3);//迷路情報の更新
-			
+	
 	    break;
 	}
 		
@@ -1791,7 +1809,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 			
 	    maze_update(my_x,my_y,my_angle,3);//迷路情報の更新
 	    maza_update_flag = 0;
-			
+		
 	    break;
 	}
 	
@@ -2797,9 +2815,9 @@ char shortest_path_search_check(){
 	}
     }
     for(int k = 0; k < 4; k++){
-	if(((maze_w[Goal_y][Goal_x] & (1<<k)) == 0 ) && ((maze_w[Goal_y][Goal_x] & (1<<(4+k))) != 0 )){
+	//if(((maze_w[Goal_y][Goal_x] & (1<<k)) == 0 ) && ((maze_w[Goal_y][Goal_x] & (1<<(4+k))) != 0 )){
 	    maze_d[Goal_y][Goal_x][k] = 0;
-	}
+	//}
     }
     enqueue(Goal_x*100 + Goal_y);
   
@@ -2811,7 +2829,8 @@ char shortest_path_search_check(){
 	for(char i =0;i<4;i++){
 	    char update_flag = 0;
 	    short nx = x+dx[i],ny = y+dy[i];
-	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){//未確定の壁は通過しない
+	    //if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){//未確定の壁は通過しない
+	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )   ){
 
 		short num = maze_d[y][x][i];
 		for(int k = 0; k < 4; k++){
@@ -2837,6 +2856,26 @@ char shortest_path_search_check(){
 	    }
 	}
     }
+    
+    /*
+    for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++)printf2("%d\t",maze_w[i][j]&0x0f);
+		printf2("\n");
+    }
+    printf2("\n");
+
+    for(int k = 0; k < 4; k++){
+    	printf2("%d \n",maze_d[Goal_y][Goal_x][k]);
+    	
+    }
+    
+    for(int k = 0; k < 4; k++){
+    	printf2("%d \n",maze_d[Start_y][Start_x][k]);
+    	
+    }
+    
+    */ 
+    
     
     char ng_flag = 1;
     for(int k = 0; k < 4; k++){
@@ -4465,7 +4504,7 @@ void Excep_CMT0_CMI0(void)
     if(t_1ms > 99999)t_1ms = 99999;
     
     task ++;                         // タスクの更新						
-    if (log_start != 2 && task >= 30) task = 0;       
+    if (log_start != 2 && task >= 40) task = 0;       
     if (log_start == 2 && task >= 10) task = 0;       
 	
     if(Gy_flag == 1){
@@ -4494,6 +4533,7 @@ void Excep_CMT0_CMI0(void)
     case 10:
     case 20:
     case 30:
+    case 40:
 	encoder_update();
         break;
    

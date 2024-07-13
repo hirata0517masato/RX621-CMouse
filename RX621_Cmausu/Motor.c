@@ -374,12 +374,13 @@ void Smotor(int M,char w_flag){
 		
 	//前壁補正　
 	if(w_flag != 3 && kusi_flag == 0){ //斜め中ではない かつ　串対策が反応してない
-	    if((get_encoder_L() > 0 && get_encoder_R() > 0) && abs(GyroSum_get()) < 550){
-		if(get_IR(IR_L) < 200 && get_IR(IR_FL) > 30 && (get_IR(IR_F) > 30) &&  get_IR(IR_FR) > 30 && get_IR(IR_R) < 200 ){//前壁あり 横壁が近くない
+	    if((get_encoder_L() > 0 && get_encoder_R() > 0) && abs(GyroSum_get()) < 1000){
+            
+		if(get_IR(IR_L) < 250 && get_IR(IR_FL) > 30 && (get_IR(IR_F) > 30) &&  get_IR(IR_FR) > 30 && get_IR(IR_R) < 250 ){//前壁あり 横壁が近くない
 				
 			
 		    long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
-		    if(abs(diff) > 5 && abs(diff) < 50 && (get_IR(IR_F) < 280)){
+		    if(abs(diff) > 5 && abs(diff) < 100 && (get_IR(IR_F) < 350)){
 			//if(abs(diff) > 0 && abs(diff) < 80){
 			cnt5++;
 			if(cnt5 > 0){
@@ -393,8 +394,8 @@ void Smotor(int M,char w_flag){
 				if(diff > 15)diff = 15;
 				if(diff < -15)diff = -15;
 			    }else{
-				if(diff > 23)diff = 23;
-				if(diff < -23)diff = -23;
+				if(diff > 30)diff = 30;
+				if(diff < -30)diff = -30;
 			    }
 			    
 			    mae_flag = 1;
@@ -410,7 +411,7 @@ void Smotor(int M,char w_flag){
 	    //ir_wall = 115;//マス中央でのセンサー値
 	    if(get_IR(IR_L) > 100 && get_IR(IR_R) > 100 &&  get_encoder_L() > 5 &&  get_encoder_R() > 5){//左右に壁がある &&  動いている
 				
-		if(abs(get_IR(IR_L) - get_IR(IR_R)) < 30 && abs(GyroSum_get()) < 550 ){//左右の差が少ない && まっすぐ
+		if(abs(get_IR(IR_L) - get_IR(IR_R)) < 80 && abs(GyroSum_get()) < 1000 ){//左右の差が少ない && まっすぐ
 		    ir_wall = ir_wall*1/10 + ((get_IR(IR_L) + get_IR(IR_R))/2)*9/10 ; //マス中央でのセンサー値を更新
 		}
 	    }
@@ -423,7 +424,7 @@ void Smotor(int M,char w_flag){
 	    }
 			
 	    if(motor_pid_mode == 0){//低速
-		ir_core = 10;//左右の差の許容範囲
+		ir_core = 15;//左右の差の許容範囲
 				
 		kp = 0.3;
 		kd = 0.0;
@@ -454,13 +455,13 @@ void Smotor(int M,char w_flag){
 			motor_pid_flag = 1;
 		    }
 	
-		}else if(get_IR(IR_L) > 30 && get_IR(IR_R) < 20){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
+		}else if(get_IR(IR_L) > 30 && get_IR(IR_R) < 30){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
 		    if(motor_pid_mode == 0){//低速
-			if(abs(get_IR(IR_L) - ir_wall) > ir_core /2) {// 左右の差が小さきすぎない
+			if(abs(get_IR(IR_L) - ir_wall) > ir_core ) {// 左右の差が小さきすぎない
 						
-			    ir_sa =  (get_IR(IR_L) - ir_wall) * 2;
+			    ir_sa =  (get_IR(IR_L) - ir_wall) / 2;
 			    
-			    if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
+			   // if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    
 			    motor_pid_flag = 1;
 			}
@@ -472,13 +473,13 @@ void Smotor(int M,char w_flag){
 			}
 		    }
 					
-		}else if(get_IR(IR_L) < 20 && get_IR(IR_R) > 30){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
+		}else if(get_IR(IR_L) < 30 && get_IR(IR_R) > 30){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
 		    if(motor_pid_mode == 0){//低速
-			if(abs(ir_wall - get_IR(IR_R)) > ir_core /2){//左右の差が小さきすぎない
+			if(abs(ir_wall - get_IR(IR_R)) > ir_core ){//左右の差が小さきすぎない
 					
-			    ir_sa =  (ir_wall - get_IR(IR_R)) * 2 ;
+			    ir_sa =  (ir_wall - get_IR(IR_R)) / 2 ;
 			    
-			    if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
+			   // if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    motor_pid_flag = 1;
 			}
 		    }else{//高速
@@ -527,7 +528,7 @@ void Smotor(int M,char w_flag){
 			
 		    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 		    
-		    ir_sa = max(min(ir_sa,100),-100);
+		    ir_sa = max(min(ir_sa,50),-50);
 					
 		    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
 					
