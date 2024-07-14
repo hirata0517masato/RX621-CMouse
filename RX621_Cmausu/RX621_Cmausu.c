@@ -59,6 +59,7 @@ void maze_update(char,char,char,char);
 void maze_search_adachi(short,short);
 void maze_search_all(void);
 char shortest_path_search_check(void);
+char shortest_path_search_check_full(void);
 void shortest_path_search_fin(void);
 void shortest_path_search_perfect(void);
 void remake_shortest_path_list_naname(void);
@@ -199,24 +200,13 @@ void main(void)
 	if(mode < 8){//各種調整モードでなければ
 	
 	   
-	    if(mode != 1 && mode != 4 && shortest_path_search_check() == 1){//最短走行時に最短経路が見つからない時
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
-		
+	    if(mode > 2 && shortest_path_search_check_full() == 1){//最短走行時に最短経路が見つからない時
+	    	for(int k = 0; k < 4;k++){
+			led(15); 
+			delay(500);
+			led(0); 
+			delay(500);
+		}
 		continue;
 	    }
 	    
@@ -276,8 +266,19 @@ void main(void)
 	    maze_search_adachi(Goal_x,Goal_y);
 		
 	    if(first_flag == 1){
-		first_flag = 0;
-		maze_save();//片道でも迷路を保存する
+		if(shortest_path_search_check_full() == 1){//ゴールしたはずなのに最短経路が見つからない時
+		    	for(int k = 0; k < 4;k++){
+				led(15); 
+				delay(500);
+				led(0); 
+				delay(500);
+			}
+			//穏当は全削除ではなくてNGっぽいところだけ削除したい
+			maze_load();//迷路データの読み込み 未確定壁ありでも最短経路が見つからない場合は確実にNGなのでロードしなおす
+		}else{
+			first_flag = 0;
+			maze_save();//片道でも迷路を保存する
+		}
 	    }
 				
 	    Set_motor_pid_mode(0);//低速
@@ -287,8 +288,46 @@ void main(void)
 				
 	    break;
 				
+	
+	case 2://探索モード　最短経路上の未確定マスをすべて探しに行く
+	    if(( maze_w[0][1] & 0x20) == 0){//迷路が初期化された直後 スタート直後のマスの壁が確定していなければ初期化直後と判定する
+		led_down();
+		led_up();
 				
-	case 2://最短走行モード
+		first_flag = 1;
+	    }
+				
+	    log_reset();//ログの初期化
+	    log_start = 1; //ログ記録開始　30msに１回記録
+				
+	    Set_motor_pid_mode(0);//低速
+	    maze_search_adachi(Goal_x,Goal_y);//はじめは普通に探索走行
+				
+				
+	    if(first_flag == 1){
+		if(shortest_path_search_check_full() == 1){//ゴールしたはずなのに最短経路が見つからない時
+		    	for(int k = 0; k < 4;k++){
+				led(15); 
+				delay(500);
+				led(0); 
+				delay(500);
+			}
+			//穏当は全削除ではなくてNGっぽいところだけ削除したい
+			maze_load();//迷路データの読み込み 未確定壁ありでも最短経路が見つからない場合は確実にNGなのでロードしなおす
+		}else{
+			first_flag = 0;
+			maze_save();//片道でも迷路を保存する
+		}
+	    }
+	    
+	    Set_motor_pid_mode(0);//低速
+	    maze_search_all();//最短経路上の未確定マスを探しに行く
+				
+	    log_start = 0; //ログ記録終了
+				
+	    break;
+	    
+	case 3://最短走行モード  小曲げ
 	    shortest_path_search_fin();
 	   // path_compression();
 	    
@@ -319,7 +358,40 @@ void main(void)
 	    maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
 				
 	    break;
-	case 3://最短走行（斜めあり）モード
+	    
+	case 4://最短走行モード  大曲あり
+	    shortest_path_search_fin();
+	    path_compression();//大曲など
+	    
+	    log_reset();//ログの初期化
+	    log_start = 2; //ログ記録開始 10msに１回記録
+				
+	    Set_motor_pid_mode(1);//高速
+	    run_shortest_path_fin(false);
+				
+	    log_start = 0; //ログ記録終了
+				
+	    led(9);
+	    delay(500);
+	    led_up();
+				
+	    my_x = Goal_x;
+	    my_y = Goal_y;
+	    my_angle = Goal_angle;
+	    
+#ifdef Pickup_x
+	    pickup_x = Pickup_x;
+	    pickup_y = Pickup_y;
+#else
+	    search_pickup(&pickup_x,&pickup_y);
+#endif
+
+	    Set_motor_pid_mode(0);//低速
+	    maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
+				
+	    break;
+	    
+	case 5://最短走行モード　斜め（２マス以上）大曲あり
 	    shortest_path_search_fin();
 	    remake_shortest_path_list_naname();
 	    path_compression();
@@ -351,36 +423,8 @@ void main(void)
 	    maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
 				
 	    break;
-				
-	case 4://最短経路上の未確定マスをすべて探しに行く
-	    if(( maze_w[0][1] & 0x20) == 0){//迷路が初期化された直後 スタート直後のマスの壁が確定していなければ初期化直後と判定する
-		led_down();
-		led_up();
-				
-		first_flag = 1;
-	    }
-				
-	    log_reset();//ログの初期化
-	    log_start = 1; //ログ記録開始　30msに１回記録
-				
-	    Set_motor_pid_mode(0);//低速
-	    maze_search_adachi(Goal_x,Goal_y);//はじめは普通に探索走行
-				
-				
-	    if(first_flag == 1){
-		first_flag = 0;
-		maze_save();//片道でも迷路を保存する
-	    }
-	    
-	    Set_motor_pid_mode(0);//低速
-	    maze_search_all();//最短経路上の未確定マスを探しに行く
-				
-	    log_start = 0; //ログ記録終了
-				
-	    break;
-			
-				
-	case 5://最短走行（斜めあり）モード ２マスも斜めにするモード
+							
+	case 6://最短走行モード 　斜め　大曲あり
 	    shortest_path_search_fin();
 	    remake_shortest_path_list_naname2(); //２マスも斜めにするモード
 	    path_compression();//大曲など
@@ -413,7 +457,7 @@ void main(void)
 				
 	    break;
 	
-	case 6://最短走行 斜めも考慮した経路選択モード
+	case 7://最短走行 斜めも考慮した経路選択モード
 	    shortest_path_search_perfect();
 	    
 	    remake_shortest_path_list_naname2(); //２マスも斜めにするモード
@@ -562,22 +606,15 @@ void main(void)
 	while(get_sw() == 1) nop();
 	
 	if(shortest_path_search_check() == 1){//最短経路が見つからない時
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
-		led(15); 
-		delay(500);
-		led(0); 
-		delay(500);
+		for(int k = 0; k < 4;k++){
+			led(15); 
+			delay(500);
+			led(0); 
+			delay(500);
+		}
+		
+		//穏当は全削除ではなくてNGっぽいところだけ削除したい
+		maze_load();//迷路データの読み込み 未確定壁ありでも最短経路が見つからない場合は確実にNGなのでロードしなおす
     	}else{ 
 		maze_save();
 		
@@ -2800,7 +2837,7 @@ void maze_search_all(){
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* 関 数 概 要：最短経路が存在するか確認する											  			            */
+/* 関 数 概 要：最短経路が存在するか確認する(未確定の壁は通過する）											  			            */
 /* 関 数 詳 細：												                                   */
 /* 引       数： なし														    */
 /* 戻  り   値： なし										    									*/
@@ -2852,7 +2889,117 @@ char shortest_path_search_check(){
 			}
 		    }
 		}
-		if(update_flag)enqueue(nx*100 + ny);
+		if(update_flag){
+			enqueue(nx*100 + ny);
+		
+			if(Start_y == ny && Start_x == nx){
+				for(int k = 0; k < 4; k++){
+		    			if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+		    				return 0;
+		    			}
+	    			}
+			}
+		}
+	    }
+	}
+    }
+    
+    /*
+    for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++)printf2("%d\t",maze_w[i][j]&0x0f);
+		printf2("\n");
+    }
+    printf2("\n");
+
+    for(int k = 0; k < 4; k++){
+    	printf2("%d \n",maze_d[Goal_y][Goal_x][k]);
+    	
+    }
+    
+    for(int k = 0; k < 4; k++){
+    	printf2("%d \n",maze_d[Start_y][Start_x][k]);
+    	
+    }
+    
+    */ 
+    
+    
+    char ng_flag = 1;
+    for(int k = 0; k < 4; k++){
+    	if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+    		ng_flag = 0;
+    	}
+    }
+    if(ng_flag == 1){
+	return 1;    
+    }
+    
+    return 0;
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路が存在するか確認する(未確定の壁はしない）											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+char shortest_path_search_check_full(){
+    queue_reset();
+    for(int i = 0; i < H;i++){
+	for(int j = 0;j < W; j++){
+	    for(int k = 0; k < 4; k++){
+		maze_d[i][j][k] = maze_d_max;
+	    }
+	}
+    }
+    for(int k = 0; k < 4; k++){
+	if(((maze_w[Goal_y][Goal_x] & (1<<k)) == 0 ) && ((maze_w[Goal_y][Goal_x] & (1<<(4+k))) != 0 )){
+	    maze_d[Goal_y][Goal_x][k] = 0;
+	}
+    }
+    enqueue(Goal_x*100 + Goal_y);
+  
+    while(!queue_empty()){
+	short x = dequeue(),y;
+	y = x%100;
+	x /=100;
+
+	for(char i =0;i<4;i++){
+	    char update_flag = 0;
+	    short nx = x+dx[i],ny = y+dy[i];
+	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){//未確定の壁は通過しない
+	    
+		short num = maze_d[y][x][i];
+		for(int k = 0; k < 4; k++){
+           
+		    if(i == k){//S
+			if(maze_d[ny][nx][k] > num + 1){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num + 1;
+			}
+		    }else if((i+2+4)%4 == k){//B
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()*2){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost()*2;
+			}
+		    }else{// L or R
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost();
+			}
+		    }
+		}
+		if(update_flag){
+			enqueue(nx*100 + ny);
+		
+			if(Start_y == ny && Start_x == nx){
+				for(int k = 0; k < 4; k++){
+		    			if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+		    				return 0;
+		    			}
+	    			}
+			}
+		}
 	    }
 	}
     }
