@@ -463,7 +463,7 @@ void Smotor(int M,char w_flag){
 			    	ir_sa =  (get_IR(IR_L) - ir_wall) / 2;
 				
 			    }else{//•Ç‚Æ‰“‚¢‹ß‚Ã‚­
-				ir_sa =  (get_IR(IR_L) - ir_wall) ;    
+				ir_sa =  (get_IR(IR_L) - ir_wall) * 15 / 10;    
 			    }
 			   // if(mae_flag == 1)ir_sa /= 4;//‘O•Ç•â³‚ª”½‰ž‚µ‚Ä‚¢‚½‚ç
 			    
@@ -485,7 +485,7 @@ void Smotor(int M,char w_flag){
 			    	ir_sa =  (ir_wall - get_IR(IR_R)) / 2 ;
 				
 			    }else{//•Ç‚Æ‰“‚¢‹ß‚Ã‚­
-				ir_sa =  (ir_wall - get_IR(IR_R)) ;   
+				ir_sa =  (ir_wall - get_IR(IR_R))  * 15 / 10;   
 			    }
 			    
 			    
@@ -538,7 +538,7 @@ void Smotor(int M,char w_flag){
 			
 		    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 		    
-		    ir_sa = max(min(ir_sa,50),-50);
+		    ir_sa = max(min(ir_sa,100),-100);
 					
 		    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
 					
