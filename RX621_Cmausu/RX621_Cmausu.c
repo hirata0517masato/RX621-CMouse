@@ -84,6 +84,9 @@ short motor_stop_cnt = 0;
 char maze_w[H][W] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
 short maze_d[H][W][4] = {0};	//4方向分の重み
 
+char maze_w_backup[H][W] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
+short maze_d_backup[H][W][4] = {0};	//4方向分の重み
+
 short maze_d_perfect[H][W] = {0};
 
 short r_cost_offset = 0;
@@ -2037,7 +2040,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 /* 引       数： 目的地のXY座標															    */
 /* 戻  り   値： なし										    									*/
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
-void shortest_path_search(short target_x,short target_y){
+char shortest_path_search(short target_x,short target_y){
     queue_reset();
     for(int i = 0; i < H;i++){
 	for(int j = 0;j < W; j++){
@@ -2085,6 +2088,18 @@ void shortest_path_search(short target_x,short target_y){
 	    }
 	}
     }
+    
+    char ng_flag = 1;
+    for(int k = 0; k < 4; k++){
+    	if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+    		ng_flag = 0;
+    	}
+    }
+    if(ng_flag == 1){
+	return 1;    
+    }
+    
+    return 0;
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -2769,17 +2784,38 @@ void maze_search_all(){
     led_down();
 	
     short target_x,target_y;
+    char path_ng = 0;
     int Goal_Start = 0;//0:ゴールに近いほうから 1:スタートに近いほうから
     
     time_limit = 60000;//60秒
 	
     while(time_limit > 0){//制限時間の間走行可能
+	path_ng = 0;
 	
 	maze_update(my_x,my_y,my_angle,3);
 	
-	shortest_path_search(Goal_x,Goal_y);
+	path_ng = shortest_path_search(Goal_x,Goal_y);
 	//shortest_path_search(Start_x,Start_y);
 	
+	if(path_ng == 1){//最短経路が存在しない→迷路情報を元に戻す
+		for(int i = 0; i < H;i++){
+			for(int j = 0; j < W; j++){
+				maze_w[i][j] = maze_w_backup[i][j];
+				for(int k = 0; k < 4;k++)maze_d[i][j][k] = maze_d_backup[i][j][k];
+			}
+		
+	    	}
+	}else{//迷路情報をバックアップする
+		for(int i = 0; i < H;i++){
+			for(int j = 0; j < W; j++){
+				maze_w_backup[i][j] = maze_w[i][j];
+				for(int k = 0; k < 4;k++)maze_d_backup[i][j][k] = maze_d[i][j][k];
+			}
+		
+	    	}	
+	}
+	
+	//確実に最短経路が存在する必要がある
 	maze_search_unknown(&target_x,&target_y, Goal_Start);//最短経路上の未確定マスの座標を取得
 	
 	//Goal_Start ++;
@@ -2796,6 +2832,11 @@ void maze_search_all(){
 			
 	    motor(0,0);
 	    return;
+	}
+	
+	if(target_x == my_x && target_y == my_y){//目標地点と現在地点が同じ = 本来はありえない
+		target_x = 1; //座標に意味はないが別の場所に移動してほしいので目標地点を変更する
+		target_y = 0;
 	}
 	
     	shortest_path_search(target_x,target_y);

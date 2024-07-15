@@ -457,10 +457,14 @@ void Smotor(int M,char w_flag){
 	
 		}else if(get_IR(IR_L) > 30 && get_IR(IR_R) < 30){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
 		    if(motor_pid_mode == 0){//低速
-			if(abs(get_IR(IR_L) - ir_wall) > ir_core ) {// 左右の差が小さきすぎない
-						
-			    ir_sa =  (get_IR(IR_L) - ir_wall) / 2;
-			    
+			if(abs(get_IR(IR_L) - ir_wall) > ir_core /2 ) {// 左右の差が小さきすぎない
+					
+			    if((get_IR(IR_L) - ir_wall ) > 0){//壁に近い＝離れる
+			    	ir_sa =  (get_IR(IR_L) - ir_wall) / 2;
+				
+			    }else{//壁と遠い＝近づく
+				ir_sa =  (get_IR(IR_L) - ir_wall) ;    
+			    }
 			   // if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    
 			    motor_pid_flag = 1;
@@ -475,9 +479,15 @@ void Smotor(int M,char w_flag){
 					
 		}else if(get_IR(IR_L) < 30 && get_IR(IR_R) > 30){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
 		    if(motor_pid_mode == 0){//低速
-			if(abs(ir_wall - get_IR(IR_R)) > ir_core ){//左右の差が小さきすぎない
-					
-			    ir_sa =  (ir_wall - get_IR(IR_R)) / 2 ;
+			if(abs(ir_wall - get_IR(IR_R)) > ir_core /2 ){//左右の差が小さきすぎない
+				
+			    if((ir_wall - get_IR(IR_R)) < 0){//壁に近い＝離れる
+			    	ir_sa =  (ir_wall - get_IR(IR_R)) / 2 ;
+				
+			    }else{//壁と遠い＝近づく
+				ir_sa =  (ir_wall - get_IR(IR_R)) ;   
+			    }
+			    
 			    
 			   // if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    motor_pid_flag = 1;
