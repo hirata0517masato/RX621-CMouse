@@ -4546,7 +4546,7 @@ void run_shortest_path_fin(	char naname){
 		 L_rotate_naname(l45 * path_num * 0.90 ,2);
 		 
 	    }else{
-	    	L_rotate_naname(l45 * path_num,2);
+	    	L_rotate_naname(l45 * path_num  * 0.90,2);
 	    }
 	    break;
 	case -13://L45 o‚é‚Æ‚«
@@ -4917,7 +4917,7 @@ void run_shortest_path_fin(	char naname){
 		R_rotate_naname(r45 * path_num * 0.90 ,2);
 		
 	    }else{
-	    	R_rotate_naname(r45 * path_num,2);
+	    	R_rotate_naname(r45 * path_num * 0.90,2);
 	    }
 	    break;
 	case 13://R45 o‚é

@@ -216,11 +216,11 @@ void Smotor(int M,char w_flag){
 				    GyroSum_add(50);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FL) > 50  ){
+				}else if(get_IR(IR_FL) > 45  ){
 				    GyroSum_add(15);
 				    naname_flag = 1;
 				    
-				}else if(get_IR(IR_FL) > 45 ){
+				}else if(get_IR(IR_FL) > 35 ){
 				    GyroSum_add(5);
 				   // naname_flag = 1;
 				  
@@ -229,7 +229,7 @@ void Smotor(int M,char w_flag){
 				    //naname_flag = 1;
 				}
 			}else{
-				if(get_IR(IR_FL) > 50  ){
+				if(get_IR(IR_FL) > 45  ){
 					GyroSum_add(1);
 					//naname_flag = 1;
 				}
@@ -258,11 +258,11 @@ void Smotor(int M,char w_flag){
 				    GyroSum_add(-50);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FR) > 50){
+				}else if(get_IR(IR_FR) > 45){
 				    GyroSum_add(-15);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FR) > 45){
+				}else if(get_IR(IR_FR) > 35){
 				    GyroSum_add(-5);
 				    //naname_flag = 1;
 				  
@@ -271,7 +271,7 @@ void Smotor(int M,char w_flag){
 				    //naname_flag = 1;
 				}
 			}else{
-				if(get_IR(IR_FR) > 50){
+				if(get_IR(IR_FR) > 45){
 					GyroSum_add(-1);
 					//naname_flag = 1;
 				}
@@ -424,7 +424,7 @@ void Smotor(int M,char w_flag){
 	    }
 			
 	    if(motor_pid_mode == 0){//低速
-		ir_core = 15;//左右の差の許容範囲
+		ir_core = 10;//左右の差の許容範囲
 				
 		kp = 0.3;
 		kd = 0.0;
