@@ -374,9 +374,9 @@ void Smotor(int M,char w_flag){
 		
 	//前壁補正　
 	if(w_flag != 3 && kusi_flag == 0){ //斜め中ではない かつ　串対策が反応してない
-	    if((get_encoder_L() > 0 && get_encoder_R() > 0) && abs(GyroSum_get()) < 1000){
+	    if((get_encoder_L() > 0 || get_encoder_R() > 0) && abs(GyroSum_get()) < 1000){
             
-		if(get_IR(IR_L) < 250 && get_IR(IR_FL) > 30 && (get_IR(IR_F) > 30) &&  get_IR(IR_FR) > 30 && get_IR(IR_R) < 250 ){//前壁あり 横壁が近くない
+		if(get_IR(IR_L) < 280 && get_IR(IR_FL) > 20 && (get_IR(IR_F) > 20) &&  get_IR(IR_FR) > 20 && get_IR(IR_R) < 280 ){//前壁あり 横壁が近くない
 				
 			
 		    long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
@@ -429,7 +429,7 @@ void Smotor(int M,char w_flag){
 		kp = 0.3;
 		kd = 0.0;
 	    }else{//高速
-		ir_core = 25;//左右の差の許容範囲
+		ir_core = 20;//左右の差の許容範囲
 				
 		kp = 0.5;
 		kd = 15.0;
@@ -538,7 +538,7 @@ void Smotor(int M,char w_flag){
 			
 		    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 		    
-		    ir_sa = max(min(ir_sa,100),-100);
+		    ir_sa = max(min(ir_sa,500),-500);
 					
 		    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
 					
@@ -936,7 +936,7 @@ void Tmotor(long long A){
     int MA = 1,min_M = 4;
 	
     //	int cnt = 0;
-    int powor_max = 15;
+    int powor_max = 18;
     int powor;
 
     while(1){
