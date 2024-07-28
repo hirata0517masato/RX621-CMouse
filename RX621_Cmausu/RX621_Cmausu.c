@@ -2884,6 +2884,8 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
     //run_list
     queue_reset();
     short h_path = 0;
+    char maze_flag[H][W] = {0};
+     
     my_x = Start_x;my_y = Start_y;my_angle = Start_angle;
  
     int last = 0;
@@ -2892,28 +2894,36 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 
 	short num = maze_d_perfect[my_y][my_x];
 	short n_num = 0;
+	char first_flag = 0;
 	
- 
+ 	maze_flag[my_y][my_x] = 1;//一度到達したマスには戻らないようにする
+	
 	for(int i = 0;i < 4;i++){//ゴールに近いマスを探す
 		int nx = my_x+dx[i],ny = my_y+dy[i];
 		
 		//迷路の範囲内　＆＆　壁が無いことが確定している
 		if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<i)) == 0 )){//  && ((maze_w[my_y][my_x] & (1<<(4+i))) != 0 ) ){
 			
-			if(num > maze_d_perfect[ny][nx]){//ゴールに近いマスを見つけた
-				num = maze_d_perfect[ny][nx];
-				n_num = i;
-				
-			 }else if(num == maze_d_perfect[ny][nx]){// LとRが同じ重み　斜めを優先したい
-			 
-				if(last == -1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == 1   ){//前回がL かつ　今回はR  
+			if(maze_flag[ny][nx] != 1){//まだ到達してなければ
+				if(first_flag == 0 || num > maze_d_perfect[ny][nx]){//初めのマスは無条件で移動す候補にする || ゴールに近いマスを見つけた
+					num = maze_d_perfect[ny][nx];
 					n_num = i;
-						 
-				}else if(last == 1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == -1   ){//前回がR　かつ　今回はL
-					n_num = i;
-						 
-				}else{//前回がSなら今回は?
-					//わからんから先に見つかった方にする
+					
+					first_flag = 1;
+					
+				 }else if(num == maze_d_perfect[ny][nx]){// LとRが同じ重み　斜めを優先したい
+				 
+					if(last == -1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == 1   ){//前回がL かつ　今回はR  
+						n_num = i;
+							 
+					}else if(last == 1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == -1   ){//前回がR　かつ　今回はL
+						n_num = i;
+							 
+					}else{//前回がSなら今回は?
+						//わからんから先に見つかった方にする
+					}
+					
+					first_flag = 1;
 				}
 			}
 		}
