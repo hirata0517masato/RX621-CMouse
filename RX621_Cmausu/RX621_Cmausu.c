@@ -2433,9 +2433,9 @@ void run_shortest_path(){
     
     int run_speed = 40;
     int run_speed_up = 50;    //未知区間加速
-    int run_speed_boost = 50; //既知区間加速
+    int run_speed_boost = 60; //既知区間加速
     
-    int run_speed_kabe = 30;
+    int run_speed_kabe = 20;
 
   
     while(!queue_empty()){
@@ -2447,14 +2447,18 @@ void run_shortest_path(){
 	case -1://L
 	    delay(time);
 		
-	    if(get_IR(IR_R) > MAKE_KABE_tikai || (get_IR(IR_R) > 50 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
+	    if(get_IR(IR_R) > MAKE_KABE_tikai || (get_IR(IR_R) > 40 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
 		R_rotate(r90);
 		
+		delay(time);
 		mae_kabe();//前壁距離補正
 		
+		delay(time);
 		L_rotate(l90);
+		delay(time);
 		if(get_IR(IR_F) > 40){
 			mae_kabe();//前壁距離補正
+			delay(time);
 		}
 		L_rotate(l90);
 		
@@ -2464,6 +2468,27 @@ void run_shortest_path(){
 	    delay(time);
 	    break;
 	case 0://S
+		
+	    if(get_IR(IR_R) > MAKE_KABE_tikai  || (get_IR(IR_R) > 40 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
+		R_rotate(r90);
+		
+		delay(time);
+		mae_kabe();//前壁距離補正
+
+		L_rotate(l90);
+		delay(time);
+		
+	    }else if(get_IR(IR_L) > MAKE_KABE_tikai || (get_IR(IR_L) > 40 && get_IR(IR_L) < MAKE_KABE_tooi)){//左壁との距離が近い || 左壁との距離が遠い
+		L_rotate(l90);
+	
+		delay(time);
+		mae_kabe();//前壁距離補正
+		
+		R_rotate(r90);
+		delay(time);
+		
+	    }
+	    
 	    if(queue_empty()){
 			
 		if(path_num == 1){
@@ -2540,6 +2565,27 @@ void run_shortest_path(){
 	    break;
 		
 	case 10://S 未確定の直線
+	
+	    if(get_IR(IR_R) > MAKE_KABE_tikai  || (get_IR(IR_R) > 40 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
+		R_rotate(r90);
+		
+		delay(time);
+		mae_kabe();//前壁距離補正
+
+		L_rotate(l90);
+		delay(time);
+		
+	    }else if(get_IR(IR_L) > MAKE_KABE_tikai || (get_IR(IR_L) > 40 && get_IR(IR_L) < MAKE_KABE_tooi)){//左壁との距離が近い || 左壁との距離が遠い
+		L_rotate(l90);
+	
+		delay(time);
+		mae_kabe();//前壁距離補正
+		
+		R_rotate(r90);
+		delay(time);
+		
+	    }
+	    
 	    if(path_num == 1){
 	  		
 		S_run_maze_search(path_num,run_speed + run_fin_speed_offset,run_speed_up + run_fin_speed_offset,  6);//串のあり、なしは関数内で設定する
@@ -2556,14 +2602,18 @@ void run_shortest_path(){
 	case 1://R
 	    delay(time);
 		
-	    if(get_IR(IR_L) > MAKE_KABE_tikai || (get_IR(IR_L) > 50 && get_IR(IR_L) < MAKE_KABE_tooi)){//左壁との距離が近い || 左壁との距離が遠い
+	    if(get_IR(IR_L) > MAKE_KABE_tikai || (get_IR(IR_L) > 40 && get_IR(IR_L) < MAKE_KABE_tooi)){//左壁との距離が近い || 左壁との距離が遠い
 		L_rotate(l90);
 		
+		delay(time);
 		mae_kabe();//前壁距離補正
 		
+		delay(time);
 		R_rotate(r90);
+		delay(time);
 		if(get_IR(IR_F) > 40){
 			mae_kabe();//前壁距離補正
+			delay(time);
 		}
 		R_rotate(r90);
 		
@@ -2576,16 +2626,18 @@ void run_shortest_path(){
 	case 2://B
 	    delay(time);
 		
-	    if(get_IR(IR_R) > MAKE_KABE_tikai  || (get_IR(IR_R) > 50 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
+	    if(get_IR(IR_R) > MAKE_KABE_tikai  || (get_IR(IR_R) > 40 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
 		R_rotate(r90);
 		
+		delay(time);
 		mae_kabe();//前壁距離補正
 
 		R_rotate(r90);
 		
-	    }else if(get_IR(IR_L) > MAKE_KABE_tikai || (get_IR(IR_L) > 50 && get_IR(IR_L) < MAKE_KABE_tooi)){//左壁との距離が近い || 左壁との距離が遠い
+	    }else if(get_IR(IR_L) > MAKE_KABE_tikai || (get_IR(IR_L) > 40 && get_IR(IR_L) < MAKE_KABE_tooi)){//左壁との距離が近い || 左壁との距離が遠い
 		L_rotate(l90);
 	
+		delay(time);
 		mae_kabe();//前壁距離補正
 		
 		L_rotate(l90);
@@ -3319,9 +3371,9 @@ void maze_search_all(){
 	}
 	
 	//確実に最短経路が存在する必要がある
-	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
-	
-	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
+	//制限時間内に探索できなかった時と合わせた方が良い
+	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
+	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得　ゴール後に戻ってこれないバグあり
 	
 	
 	if(target_x == Goal_x && target_y == Goal_y){//最短経路上に未確定マスがなければ終了
@@ -3366,13 +3418,19 @@ void maze_search_all(){
 			
 	
 	//以下は最短経路を確定できたかどうかの確認用
-	my_x = Start_x;
-	my_y = Start_y;
-	my_angle = Start_angle;
-	
 	shortest_path_search(Goal_x,Goal_y);
-	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
-			
+	
+	//制限時間内の時と合わせた方が良い
+	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
+	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得  ゴール後に戻ってこれないバグあり
+	
+/*	while(1){
+		motor(0,0);
+		if(get_sw() == 1){
+			printf2("%d : %d \n",target_x,target_y);	
+		}
+	}
+*/
 	if(target_x == Goal_x && target_y == Goal_y){//最短経路上に未確定マスがなければ
 	    led_down();
 	    led_up();
@@ -5284,6 +5342,8 @@ void Excep_CMT0_CMI0(void)
     
     if(motor_stop_get() == 1){//モータ緊急停止状態
 	log_start = 0; //ログの記録も停止
+	ir_flag = 0; //赤外線停止
+	Gy_flag = 0; //ジャイロ停止
 	
 	if(mode < 3){//探索中の場合
 		

@@ -86,8 +86,8 @@
 #define F_cnt 1000
 #define F_max_time 1000
 
-#define MAKE_KABE_tikai (135 + 40)
-#define MAKE_KABE_tooi (135 - 40)
+#define MAKE_KABE_tikai (135 + 60)
+#define MAKE_KABE_tooi (135 - 60)
 
 
 #endif
