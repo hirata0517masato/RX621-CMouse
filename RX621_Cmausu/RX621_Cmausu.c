@@ -72,7 +72,9 @@ void run_shortest_path_fin(char);
 void L_rotate(long long);
 void R_rotate(long long);
 void S_run(long long,int, char,char);
-	
+
+int d_to_p(int);
+
 /* 定数設定 */
 #define true 1
 #define false 0
@@ -88,6 +90,16 @@ short maze_d[H][W][4] = {0};	//4方向分の重み
 
 char maze_w_backup[H][W] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
 short maze_d_backup[H][W][4] = {0};	//4方向分の重み
+
+
+#define backup_irq_max	(5) 		//過去５回分のバックアップを保存する
+long long backup_irq_time_ms = 5000;	//探索時に指定時間ごとに迷路情報をバックアップする
+#define backup_irq_cnt	(3) 		// 指定回数前の情報に復元する
+
+char maze_w_backup_irq[H][W][backup_irq_max] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
+
+
+
 
 short maze_d_perfect[H][W] = {0};
 
@@ -106,6 +118,8 @@ int Gy_flag = 0; // 0:ジャイロOFF 1:ジャイロON
 int run_fin_speed_offset = 0;
 
 long long time_limit = -1;
+long long time_limit_base = 150000;//2分30秒
+long long time_limit_offset = 0;
 
 int pickup_x = 1;
 int pickup_y = 1;
@@ -119,6 +133,8 @@ int log_block_num = 1; //max 15
 short status_log = 99;
 
 long t_1ms = 0;
+
+int mode = 0;
 
 /***********************************************************************/
 /* メインプログラム                                                    */
@@ -135,7 +151,7 @@ void main(void)
 	
     */
     volatile int i = 0;
-    int mode = 0;
+    //int mode = 0;   割り込みでも使用したいのでグローバルに移動　
     int first_flag = 0;
     ir_flag = 0;//赤外線OFF
 	
@@ -143,20 +159,25 @@ void main(void)
 	
     delay(100);
 	
-    /*
+ /*   
       while(1){
-      motor(i,i);
-      delay(10);
-      printf2("%d : %d \n",i,get_encoder_L());
-      delay(100);
-      i++;
+      //motor(i,i);
+      	delay(10);
+     	//printf2("%d : %d \n",i,get_encoder_L());
+	printf2("%d \n",get_encoder_total_L());
+      	delay(100);
+      	//i++;
 	  
-      if(i > 100){
-      motor(0,0);
-      while(1);
+      	if(i > 100){
+     		motor(0,0);
+      		while(1);
+      	}
+	
+	if(get_sw() == 1){
+		Encoder_reset();
+	}
       }
-      }*/
- 
+ */
 /*      
       while(1){
 	      led(0);
@@ -202,10 +223,10 @@ void main(void)
 	my_y = Start_y;
 	my_angle = Start_angle;
 		
-	if(mode < 8){//各種調整モードでなければ
+	if(mode < 8){//走行モードの場合スタート準備
 	
 	   
-	    if(mode > 2 && shortest_path_search_check_full() == 1){//最短走行時に最短経路が見つからない時
+	    if(mode > 2 && shortest_path_search_check_full() == 1){//最短走行時に最短経路が見つからない時　エラー終了
 	    	for(int k = 0; k < 4;k++){
 			led(15); 
 			delay(500);
@@ -278,7 +299,7 @@ void main(void)
 				led(0); 
 				delay(500);
 			}
-			//穏当は全削除ではなくてNGっぽいところだけ削除したい
+			//本当は全削除ではなくてNGっぽいところだけ削除したい
 			maze_load();//迷路データの読み込み 未確定壁ありでも最短経路が見つからない場合は確実にNGなのでロードしなおす
 		}else{
 			first_flag = 0;
@@ -295,6 +316,11 @@ void main(void)
 				
 	
 	case 2://探索モード　最短経路上の未確定マスをすべて探しに行く
+
+	     time_limit = time_limit_base;
+	    //printf2("time_limit = %d \n",time_limit);
+	    
+	    
 	    if(( maze_w[0][1] & 0x20) == 0){//迷路が初期化された直後 スタート直後のマスの壁が確定していなければ初期化直後と判定する
 		led_down();
 		led_up();
@@ -304,7 +330,8 @@ void main(void)
 				
 	    log_reset();//ログの初期化
 	    log_start = 1; //ログ記録開始　30msに１回記録
-				
+		
+	   
 	    Set_motor_pid_mode(0);//低速
 	    maze_search_adachi(Goal_x,Goal_y);//はじめは普通に探索走行
 				
@@ -317,7 +344,7 @@ void main(void)
 				led(0); 
 				delay(500);
 			}
-			//穏当は全削除ではなくてNGっぽいところだけ削除したい
+			//本当は全削除ではなくてNGっぽいところだけ削除したい
 			maze_load();//迷路データの読み込み 未確定壁ありでも最短経路が見つからない場合は確実にNGなのでロードしなおす
 		}else{
 			first_flag = 0;
@@ -560,8 +587,70 @@ void main(void)
 	    }
 		
 	    break;
-	    
-	case 11://迷路情報リセットモード
+	
+	case 11://走行時間制限の調整（調整値は保存しない、本番での微調整用）
+		Encoder_reset();
+		
+		led(9);
+	    	delay(500);
+		
+		led(0);
+		delay(200);
+		led(12);
+		delay(200);
+		led(0);
+		delay(200);
+		led(12);
+		delay(200);
+		
+	    	//モード選択 分設定
+	    	while(1){
+			
+			led( ((time_limit_base + time_limit_offset)/60000) );//分
+			
+			
+			time_limit_offset = ((get_encoder_total_L() / 60) * 60000);//Lエンコーダ１カウントで１分  Rエンコーダ１カウントで１０秒
+	
+			
+			if(get_sw() == 1){
+			    	led_up();
+		    		while(get_sw() == 1)nop();
+		    		break;
+			}
+	    	}
+		
+		time_limit_base += time_limit_offset;
+		
+		//printf2("time_limit_base = %d  , time_limit_offset = %d \n",time_limit_base,time_limit_offset);
+		 
+		led(0);
+		delay(200);
+		led(3);
+		delay(200);
+		led(0);
+		delay(200);
+		led(3);
+		delay(200);
+		//モード選択　秒設定
+	    	while(1){
+			
+			led((((time_limit_base + time_limit_offset)%60000)/10000)  );//10秒
+			
+			time_limit_offset = ((get_encoder_total_R() / 60) * 10000)%60000;//Lエンコーダ１カウントで１分  Rエンコーダ１カウントで１０秒
+	
+			
+			if(get_sw() == 1){
+			    	led_up();
+		    		while(get_sw() == 1)nop();
+		    		break;
+			}
+	    	}
+		time_limit_base += time_limit_offset;
+		
+		//printf2("time_limit_base = %d  , time_limit_offset = %d \n",time_limit_base,time_limit_offset);
+		break;
+		
+	case 14://迷路情報リセットモード
 	    for(int i = 0; i < H;i++)for(int j = 0; j < W; j++)maze_w[i][j] = 0;
 				
 	    //迷路の外周の確定壁を設定
@@ -581,13 +670,74 @@ void main(void)
 				
 	    break;
 				
-	case 12://ログ出力モード
+	case 15://ログ出力モード
+		
+	    shortest_path_search_check_full();
+	    
 	    for(int i = 0; i < H;i++){
 		for(int j = 0; j < W; j++)printf2("%d\t",maze_w[i][j]&0x0f);
 		printf2("\n");
 	    }
 	    printf2("\n");
+	
+	    
+	    for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++){
+			printf2("+");
+			if(maze_w[i][j]&0x01)printf2("----");
+			else if(maze_w[i][j]&0x10)printf2("    ");
+			else printf2("....");
+		}
+		printf2("+\n");
+		
+		for(int j = 0; j < W; j++){
+			if(maze_w[i][j]&0x08)printf2("|");
+			else if(maze_w[i][j]&0x80)printf2(" ");
+			else printf2(":");
+			
+			if(min(maze_d[i][j][3],min(maze_d[i][j][2],min(maze_d[i][j][1],maze_d[i][j][0] ))) == maze_d_max){
+				printf2("    ");
+			}else{
+				printf2("%4d",min(maze_d[i][j][3],min(maze_d[i][j][2],min(maze_d[i][j][1],maze_d[i][j][0] )))  );	
+			}
+			
+		}
+		printf2("|\n");
+	    }
+	    printf2("+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n");
+	
+	    printf2("\n");
+	    
+	    if(shortest_path_search_check_full() == 0){//最短経路が存在するとき
+		    shortest_path_search_perfect();
+		    for(int i = 0; i < H;i++){
+			for(int j = 0; j < W; j++){
+				printf2("+");
+				if(maze_w[i][j]&0x01)printf2("----");
+				else if(maze_w[i][j]&0x10)printf2("    ");
+				else printf2("....");
+			}
+			printf2("+\n");
+			
+			for(int j = 0; j < W; j++){
+				if(maze_w[i][j]&0x08)printf2("|");
+				else if(maze_w[i][j]&0x80)printf2(" ");
+				else printf2(":");
 				
+				if(maze_d_perfect[i][j] == maze_d_max){
+					printf2("    ");
+				}else{
+					printf2("%4d",maze_d_perfect[i][j] );	
+				}
+				
+			}
+			printf2("|\n");
+		    }
+		    printf2("+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n");
+		
+		    printf2("\n");
+	    }
+	    
 	    log_load();//リード＆出力
 	    break;
 				
@@ -1235,7 +1385,11 @@ void mae_kabe(){
 	GyroSum_reset();
 	
 	int cnt = 0;
-
+	
+	if(150 < get_IR(IR_F) ){//前壁　激突対策
+		ESmotor(-15,F_pow,true,false);//ちょっと下がる
+	}
+	
 	t_1ms = 0;
 	while(t_1ms < F_max_time){//前壁補正
 	
@@ -1345,7 +1499,7 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 	    motor(0,0);
 			
 	    if(150 < get_IR(IR_F) ){//前壁　激突対策
-		ESmotor(-15,powor,true,false);//ちょっと下がる
+		ESmotor(-15,F_pow,true,false);//ちょっと下がる
 	    }
 			
 	    mae_kabe();//前壁距離補正
@@ -2456,7 +2610,8 @@ void run_shortest_path(){
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void maze_search_adachi(short target_x,short target_y){
     int cnt = 0;
-	
+    char path_ng = 0;
+    
     GyroSum_reset();
     Encoder_reset();
 
@@ -2467,7 +2622,27 @@ void maze_search_adachi(short target_x,short target_y){
 	/*if((target_x != Goal_x || target_y != Goal_y) && (target_x != Start_x || target_y != Start_y)){//スタート地点、ゴール地点以外が目標地点のとき
 	  if((maze_w[target_y][target_x] & 0xf0) == 0xf0)break;    //目標地点の壁がすべて確定したら探索完了  
 	  }*/
+	
+	path_ng = shortest_path_search(Goal_x,Goal_y);
+	
+	if(path_ng == 1){//最短経路が存在しない→迷路情報を元に戻す
+		for(int i = 0; i < H;i++){
+			for(int j = 0; j < W; j++){
+				maze_w[i][j] = maze_w_backup[i][j];
+				for(int k = 0; k < 4;k++)maze_d[i][j][k] = maze_d_backup[i][j][k];
+			}
 		
+	    	}
+	}else{//迷路情報をバックアップする
+		for(int i = 0; i < H;i++){
+			for(int j = 0; j < W; j++){
+				maze_w_backup[i][j] = maze_w[i][j];
+				for(int k = 0; k < 4;k++)maze_d_backup[i][j][k] = maze_d[i][j][k];
+			}
+		
+	    	}	
+	}
+	
 	if(target_x == my_x && target_y == my_y){//ゴール
 	    motor(0,0);
 	    led_up();
@@ -3115,7 +3290,7 @@ void maze_search_all(){
     char path_ng = 0;
     
     
-    time_limit = 60000;//60秒
+    //time_limit = xxxx;//60秒  別のところで設定するように変更
 	
     while(time_limit > 0){//制限時間の間走行可能
 	path_ng = 0;
@@ -3144,9 +3319,10 @@ void maze_search_all(){
 	}
 	
 	//確実に最短経路が存在する必要がある
-	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
+	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
 	
-	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
+	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
+	
 	
 	if(target_x == Goal_x && target_y == Goal_y){//最短経路上に未確定マスがなければ終了
 	    motor(0,0);
@@ -3180,11 +3356,20 @@ void maze_search_all(){
 	*/
     }
 	
-    if(time_limit <= 0){//　制限時間内に探索できなかった　ゴールまで向かう
+    
+    
+    if(time_limit <= 0){//　制限時間内に探索できなかった　
 		
 	//maze_search_adachi(Goal_x,Goal_y);
-	maze_search_adachi(Start_x,Start_y);
+	//maze_search_adachi(Start_x,Start_y);//スタート地点に戻る
+	maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
 			
+	
+	//以下は最短経路を確定できたかどうかの確認用
+	my_x = Start_x;
+	my_y = Start_y;
+	my_angle = Start_angle;
+	
 	shortest_path_search(Goal_x,Goal_y);
 	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
 			
@@ -3200,6 +3385,8 @@ void maze_search_all(){
 	    delay(500);
 	    led(15);
 	    delay(500);
+	    
+	    Tmotor(r45);//45度回転し、最後まで探索できなかったことをわかるようにする
 	}
     }
 }
@@ -5029,6 +5216,21 @@ void search_pickup(int* pickuup_x,int* pickuup_y){
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：距離(0.11mm)をパルス数に変換する   		 			            */
+/* 関 数 詳 細：										    */
+/* 引       数： 距離（0.11mm)									    */
+/* 戻  り   値： パルス数										    */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+int d_to_p(int d){
+	static double hoge = W_P / (W_D * 3.14);
+	int p;
+	
+	p = (hoge * d) / 10;
+	return p;
+}
+
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：CMT0割り込みモジュール                                                              */
 /* 関 数 詳 細：                                                                                    */
 /* 引       数：なし										    */
@@ -5039,6 +5241,8 @@ void Excep_CMT0_CMI0(void)
 {	
     static int task = 0;
     static char log_flag = 0;
+    static long long backup_irq_time = 0;
+    static char backup_irq_cnt_now = 0;
 
     t_1ms++;
     if(t_1ms > 99999)t_1ms = 99999;
@@ -5058,8 +5262,60 @@ void Excep_CMT0_CMI0(void)
 	}
     }
 	
+    
+    if(ir_flag == 1 && mode < 3){//探索走行中
+    	backup_irq_time++;
+    	if(backup_irq_time >= backup_irq_time_ms){//hoge秒に１回迷路情報をバックアップする
+		backup_irq_time = 0;
+		for(int i = 0; i < H;i++){
+			for(int j = 0; j < W; j++){
+				maze_w_backup_irq[i][j][backup_irq_cnt_now] = maze_w[i][j];
+			}
+		
+	    	}
+		
+		backup_irq_cnt_now++;
+		if(backup_irq_cnt_now >= backup_irq_max)backup_irq_cnt_now = 0;
+	}
+    }
+		
+	
+	
+    
     if(motor_stop_get() == 1){//モータ緊急停止状態
 	log_start = 0; //ログの記録も停止
+	
+	if(mode < 3){//探索中の場合
+		
+		//現在地の周囲の迷路情報が信用できないのでバックアップから過去の情報に置き換える
+		for(int i = 0; i < H;i++){
+			for(int j = 0; j < W; j++){
+				maze_w[i][j] = maze_w_backup_irq[i][j][(backup_irq_cnt_now+backup_irq_max-backup_irq_cnt )%backup_irq_max];
+			}
+		
+	    	}
+			
+		motor(0,0);
+		led(15);
+			
+		while(1){//動作を停止する　電源をオフする必要がある
+			if(get_sw() == 1){
+				
+				while(get_sw() == 1)nop();
+					
+				
+				if(shortest_path_search_check() == 1){//最短経路が見つからない時
+					
+					led(4);
+					//迷路情報はあきらめるしかない
+				 }else{ 
+					maze_save();//バックアップで上書きする
+						
+					led(9);
+				}
+	    		}
+		}	
+	}
     }
 	
     if(time_limit > 0){
