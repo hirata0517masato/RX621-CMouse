@@ -2867,7 +2867,7 @@ void make_shortest_path_list_simple(short target_x,short target_y){
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* 関 数 概 要：斜めも考慮して最短経路上の未確定マスを探す						*/
+/* 関 数 概 要：斜めも考慮して最短経路上の未確定マスを探す	未確定マスも通過する					*/
 /* 関 数 詳 細：												                                   */
 /* 引       数： なし														    */
 /* 戻  り   値： なし										    									*/
@@ -3119,7 +3119,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 	
     while(my_x != Goal_x || my_y != Goal_y){
 
-	short num = maze_d_perfect[my_y][my_x];
+	short num = maze_d_max -100; //maze_d_perfect[my_y][my_x];  周囲のマスが現在地より小さいとは言えないため最大値-100に変更
 	short n_num = 0;
 	char first_flag = 0;
 	
@@ -3140,16 +3140,21 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 					
 				 }else if(num == maze_d_perfect[ny][nx]){// LとRが同じ重み　斜めを優先したい
 				 
-					if(last == -1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == 1   ){//前回がL かつ　今回はR  
+				 	if( maze_d[ny][nx][i] < maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num] ){//斜めを考慮しない重みの小さいほうを優先する
 						n_num = i;
-							 
-					}else if(last == 1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == -1   ){//前回がR　かつ　今回はL
-						n_num = i;
-							 
-					}else{//前回がSなら今回は?
-						//わからんから先に見つかった方にする
+						
+					}else if( maze_d[ny][nx][i] == maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num]) {
+						if(last == -1 && (i - my_angle + 4)%4 == 1   ){//前回がL かつ　今回はR  
+							n_num = i;
+								 
+						}else if(last == 1 && (i - my_angle + 4)%4 == -1   ){//前回がR　かつ　今回はL
+							n_num = i;
+								 
+						}else{//前回がSなら今回は?
+							//わからんから先に見つかった方にする
+						}
 					}
-					
+
 					first_flag = 1;
 				}
 			}
@@ -3372,8 +3377,8 @@ void maze_search_all(){
 	
 	//確実に最短経路が存在する必要がある
 	//制限時間内に探索できなかった時と合わせた方が良い
-	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
-	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得　ゴール後に戻ってこれないバグあり
+	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
+	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
 	
 	
 	if(target_x == Goal_x && target_y == Goal_y){//最短経路上に未確定マスがなければ終了
@@ -3421,8 +3426,8 @@ void maze_search_all(){
 	shortest_path_search(Goal_x,Goal_y);
 	
 	//制限時間内の時と合わせた方が良い
-	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
-	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得  ゴール後に戻ってこれないバグあり
+	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
+	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
 	
 /*	while(1){
 		motor(0,0);
@@ -4088,17 +4093,36 @@ void shortest_path_search_perfect(){
 	   // printf2("OK \n");
 	}
     }
+    
+    
+    
     /*
-     for(int i = 0; i < H;i++){
-	for(int j = 0;j < W; j++){
-		if(maze_d_perfect[i][j] == maze_d_max)printf2("xxx");
-		else printf2("%3d",maze_d_perfect[i][j]);
-		delay(1);
+    for(int i = 0; i < H;i++){
+	for(int j = 0; j < W; j++){
+		printf2("+");
+		if(maze_w[i][j]&0x01)printf2("----");
+		else if(maze_w[i][j]&0x10)printf2("    ");
+		else printf2("....");
 	}
-	printf2("\n");
-     }
-     while(1);
-     */
+	printf2("+\n");
+		
+	for(int j = 0; j < W; j++){
+		if(maze_w[i][j]&0x08)printf2("|");
+		else if(maze_w[i][j]&0x80)printf2(" ");
+		else printf2(":");
+			
+		if(maze_d_perfect[i][j] == maze_d_max){
+			printf2("    ");
+		}else{
+			printf2("%4d",maze_d_perfect[i][j] );	
+		}
+			
+	}
+	printf2("|\n");
+    }
+    printf2("+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n");
+    */    
+  
     ///////////////////////////////////////////////
     
     //run_list
@@ -4113,12 +4137,14 @@ void shortest_path_search_perfect(){
     
     while(my_x != Goal_x || my_y != Goal_y){
 	
-	short num = maze_d_perfect[my_y][my_x];
+	short num = maze_d_max -100; //maze_d_perfect[my_y][my_x];  周囲のマスが現在地より小さいとは言えないため最大値-100に変更
 	short n_num = 0;
 	char first_flag = 0;
 	
 	maze_flag[my_y][my_x] = 1;//一度到達したマスには戻らないようにする
  
+	//printf2("%d  %d\n",my_x,my_y);
+	 
 	for(int i = 0;i < 4;i++){//ゴールに近いマスを探す
 		int nx = my_x+dx[i],ny = my_y+dy[i];
 		
@@ -4134,14 +4160,21 @@ void shortest_path_search_perfect(){
 					
 				 }else if(num == maze_d_perfect[ny][nx]){// LとRが同じ重み　斜めを優先したい
 				 
-					if(last == -1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == 1   ){//前回がL かつ　今回はR  
+				 	//printf2("hoge   %d ,  %d  , %d\n",my_angle , i, (i - my_angle + 4)%4);
+					
+					if( maze_d[ny][nx][i] < maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num] ){//斜めを考慮しない重みの小さいほうを優先する
 						n_num = i;
-							 
-					}else if(last == 1 && (  ((4 + i - ((4+my_angle-1)%4))%4)) == -1   ){//前回がR　かつ　今回はL
-						n_num = i;
-							 
-					}else{//前回がSなら今回は?
-						//わからんから先に見つかった方にする
+						
+					}else if( maze_d[ny][nx][i] == maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num]) {
+						if(last == -1 && (i - my_angle + 4)%4 == 1   ){//前回がL かつ　今回はR  
+							n_num = i;
+								 
+						}else if(last == 1 && (i - my_angle + 4)%4 == -1   ){//前回がR　かつ　今回はL
+							n_num = i;
+								 
+						}else{//前回がSなら今回は?
+							//わからんから先に見つかった方にする
+						}
 					}
 					
 					first_flag = 1;
