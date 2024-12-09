@@ -1386,8 +1386,9 @@ void mae_kabe(){
 	
 	int cnt = 0;
 	
-	if(150 < get_IR(IR_F) ){//前壁　激突対策
-		ESmotor(-15,F_pow,true,false);//ちょっと下がる
+	if(100 < get_IR(IR_F) ){//前壁　激突対策
+	//while(F_min -30 < get_IR(IR_F) ){//前壁　激突対策
+		ESmotor(-35,F_pow,true,false);//ちょっと下がる
 	}
 	
 	t_1ms = 0;
@@ -1403,7 +1404,8 @@ void mae_kabe(){
 			cnt = 0;
 			GyroSum_reset();
 			
-		}else if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
+		//}else if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
+		}else if(get_IR(IR_F) > F_max){
 			Smotor(-F_pow,false);
 
 			cnt = 0;
@@ -1959,7 +1961,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	    break;
 	}
 		
-	if( path_cnt < path-1 && get_IR(IR_F) > 100){//目標まで１マス以上残ってる　＆＆　前壁が出現
+	if( path_cnt < path-1 && get_IR(IR_F) > 40){//目標まで１マス以上残ってる　＆＆　前壁が出現
 		
 	    //マスの中心まで移動
 	  /*  while(enc_now - ((long long)s1 * path_cnt ) < s1 && get_IR(IR_F) < F_min){
@@ -2431,9 +2433,9 @@ void run_shortest_path(){
     short comand ,path_num;
     int time = 1;
     
-    int run_speed = 40;
-    int run_speed_up = 50;    //未知区間加速
-    int run_speed_boost = 60; //既知区間加速
+    int run_speed = 50;
+    int run_speed_up = 60;    //未知区間加速
+    int run_speed_boost = 70; //既知区間加速
     
     int run_speed_kabe = 20;
 
@@ -2705,6 +2707,11 @@ void maze_search_adachi(short target_x,short target_y){
 		
 		cnt = 0;
 
+		if(100 < get_IR(IR_F) ){//前壁　激突対策
+		//while(F_min -30 < get_IR(IR_F) ){//前壁　激突対策
+			ESmotor(-35,F_pow,true,false);//ちょっと下がる
+		}
+		
 		t_1ms = 0;
 		while(t_1ms < F_max_time || get_IR(IR_FL) < F_min){//スタートの奥まで進む 前壁補正
 			
@@ -2718,7 +2725,8 @@ void maze_search_adachi(short target_x,short target_y){
 				cnt = 0;
 				GyroSum_reset();
 				
-			}else if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
+			//}else if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
+			}else if(get_IR(IR_F) > F_max ){
 				Smotor(-F_pow,false);
 
 				cnt = 0;
@@ -4794,11 +4802,11 @@ void run_shortest_path_fin(	char naname){
 	    */
 	    if(queue_next(1) == -1){//上のUターンが無効の時に発動する
 		L_curve(sl90,true);
-		ESmotor(170,30,true,true);//距離、スピード
+		ESmotor(130,30,true,true);//距離、スピード 170
 		
 	    }else if(queue_next(1) == 1){//Sターン
 		L_curve(sl90,true);
-		ESmotor(200,30,true,true);//距離、スピード
+		ESmotor(150,30,true,true);//距離、スピード 200,30
 		
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		L_curve(sl90,true);
@@ -4883,6 +4891,11 @@ void run_shortest_path_fin(	char naname){
 		
 		int cnt = 0;
 
+		if(100 < get_IR(IR_F) ){//前壁　激突対策
+		//while(F_min -30 < get_IR(IR_F) ){//前壁　激突対策
+			ESmotor(-35,F_pow,true,false);//ちょっと下がる
+		}
+	
 		t_1ms = 0;
 		while(t_1ms < F_max_time || get_IR(IR_FL) < F_min){//スタートの奥まで進む 前壁補正
 			
@@ -4896,7 +4909,8 @@ void run_shortest_path_fin(	char naname){
 				cnt = 0;
 				GyroSum_reset();
 				
-			}else if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
+			//}else if(get_IR(IR_FL) > F_max || get_IR(IR_F) > F_max || get_IR(IR_FR) > F_max){
+			}else if(get_IR(IR_F) > F_max){
 				Smotor(-F_pow,false);
 
 				cnt = 0;
@@ -5174,7 +5188,7 @@ void run_shortest_path_fin(	char naname){
 	case 1://R
 	    if(queue_next(1) == -1){//Sターン
 		R_curve(sr90,true);
-		ESmotor(200,30,true,true);//距離、スピード
+		ESmotor(150,30,true,true);//距離、スピード 200,30
 			
 		/*    }else if(comand_old == 0 && queue_next(1) == 1 && queue_next(3) == 0){//Uターン
 		
@@ -5184,7 +5198,7 @@ void run_shortest_path_fin(	char naname){
 		*/		
 	    }else if(queue_next(1) == 1){//上のUターンが無効の時に発動する
 		R_curve(sr90,true);
-		ESmotor(170,30,true,true);//距離、スピード
+		ESmotor(130,30,true,true);//距離、スピード 170
 		
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		R_curve(sr90,true);

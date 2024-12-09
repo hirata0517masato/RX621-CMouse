@@ -38,8 +38,8 @@
 #define r90  (21400) 	//90度 右回転
 #define l90  (21400)	//90度 左回転
 #define r180  (-43000)	//180度 右回転
-#define sr90  (25000)	//スラローム 23000 //左右で同じ値でないと連続時にずれていく
-#define sl90  (25000)	//スラローム 23000
+#define sr90  (24500)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
+#define sl90  (24500)	//スラローム 23000 25000
 
 #define sr90BIG  (25500)	//スラローム 大曲
 #define sl90BIG  (25500)	//スラローム 大曲
@@ -79,12 +79,12 @@
 
 
 //前壁補正のパラメータ
-#define F_max 250
+#define F_max 245
 #define F_min 240
-#define FLR_dif 15
-#define F_pow 10
-#define F_cnt 1000
-#define F_max_time 1000
+#define FLR_dif 5
+#define F_pow 8
+#define F_cnt 2000
+#define F_max_time 2000
 
 #define MAKE_KABE_tikai (135 + 60)
 #define MAKE_KABE_tooi (135 - 60)

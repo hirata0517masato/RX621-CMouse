@@ -1304,7 +1304,7 @@ void ETmotor(long long A, long long E, char non_stop){
     if(25 < get_IR(IR_F)){//‘O•Ç‚ª‹ß‚·‚¬  //////ã‚Ì”’l‚Æ‡‚í‚¹‚é
     	//ESmotor(45,M_kabe,true,true);//60
     }else{
-	ESmotor(45,M_kabe,true,true);//60
+	ESmotor(35,M_kabe,true,true);//60 45
     }
     
     GyroSum_reset();
@@ -1425,7 +1425,7 @@ void ETmotor(long long A, long long E, char non_stop){
     PORTA.DR.BIT.B3 = 0;
 	
     //ESmotor(45,M_kabe2,true,true);//60
-    ESmotor(45,M_kabe2,true,false);//60
+    ESmotor(35,M_kabe2,true,false);//60 45
 	
     //motor(0,0);
     GyroSum_reset();
