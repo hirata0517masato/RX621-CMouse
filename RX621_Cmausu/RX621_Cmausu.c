@@ -2433,9 +2433,9 @@ void run_shortest_path(){
     short comand ,path_num;
     int time = 1;
     
-    int run_speed = 50;
-    int run_speed_up = 60;    //未知区間加速
-    int run_speed_boost = 70; //既知区間加速
+    int run_speed = 40;
+    int run_speed_up = 50;    //未知区間加速
+    int run_speed_boost = 60; //既知区間加速
     
     int run_speed_kabe = 20;
 
