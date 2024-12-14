@@ -13,9 +13,9 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Goal_x  0
-#define Goal_y  1
-#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
+#define Goal_x  8
+#define Goal_y  7
+#define Goal_angle 1 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版
 #define Pickup_x  1	
@@ -63,9 +63,9 @@
 #define rslsr90 	(980)	//スラローム 664
 #define rslsr90_offset  (-0)
 
-#define rslsl90_BIG (1550)	//スラローム 大 タイヤ削れた時：1600
+#define rslsl90_BIG (1620)	//スラローム 大 タイヤ削れた時：1600
 #define rslsl90_BIG_offset  (-100)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1550)	//スラローム 大 タイヤ削れた時：1600
+#define rslsr90_BIG (1620)	//スラローム 大 タイヤ削れた時：1600
 #define rslsr90_BIG_offset  (-100)	      //タイヤ削れた時：-100
 
 #define usll180     (2250)	//Uターン

@@ -447,9 +447,9 @@ void Smotor(int M,char w_flag){
 				
 		
 	    }else{//高速
-		ir_core = 20;//左右の差の許容範囲
+		ir_core = 25;//左右の差の許容範囲
 				
-		kp = 0.5;
+		kp = 0.4;
 		kd = 15.0;
 	    }
 			
@@ -589,12 +589,12 @@ void Smotor(int M,char w_flag){
 		if( get_encoder_L() < 30 || get_encoder_R() < 30){//速度が遅い時はジャイロ弱める
 		
 		    if( get_encoder_L() < 10 || get_encoder_R() < 10){
-			powor = powor * 1 / 4;
-			powor_max = 10;
+			powor = powor * 2 / 4;
+			powor_max = 40;
 			
 		    }else{
-			powor = powor * 2 / 4;
-			powor_max = 30;
+			powor = powor * 3 / 4;
+			powor_max = 50;
 		    }
 
 		}else{
@@ -658,6 +658,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     //int ir_L_old = 0,ir_R_old = 0;
     int ir_L_now = 0,ir_R_now = 0;
     int ir_L_flag = 0,ir_R_flag = 0;
+    int ir_L_flag_1masu = 0,ir_R_flag_1masu = 0;
     int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
     int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 //    int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
@@ -849,6 +850,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			}
 */
 		    }
+		    
 		    ir_L_flag = 0;
 		    path_cnt_save_L = path_cnt;
 		}
@@ -903,14 +905,58 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			}
 */
 		    }
+		    
 		    ir_R_flag = 0;
 		    path_cnt_save_R = path_cnt;
 		}
 	    }
 	}
-			
+	
+	
+	if(A >= s1 && (A - enc_now) < s1 && non_stop == false){//１マス以上進 && 残り１マス && 探索中　で壁切れした場合は半マス進んで終了
+	
+		if(ir_L_flag_1masu == 0){
+			if(get_IR(IR_L) > 20){
+				ir_L_flag_1masu = 1;
+			}
+		}else if(ir_L_flag_1masu == 1){
+			if(get_IR(IR_L) < 10){
+				ESmotor(h1_2,  25 ,non_stop,w_flag);  
+				//while(1){
+					//led()
+				//	PORTA.DR.BIT.B0 = 0;
+				//	PORTA.DR.BIT.B1 = 0;
+				//	PORTA.DR.BIT.B2 = 1;
+				//	PORTA.DR.BIT.B3 = 1;
+				motor(0,0);
+				//}
+				return;
+			}
+		}
+		
+		if(ir_R_flag_1masu == 0){
+			if(get_IR(IR_R) > 20){
+				ir_R_flag_1masu = 1;
+			}
+		}else if(ir_R_flag_1masu == 1){
+			if(get_IR(IR_R) < 10){
+				ESmotor(h1_2, 25 ,non_stop,w_flag); 
+				//while(1){
+					//led()
+				//	PORTA.DR.BIT.B0 = 1;
+				//	PORTA.DR.BIT.B1 = 1;
+				//	PORTA.DR.BIT.B2 = 0;
+				//	PORTA.DR.BIT.B3 = 0;
+				motor(0,0);
+				//}
+				return;
+			}
+		}
+	}
+		
+		
 	if(motor_pid_mode == 0){//探索中
-		if((A - enc_now) < h1 && 180 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
+		if((A - enc_now) < s1 && 180 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
 		    break; //激突防止
 				
 		}

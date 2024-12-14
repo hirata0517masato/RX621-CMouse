@@ -1494,7 +1494,7 @@ void R_rotate_naname(long long a,char inout){
 void S_run(long long path,int powor, char non_stop,char kabe){
     //GyroSum_reset();
     ESmotor(path,powor,non_stop,kabe);
-
+    
     if((non_stop == 0 || non_stop == 4) && (kabe == 1 || kabe == 4)){
 	// GyroSum_reset();
 	if(50 < get_IR(IR_F) ){//前壁補正
@@ -1936,10 +1936,76 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
     int led_num = 0;
 //    int kame_hosei = 530;
 	
+    int ir_L_flag_1masu = 0,ir_R_flag_1masu = 0;
+    
     GyroSum_reset();
 	
     while(1){
+	
+	if((long long)path * s1 >= s1 && ((long long)path * s1 - enc_now) < s1){//１マス以上進 && 残り１マス && 探索中　で壁切れした場合は半マス進んで終了
+	
+		if(ir_L_flag_1masu == 0){
+			if(get_IR(IR_L) > 20){
+				ir_L_flag_1masu = 1;
+			}
+		}else if(ir_L_flag_1masu == 1){
+			if(get_IR(IR_L) < 10){
+				ESmotor(h1_2,  powor ,0,1);  
+				//while(1){
+					//led()
+				//	PORTA.DR.BIT.B0 = 0;
+				//	PORTA.DR.BIT.B1 = 0;
+				//	PORTA.DR.BIT.B2 = 1;
+				//	PORTA.DR.BIT.B3 = 1;
+				
+				if(get_IR(IR_F) > 40){//前壁が出現
+					mae_kabe();//前壁距離補正
+	    				motor(0,0);
+				}
+				 //現在地の更新
+	    			my_x += dx[my_angle];
+	    			my_y += dy[my_angle];
+			
+	    			maze_update(my_x,my_y,my_angle,3);//迷路情報の更新
+	    
+				motor(0,0);
+				//}
+				return;
+			}
+		}
 		
+		if(ir_R_flag_1masu == 0){
+			if(get_IR(IR_R) > 20){
+				ir_R_flag_1masu = 1;
+			}
+		}else if(ir_R_flag_1masu == 1){
+			if(get_IR(IR_R) < 10){
+				ESmotor(h1_2, powor ,0,1); 
+				//while(1){
+					//led()
+				//	PORTA.DR.BIT.B0 = 1;
+				//	PORTA.DR.BIT.B1 = 1;
+				//	PORTA.DR.BIT.B2 = 0;
+				//	PORTA.DR.BIT.B3 = 0;
+				
+				if(get_IR(IR_F) > 40){//前壁が出現
+					mae_kabe();//前壁距離補正
+	    				motor(0,0);
+				}
+				 //現在地の更新
+	    			my_x += dx[my_angle];
+	    			my_y += dy[my_angle];
+			
+	    			maze_update(my_x,my_y,my_angle,3);//迷路情報の更新
+	    
+				motor(0,0);
+				
+				//}
+				return;
+			}
+		}
+	}
+	
 	if(enc_now >= (long long)path * s1){//目標距離に到達
 		
 	    //マスの中心まで移動(戻る）
@@ -2433,7 +2499,7 @@ void run_shortest_path(){
     short comand ,path_num;
     int time = 1;
     
-    int run_speed = 40;
+    int run_speed = 35;
     int run_speed_up = 50;    //未知区間加速
     int run_speed_boost = 60; //既知区間加速
     
@@ -2591,9 +2657,10 @@ void run_shortest_path(){
 	    if(path_num == 1){
 	  		
 		S_run_maze_search(path_num,run_speed + run_fin_speed_offset,run_speed_up + run_fin_speed_offset,  6);//串のあり、なしは関数内で設定する
-			
+		
 	    }else{
-		S_run_maze_search(path_num,run_speed + run_fin_speed_offset,run_speed_up + run_fin_speed_offset ,  6);
+		S_run_maze_search(path_num,run_speed + run_fin_speed_offset,run_speed_up + run_fin_speed_offset ,  4);
+		
 	    }
 		
 	    if(get_IR(IR_F) > 40){
@@ -3223,6 +3290,19 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 		
 	    last = 1;
 	    break;
+	 
+	 case 2://B
+	 	if(h_path > 0){
+			if(queue_empty())h_path--;
+			enqueue(0);
+			enqueue(h_path);
+			h_path = 0;
+		}
+		
+	 	enqueue(2);
+	    	enqueue(1);
+	 	my_angle = (4+my_angle+2)%4;
+	 	break;
 	}
     }
  
@@ -3385,8 +3465,8 @@ void maze_search_all(){
 	
 	//確実に最短経路が存在する必要がある
 	//制限時間内に探索できなかった時と合わせた方が良い
-	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
-	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
+	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
+	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
 	
 	
 	if(target_x == Goal_x && target_y == Goal_y){//最短経路上に未確定マスがなければ終了
@@ -3434,8 +3514,8 @@ void maze_search_all(){
 	shortest_path_search(Goal_x,Goal_y);
 	
 	//制限時間内の時と合わせた方が良い
-	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
-	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
+	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
+	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
 	
 /*	while(1){
 		motor(0,0);
@@ -4743,7 +4823,7 @@ void run_shortest_path_fin(	char naname){
     int v2_flag = 0;
     
     //１マスでは無効
-    int over_run = -200;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
+    int over_run = -400;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
     int over_run2 = -400; // 直線距離が短い時に使用する
 
     int run_speed = 90;
@@ -4802,7 +4882,7 @@ void run_shortest_path_fin(	char naname){
 	    */
 	    if(queue_next(1) == -1){//上のUターンが無効の時に発動する
 		L_curve(sl90,true);
-		ESmotor(130,30,true,true);//距離、スピード 170
+		ESmotor(170,30,true,true);//距離、スピード 170
 		
 	    }else if(queue_next(1) == 1){//Sターン
 		L_curve(sl90,true);
@@ -5198,7 +5278,7 @@ void run_shortest_path_fin(	char naname){
 		*/		
 	    }else if(queue_next(1) == 1){//上のUターンが無効の時に発動する
 		R_curve(sr90,true);
-		ESmotor(130,30,true,true);//距離、スピード 170
+		ESmotor(170,30,true,true);//距離、スピード 170
 		
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		R_curve(sr90,true);
