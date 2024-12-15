@@ -2951,6 +2951,8 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 
     int comand ,path_num;
 
+    char my_x_tmp = my_x,my_y_tmp = my_y,my_angle_tmp = my_angle;//現在位置のバックアップ
+    
     led(0);
     ////////////// ゴールからの距離を計算する
     queue_reset();
@@ -3240,6 +3242,10 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 		*target_x = my_x + dx[n_num];
 		*target_y = my_y + dy[n_num];
 		
+		//現在位置をバックアップから復元
+		my_x = my_x_tmp;
+		my_y = my_y_tmp;
+   		my_angle = my_angle_tmp;
 		return;
 	}
 	
@@ -3319,6 +3325,11 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
    //未確定マスを通らずにゴールまで経路を確認できた。
     *target_x = Goal_x;
     *target_y = Goal_y; 
+    
+    //現在位置をバックアップから復元
+    my_x = my_x_tmp;
+    my_y = my_y_tmp;
+    my_angle = my_angle_tmp;
   
 }
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -3465,8 +3476,8 @@ void maze_search_all(){
 	
 	//確実に最短経路が存在する必要がある
 	//制限時間内に探索できなかった時と合わせた方が良い
-	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
-	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
+	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
+	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
 	
 	
 	if(target_x == Goal_x && target_y == Goal_y){//最短経路上に未確定マスがなければ終了
@@ -3514,8 +3525,8 @@ void maze_search_all(){
 	shortest_path_search(Goal_x,Goal_y);
 	
 	//制限時間内の時と合わせた方が良い
-	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
-	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
+	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
+	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
 	
 /*	while(1){
 		motor(0,0);
@@ -3962,6 +3973,8 @@ void shortest_path_search_perfect(){
 
     int comand ,path_num;
 
+    char my_x_tmp = my_x,my_y_tmp = my_y,my_angle_tmp = my_angle;//現在位置のバックアップ
+    
     led(0);
     ////////////// ゴールからの距離を計算する
     queue_reset();
@@ -4333,6 +4346,11 @@ void shortest_path_search_perfect(){
   
     led_down();
   
+    //現在位置をバックアップから復元
+    my_x = my_x_tmp;
+    my_y = my_y_tmp;
+    my_angle = my_angle_tmp;
+		
     ////////////////////////////////////
     /*   for(int i = 0; i < H;i++){
 	 for(int j = 0;j < W; j++){
@@ -5045,7 +5063,7 @@ void run_shortest_path_fin(	char naname){
 		
 		
 		
-		if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 || ((abs(get_IR(IR_L) - get_IR(IR_R)) > 120) &&  get_IR(IR_L) > 20 && get_IR(IR_R) > 20)){//左右の差が大きい && 左右に壁がある
+		if(get_IR(IR_L) > 180 || get_IR(IR_R) > 180 || ((abs(get_IR(IR_L) - get_IR(IR_R)) > 120) &&  get_IR(IR_L) > 20 && get_IR(IR_R) > 20)){//左右の差が大きい && 左右に壁がある
     			
 			if(queue_next(1) == -12 || queue_next(1) == 12){//次は大曲予定
     				BIG_NG_flag = 1;//ずれが大きいので大曲禁止
