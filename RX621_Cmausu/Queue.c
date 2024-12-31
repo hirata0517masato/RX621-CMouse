@@ -32,6 +32,7 @@ short dequeue(){
 short queue_next(int n){
     n += queue_front-1;
     n %= MAXqueue;
+    //if(queue_empty() || queue_num < n)return -99;
     if(queue_empty())return -99;
     return queue[n];
 }

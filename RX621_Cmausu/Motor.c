@@ -447,10 +447,17 @@ void Smotor(int M,char w_flag){
 				
 		
 	    }else{//高速
-		ir_core = 25;//左右の差の許容範囲
-				
-		kp = 0.4;
-		kd = 15.0;
+	    	if(get_encoder_L() > 5 && get_encoder_R() > 5){
+			ir_core = 15; // 25  //左右の差の許容範囲
+					
+			kp = 0.4;//0.4
+			kd = 10.0;//15.0
+		}else{
+			ir_core = 25; // 25  //左右の差の許容範囲
+					
+			kp = 0.3;//0.4
+			kd = 0.0;//15.0
+		}
 	    }
 			
 			
@@ -1325,23 +1332,23 @@ void ETmotor(long long A, long long E, char non_stop){
     int M 		= 25;
     int M_kabe2 = 25;
 	
-    //	char flag = 0;
+    //char flag = 0;
 	
     //壁切れ
     if(A > 0){//R 
 	//while(get_IR(IR_R) > 10){
 	while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){ //前壁補正は斜めになると悪影響がある
 	    Smotor(M_kabe,true);
-	    //			flag = 1;
+	   // flag = 1;
 	}
-	//		if(flag)ESmotor(25,M_kabe,true,false);
+	//if(flag)ESmotor(45,M_kabe,true,false);
     }else{//L
 	//while(get_IR(IR_L) > 10){
 	while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){
 	    Smotor(M_kabe,true);
-	    //			flag = 1;
+	    //flag = 1;
 	}
-	//		if(flag)ESmotor(25,M_kabe,true,false);
+	//if(flag)ESmotor(45,M_kabe,true,false);
     }
 
     GyroSum_reset();
