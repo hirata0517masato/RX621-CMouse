@@ -19,7 +19,7 @@
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
 #define Pickup_x  1	
-#define Pickup_y  1
+#define Pickup_y  0
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
 #define Not_Pickup_x_min  3		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
@@ -33,19 +33,20 @@
 #define W_P	(400) //エンコーダ1週のパルス数
 
 //ジャイロ関連
-#define r45  (11500)	//45度 右回転 11500 10500
 #define l45  (11500)	//45度 左回転 11500
-#define r90  (21400) 	//90度 右回転
+#define r45  (11500)	//45度 右回転 11500 10500
 #define l90  (21400)	//90度 左回転
+#define r90  (21400) 	//90度 右回転
 #define r180  (-43000)	//180度 右回転
-#define sr90  (24500)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
 #define sl90  (24500)	//スラローム 23000 25000
+#define sr90  (24500)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
 
-#define sr90BIG  (25500)	//スラローム 大曲
-#define sl90BIG  (25500)	//スラローム 大曲
+#define sl90BIG  (26000)	//スラローム 大曲
+#define sr90BIG  (26000)	//スラローム 大曲
 
-#define ur180  (47500)	//Uターン //左右で同じ値でないと連続時にずれていく
 #define ul180  (47500)	//Uターン
+#define ur180  (47500)	//Uターン //左右で同じ値でないと連続時にずれていく
+
 
 //エンコーダ関連　memo : 1mm = 5.56 //壁切れ170 //2ndの1.34倍くらい
 #define s1 (1010)		//1マス直進      タイヤ削れた時：1025
@@ -63,9 +64,9 @@
 #define rslsr90 	(980)	//スラローム 664
 #define rslsr90_offset  (-0)
 
-#define rslsl90_BIG (1580)	//スラローム 大 タイヤ削れた時：1600
+#define rslsl90_BIG (1700)	//スラローム 大 タイヤ削れた時：1600
 #define rslsl90_BIG_offset  (-100)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1600)	//スラローム 大 タイヤ削れた時：1600
+#define rslsr90_BIG (1700)	//スラローム 大 タイヤ削れた時：1600
 #define rslsr90_BIG_offset  (-100)	      //タイヤ削れた時：-100
 
 #define usll180     (2250)	//Uターン
@@ -84,7 +85,7 @@
 #define FLR_dif 5
 #define FLR_dif_max 50
 #define F_pow 8
-#define F_cnt 2000
+#define F_cnt 4000
 #define F_max_time 2000
 
 #define MAKE_KABE_tikai (135 + 60)

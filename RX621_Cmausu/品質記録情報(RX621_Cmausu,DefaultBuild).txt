@@ -1,8 +1,8 @@
 品質記録情報
-2025年1月1日 3:58:47
+2025年1月1日 19:53:59
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
@@ -44,8 +44,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: f395c7080149ba1aada3dd84cde43432cda7804b
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 181b26b02d7d141c825ecc589b98994918b139cd
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 6384c92729ffabe79cf7ef2fbe7e7df8bd081e24
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: d947ad8f6e46562222362e38b3521fbf6c414692
 
 
 --- システム情報 ---
@@ -71,11 +71,11 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 181b26b02d7d141c825ecc5
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  336 MB
+  295 MB
  *GDIオブジェクト数
-  2110
+  2091
  *USERオブジェクト数
-  1013
+  974
  *開いているファイル
   6 editors, 6 files, 205 KB
 
