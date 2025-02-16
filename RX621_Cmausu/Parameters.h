@@ -35,8 +35,8 @@
 //ジャイロ関連
 #define l45  (11500)	//45度 左回転 11500
 #define r45  (11500)	//45度 右回転 11500 10500
-#define l90  (21400)	//90度 左回転
-#define r90  (21400) 	//90度 右回転
+#define l90  (21500)	//90度 左回転
+#define r90  (21500) 	//90度 右回転
 #define r180  (-43000)	//180度 右回転
 #define sl90  (24500)	//スラローム 23000 25000
 #define sr90  (24500)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
@@ -49,9 +49,9 @@
 
 
 //エンコーダ関連　memo : 1mm = 5.56 //壁切れ170 //2ndの1.34倍くらい
-#define s1 (1010)		//1マス直進      タイヤ削れた時：1025
-#define s45 (780)		//45度１マス直進 タイヤ削れた時：800
-#define h1 (515)		//半マス直進 	タイヤ削れた時：525　最短用
+#define s1 (1015)		//1マス直進      タイヤ削れた時：1025
+#define s45 (785)		//45度１マス直進 タイヤ削れた時：800
+#define h1 (520)		//半マス直進 	タイヤ削れた時：525　最短用
 #define h1_2 (520)		//半マス直進 	タイヤ削れた時：525  探索の壁切れ用
 
 #define s45_V2 (140)		//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
@@ -65,9 +65,9 @@
 #define rslsr90_offset  (-0)
 
 #define rslsl90_BIG (1700)	//スラローム 大 タイヤ削れた時：1600
-#define rslsl90_BIG_offset  (-100)	      //タイヤ削れた時：-100	
+#define rslsl90_BIG_offset  (-150)	      //タイヤ削れた時：-100	
 #define rslsr90_BIG (1700)	//スラローム 大 タイヤ削れた時：1600
-#define rslsr90_BIG_offset  (-100)	      //タイヤ削れた時：-100
+#define rslsr90_BIG_offset  (-150)	      //タイヤ削れた時：-100
 
 #define usll180     (2250)	//Uターン
 #define usll180_fin (0)	//Uターン 微調整
@@ -82,9 +82,7 @@
 //前壁補正のパラメータ
 #define F_max 245
 #define F_min 240
-#define FLR_dif 5
-#define FLR_dif_max 50
-#define F_pow 8
+#define F_pow 10
 #define F_cnt 4000
 #define F_max_time 2000
 
