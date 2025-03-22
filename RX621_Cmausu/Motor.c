@@ -209,11 +209,11 @@ void Smotor(int M,char w_flag){
 	if(w_flag == 3){
 	    if((get_encoder_L() > 30 && get_encoder_R() > 30) ){// && abs(GyroSum_get()) < 2000){
 		//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
-		if(   get_IR(IR_FL) > 30 && abs(GyroSum_get()) < 1000){//左前のみ
+		if(   get_IR(IR_FL) > 30 && abs(GyroSum_get()) < 1200){//左前のみ
 		    cnt3++;
 		    if(cnt3 > 0){
 			cnt3 = 0;
-			if(get_encoder_L() > 60 && get_encoder_R() > 60){
+			if(get_encoder_L() > 50 && get_encoder_R() > 50){
 				if( GyroSum_get() < 0){
 					GyroSum_reset();
 				}
@@ -223,7 +223,7 @@ void Smotor(int M,char w_flag){
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FL) > 70){// || get_IR(IR_F) > 20){ // 左前がかなり近い　|| 正面にも壁があるとき
-				    GyroSum_add(50);
+				    GyroSum_add(100);
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FL) > 55  ){
@@ -258,11 +258,11 @@ void Smotor(int M,char w_flag){
 		}
 				
 		//if(get_IR(IR_FL) < 30 &&  get_IR(IR_FR) > 35  ){//右前のみ
-		if(get_IR(IR_FR) > 30 && abs(GyroSum_get()) < 1000 ){//右前のみ
+		if(get_IR(IR_FR) > 30 && abs(GyroSum_get()) < 1200 ){//右前のみ
 		    cnt4++;
 		    if(cnt4 > 0){
 			cnt4 = 0;
-			if(get_encoder_L() > 60 && get_encoder_R() > 60){
+			if(get_encoder_L() > 50 && get_encoder_R() > 50){
 				
 				if( GyroSum_get() > 0){
 					GyroSum_reset();
@@ -273,7 +273,7 @@ void Smotor(int M,char w_flag){
 				    naname_flag = 1;
 				    
 				}else if(get_IR(IR_FR) > 70){// || get_IR(IR_F) > 20){ // 右前がかなり近い　|| 正面にも壁があるとき
-				    GyroSum_add(-50);
+				    GyroSum_add(-100);
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FR) > 55){
@@ -406,7 +406,7 @@ void Smotor(int M,char w_flag){
 	if(w_flag != 3 && kusi_flag == 0){ //斜め中ではない かつ　串対策が反応してない
 	    if((get_encoder_L() >= 0 || get_encoder_R() >= 0) && abs(GyroSum_get()) < 1000){
             
-		if(get_IR(IR_L) < 180 && get_IR(IR_FL) > 20 && (get_IR(IR_F) > 20) &&  get_IR(IR_FR) > 20 && get_IR(IR_R) < 180 ){//前壁あり 横壁が近くない
+		if(get_IR(IR_L) < 180 && get_IR(IR_FL) > 40 && (get_IR(IR_F) > 40) &&  get_IR(IR_FR) > 40 && get_IR(IR_R) < 180 ){//前壁あり 横壁が近くない
 				
 			
 		    long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
@@ -455,14 +455,14 @@ void Smotor(int M,char w_flag){
 			
 	    if(motor_pid_mode == 0){//低速
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
-			ir_core = 1;//左右の差の許容範囲
+			ir_core = 2;//1;//左右の差の許容範囲
 			
-			kp = 0.7;
-			kd = 3.5;
+			kp = 0.2;//0.7;
+			kd = 0.0;//3.5;
 		}else{
-			ir_core = 1;//左右の差の許容範囲
+			ir_core = 20;//1;//左右の差の許容範囲
 			
-			kp = 0.2;
+			kp = 0.3;//0.2;
 			kd = 0.0;
 		}
 				
@@ -470,15 +470,15 @@ void Smotor(int M,char w_flag){
 	    }else{//高速
 	    	
 	    	if(get_encoder_L() > 5 && get_encoder_R() > 5){
-			ir_core = 1; // 25  //左右の差の許容範囲
+			ir_core = 10; // 25  //左右の差の許容範囲
 					
-			kp = 0.4;
-			kd = 1.5;
+			kp = 0.2; //0.3 0.5
+			kd = 8.0; //1.5 15.0
 		}else{
-			ir_core = 1; // 25  //左右の差の許容範囲
+			ir_core = 10; // 25  //左右の差の許容範囲
 					
-			kp = 0.05;//0.4
-			kd = 0.0;//15.0
+			kp = 0.4;//0.4
+			kd = 15.0;//15.0
 		}
 	    }
 			
@@ -506,12 +506,8 @@ void Smotor(int M,char w_flag){
 		    if(motor_pid_mode == 0){//低速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core /2 ) {// 左右の差が小さきすぎない
 					
-			    if((get_IR(IR_L) - ir_wall ) > 0){//壁に近い＝離れる
-			    	ir_sa =  (get_IR(IR_L) - ir_wall) * 2;
-				
-			    }else{//壁と遠い＝近づく
-				ir_sa =  (get_IR(IR_L) - ir_wall);    
-			    }
+			    ir_sa =  (get_IR(IR_L) - ir_wall);    
+			    
 			   // if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    
 			    motor_pid_flag = 1;
@@ -528,12 +524,8 @@ void Smotor(int M,char w_flag){
 		    if(motor_pid_mode == 0){//低速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core /2 ){//左右の差が小さきすぎない
 				
-			    if((ir_wall - get_IR(IR_R)) < 0){//壁に近い＝離れる
-			    	ir_sa =  (ir_wall - get_IR(IR_R)) * 2;
-				
-			    }else{//壁と遠い＝近づく
-				ir_sa =  (ir_wall - get_IR(IR_R)); 
-			    }
+			    ir_sa =  (ir_wall - get_IR(IR_R));
+			
 			    
 			    
 			   // if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
@@ -1782,12 +1774,12 @@ void Tmotor_naname_in_BIG(long long A ){
     }
 	
     if(A > 0){//R
-	    while(get_IR(IR_RT) > 5){ 
+	    while(get_IR(IR_RT) > 18){ 
 	  
 		Smotor(M_kabe,true);
 	    }
     }else{
-	  while(get_IR(IR_LT) > 5){ 
+	  while(get_IR(IR_LT) > 18){ 
 	  
 		Smotor(M_kabe,true);
 	    }  
