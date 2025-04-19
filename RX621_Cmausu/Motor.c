@@ -457,12 +457,12 @@ void Smotor(int M,char w_flag){
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
 			ir_core = 2;//1;//左右の差の許容範囲
 			
-			kp = 0.2;//0.7;
+			kp = 0.3;//0.7;
 			kd = 0.0;//3.5;
 		}else{
-			ir_core = 20;//1;//左右の差の許容範囲
+			ir_core = 15;//1;//左右の差の許容範囲
 			
-			kp = 0.3;//0.2;
+			kp = 0.4;//0.2;
 			kd = 0.0;
 		}
 				
@@ -470,12 +470,12 @@ void Smotor(int M,char w_flag){
 	    }else{//高速
 	    	
 	    	if(get_encoder_L() > 5 && get_encoder_R() > 5){
-			ir_core = 10; // 25  //左右の差の許容範囲
+			ir_core = 15; // 25  //左右の差の許容範囲
 					
 			kp = 0.2; //0.3 0.5
 			kd = 8.0; //1.5 15.0
 		}else{
-			ir_core = 10; // 25  //左右の差の許容範囲
+			ir_core = 15; // 25  //左右の差の許容範囲
 					
 			kp = 0.4;//0.4
 			kd = 15.0;//15.0
@@ -497,7 +497,7 @@ void Smotor(int M,char w_flag){
 		}else if(motor_pid_mode == 0 && get_IR(IR_LT) > 30 && get_IR(IR_RT) > 30 && get_IR(IR_F) < 50){//斜め45度センサー 低速モードのみ
 		    if(abs(get_IR(IR_LT) - get_IR(IR_RT))*2 > ir_core){//  左右の差が小さきすぎない
 					
-			ir_sa =  (get_IR(IR_LT) - get_IR(IR_RT)) / 10 ;// *2;
+			ir_sa =  (get_IR(IR_LT) - get_IR(IR_RT));// *2;
 						
 			motor_pid_flag = 1;
 		    }
@@ -543,7 +543,7 @@ void Smotor(int M,char w_flag){
 		    if(motor_pid_mode == 0){//低速
 			if(abs(get_IR(IR_LT) - ir_wall2) > ir_core/2) {// 左右の差が小さきすぎない
 						
-			    ir_sa =  (get_IR(IR_LT) - ir_wall2) / 8;// / 6;
+			    ir_sa =  (get_IR(IR_LT) - ir_wall2);// / 8;// / 6;
 			    
 			    if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    motor_pid_flag = 1;
@@ -559,7 +559,7 @@ void Smotor(int M,char w_flag){
 		    if(motor_pid_mode == 0){//低速
 			if(abs(ir_wall2 - get_IR(IR_RT)) > ir_core/2 ){//左右の差が小さきすぎない
 					
-			    ir_sa =  (ir_wall2 - get_IR(IR_RT)) / 8;// / 6;
+			    ir_sa =  (ir_wall2 - get_IR(IR_RT)) ;/// 8;// / 6;
 			    
 			    if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    motor_pid_flag = 1;

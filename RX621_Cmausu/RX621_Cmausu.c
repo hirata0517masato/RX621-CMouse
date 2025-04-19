@@ -58,6 +58,7 @@ void log_save(void);
 void log_load(void);
 void search_pickup(int*,int*);
 void maze_update(char,char,char,char);
+void maze_update2(char ,char );
 void maze_search_adachi(short,short);
 void maze_search_all(void);
 char shortest_path_search_check(void);
@@ -758,6 +759,7 @@ void main(void)
 	    //3
 	    for(int i = 0; i < H;i++)maze_w[i][0] |= 0x88;
   
+	    
 	    //ƒXƒ^[ƒg’n“_‚ÌŠm’è•Ç‚ðÝ’è
 	    maze_w[my_y][my_x] = 0xfd;//13;//15-2;
 	    maze_w[my_y+1][my_x] |= 0x11;
@@ -1473,6 +1475,107 @@ void maze_update(char x,char y,char angle, char type){
 	    }
 	}
     }
+    
+    maze_update2(x,y);
+}
+
+void maze_update2(char x,char y){
+
+	if(x == 7 && y == 7)return;
+	
+	char kakutei_cnt = 0;
+	char kakutei_flag = 0;
+	char mi_kakutei = 0;
+	char kakutei_kabe_cnt = 0;
+		
+	if(x == 15)x--;
+	if(y == 15)y--;
+	
+	if(0 <= x && x < 15 && 0 <= y && y < 15){//ŠO˜g‚Å‚Í‚È‚¢
+		
+		if(maze_w[y][x] & (1 << (4+1)) != 0 ){
+			kakutei_flag |= 1;
+			kakutei_cnt++;
+			
+			if(maze_w[y][x] & (1 << (1)) != 0){
+				kakutei_kabe_cnt++;
+			}
+		}else{
+			mi_kakutei = 0;
+		}
+		
+		if(maze_w[y][x+1] & (1 << (4+2)) != 0 ){
+			kakutei_flag |= 2;
+			kakutei_cnt++;
+			
+			if(maze_w[y][x+1] & (1 << (2)) != 0){
+				kakutei_kabe_cnt++;
+			}
+		}else{
+			mi_kakutei = 1;
+		}
+		
+		if(maze_w[y+1][x] & (1 << (4+1)) != 0 ){
+			kakutei_flag |= 4;
+			kakutei_cnt++;
+			
+			if(maze_w[y+1][x] & (1 << (1)) != 0){
+				kakutei_kabe_cnt++;
+			}
+		}else{
+			mi_kakutei = 2;
+		}
+		
+		if(maze_w[y][x] & (1 << (4+2)) != 0 ){
+			kakutei_flag |= 8;
+			kakutei_cnt++;
+			
+			if(maze_w[y][x] & (1 << (2)) != 0){
+				kakutei_kabe_cnt++;
+			}
+		}else{
+			mi_kakutei = 3;
+		}
+		
+		if(kakutei_cnt == 3){//Žc‚è‚Ì1•Ç‚àŠm’è‚É‚Å‚«‚é
+			if(kakutei_kabe_cnt == 0){//‚R–‡@•Ç‚ª‚È‚¢@Žc‚è‚Í•Ç‚ª‚ ‚é
+				
+				if(mi_kakutei == 0){
+					maze_w[y][x] |= 1 << (4+1);
+					maze_w[y][x] |= (1 << (1));
+					
+					maze_w[y][x+1] |= 1 << (4+3);
+					maze_w[y][x+1] |= (1 << (3));
+					
+				}else if(mi_kakutei == 1){
+					maze_w[y][x+1] |= 1 << (4+2);
+					maze_w[y][x+1] |= (1 << (2));
+					
+					maze_w[y+1][x+1] |= 1 << (4+0);
+					maze_w[y+1][x+1] |= (1 << (0));
+					
+				}else if(mi_kakutei == 2){
+					maze_w[y+1][x] |= 1 << (4+1);
+					maze_w[y+1][x] |= (1 << (1));
+					
+					maze_w[y+1][x+1] |= 1 << (4+3);
+					maze_w[y+1][x+1] |= (1 << (3));
+					
+				}else if(mi_kakutei == 3){
+					maze_w[y][x] |= 1 << (4+2);
+					maze_w[y][x] |= (1 << (2));
+					
+					maze_w[y+1][x] |= 1 << (4+0);
+					maze_w[y+1][x] |= (1 << (0));
+				}
+			}
+		}
+		
+		
+	}else{//ŠO˜g‚È‚Ì‚Å@’Œ‚É‚Â‚È‚ª‚é•Ç‚Í‚R‚Â
+		
+	}
+	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2005,13 +2108,13 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 	ESmotor(90,powor,true,false);  //140
 	
     }else if(v2_flag == 2){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
-    	ESmotor(250,powor,true,false);//750
+    	ESmotor(200,powor,true,false);//750
 	
     }else if(v2_flag == 3){//‚Qƒ}ƒXˆÈã‚ÌVƒ^[ƒ“ŠJŽn
     	ESmotor(120,powor,true,false);
 	
     }else if(v2_flag == 4){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚é‚Æ‚«
-    	ESmotor(330,powor,true,false);
+    	ESmotor(260,powor,true,false);
 	
     }else if(v2_flag == 5){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚½‚ ‚ÆƒJ[ƒu
     	ESmotor(190,powor,true,false);
@@ -4970,7 +5073,7 @@ void run_shortest_path_fin(	char naname){
     int over_run = -400;//‘¬“xã‚°‚é‚ÆƒI[ƒo[ƒ‰ƒ“‚¬‚Ý‚È‚Ì‚Å­‚µŽè‘O‚ÅŽ~‚ß‚é ƒ}ƒCƒiƒX‚É‚·‚é‚Æ‹——£‚ªƒvƒ‰ƒX‚É‚È‚é
     int over_run2 = -400; // ’¼ü‹——£‚ª’Z‚¢Žž‚ÉŽg—p‚·‚é
 
-    int run_speed = 90;
+    int run_speed = 100;
     int run_speed_naname = 90;
     
     /*   
