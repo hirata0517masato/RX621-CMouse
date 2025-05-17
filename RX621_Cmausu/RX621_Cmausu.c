@@ -3683,16 +3683,18 @@ void maze_search_unknown_wall(short* target_x,short* target_y){
 	for(int x = 0; x < W; x++){
 		
 		if((maze_w[y][x] & 0xF0) == 0){//Šm’è•Ç‚ª‚P‚Â‚à–³‚¯‚ê‚Î
-			target_flag = 1;
 			
-			if(tmp_x == -1){
+			short tmp_maze_d2 = min(maze_d[y][x][3],min(maze_d[y][x][2],min(maze_d[y][x][1], maze_d[y][x][0])));
+			
+			
+			if(tmp_x == -1 && tmp_maze_d2 < maze_d_max){
 				tmp_x = x;
 				tmp_y = y;
-				tmp_maze_d = min(maze_d[y][x][3],min(maze_d[y][x][2],min(maze_d[y][x][1], maze_d[y][x][0])));
+				tmp_maze_d = tmp_maze_d2;
+				
+				target_flag = 1;
 				
 			}else{
-				short tmp_maze_d2 = min(maze_d[y][x][3],min(maze_d[y][x][2],min(maze_d[y][x][1], maze_d[y][x][0])));
-				
 				if(tmp_maze_d > tmp_maze_d2 ){
 					tmp_x = x;
 					tmp_y = y;
