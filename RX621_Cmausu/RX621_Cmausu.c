@@ -125,7 +125,7 @@ int Gy_flag = 0; // 0:ジャイロOFF 1:ジャイロON
 int run_fin_speed_offset = 0;
 
 long long time_limit = -1;
-long long time_limit_base = 150000;//2分30秒
+long long time_limit_base = 150000;//3分00秒　180000      2分30秒 150000
 long long time_limit_offset = 0;
 
 int pickup_x = 1;
@@ -1477,6 +1477,13 @@ void maze_update(char x,char y,char angle, char type){
     }
     
     maze_update2(x,y);
+    maze_update2(x-1,y);
+    maze_update2(x-1,y-1);
+    maze_update2(x,y-1);
+    maze_update2(x,y);
+    maze_update2(x-1,y);
+    maze_update2(x-1,y-1);
+    maze_update2(x,y-1);
 }
 
 void maze_update2(char x,char y){
@@ -2716,9 +2723,9 @@ void run_shortest_path(){
     short comand ,path_num;
     int time = 1;
     
-    int run_speed = 35;
-    int run_speed_up = 45;    //未知区間加速
-    int run_speed_boost = 55; //既知区間加速
+    int run_speed = 40;
+    int run_speed_up = 55;    //未知区間加速
+    int run_speed_boost = 70; //既知区間加速
     
     int run_speed_kabe = 20;
 
@@ -3659,6 +3666,56 @@ void maze_search_unknown(short* target_x,short* target_y){
     *target_y = Get_Goal_y();
 
 }
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：4方向すべての壁が確定していないマスからゴールに近いマスの座標を取得 無ければゴール座標を設定する           */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 																				    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void maze_search_unknown_wall(short* target_x,short* target_y){
+ 
+    char target_flag = 0;
+    
+    short tmp_x = -1,tmp_y = -1,tmp_maze_d;
+    
+    for(int y = 0; y < H; y++){
+	for(int x = 0; x < W; x++){
+		
+		if((maze_w[y][x] & 0xF0) == 0){//確定壁が１つも無ければ
+			target_flag = 1;
+			
+			if(tmp_x == -1){
+				tmp_x = x;
+				tmp_y = y;
+				tmp_maze_d = min(maze_d[y][x][3],min(maze_d[y][x][2],min(maze_d[y][x][1], maze_d[y][x][0])));
+				
+			}else{
+				short tmp_maze_d2 = min(maze_d[y][x][3],min(maze_d[y][x][2],min(maze_d[y][x][1], maze_d[y][x][0])));
+				
+				if(tmp_maze_d > tmp_maze_d2 ){
+					tmp_x = x;
+					tmp_y = y;
+					tmp_maze_d = tmp_maze_d2;
+				}
+			}
+		}
+			
+	}
+    }
+    
+    if(target_flag == 0){//１つも対象のマスが無ければ
+	    *target_x = Get_Goal_x();
+	    *target_y = Get_Goal_y();
+	    
+	    return;
+    }
+    
+    *target_x = tmp_x;
+    *target_y = tmp_y;
+
+}
+
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：最短経路はすべて確定マスにする  										            */
 /* 関 数 詳 細：												                                   */
@@ -3673,6 +3730,8 @@ void maze_search_all(){
 	
     short target_x,target_y;
     char path_ng = 0;
+    
+    char phese_flag = 0;//0=大まかに探索, 　1=最短経路の未確定マスを探索
     
     
     //time_limit = xxxx;//60秒  別のところで設定するように変更
@@ -3703,28 +3762,47 @@ void maze_search_all(){
 	    	}	
 	}
 	
-	//確実に最短経路が存在する必要がある
-	//制限時間内に探索できなかった時と合わせた方が良い
-	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
-	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
-	
-	
-	if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ終了
-	    motor(0,0);
-				
-	    maze_search_adachi(Start_x,Start_y);
-	    led_down();
-	    led_up();
-	    led_down();
-	    led_up();
-			
-	    motor(0,0);
-	    return;
+	if(phese_flag == 0){//大まかに探索
+		
+		maze_search_unknown_wall(&target_x,&target_y);//4方向すべての壁が確定していないマスからゴールに近いマスの座標を取得
+		
+		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//ゴール座標が設定されているときは対象のマスがないとき
+			phese_flag = 1;
+		}
+		
 	}
 	
-	if(target_x == my_x && target_y == my_y){//目標地点と現在地点が同じ = 本来はありえない
-		target_x = 1; //座標に意味はないが別の場所に移動してほしいので目標地点を変更する
-		target_y = 0;
+	if(phese_flag == 1){ //最短経路の未確定マスを探索
+	
+		//確実に最短経路が存在する必要がある
+		//制限時間内に探索できなかった時と合わせた方が良い
+		maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得
+		//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
+		
+		
+		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ終了
+		
+		    shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
+		    
+		    if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ終了
+		
+			    motor(0,0);
+						
+			    maze_search_adachi(Start_x,Start_y);
+			    led_down();
+			    led_up();
+			    led_down();
+			    led_up();
+					
+			    motor(0,0);
+			    return;
+		    }
+		}
+		
+		if(target_x == my_x && target_y == my_y){//目標地点と現在地点が同じ = 本来はありえない
+			target_x = 1; //座標に意味はないが別の場所に移動してほしいので目標地点を変更する
+			target_y = 0;
+		}
 	}
 	
     	shortest_path_search(target_x,target_y);
@@ -3754,8 +3832,8 @@ void maze_search_all(){
 	shortest_path_search(Get_Goal_x(),Get_Goal_y());
 	
 	//制限時間内の時と合わせた方が良い
-	//maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
-	shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
+	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
+	//shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
 	
 /*	while(1){
 		motor(0,0);

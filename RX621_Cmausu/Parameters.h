@@ -13,20 +13,20 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Goal_x  7
+#define Goal_x  8
 #define Goal_y  7
-#define Goal_angle 3 //ゴールした直後の向き スタートの向きが1
+#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
 //#define Pickup_x  1	
 //#define Pickup_y  0
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
-#define Not_Pickup_x_min  3		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
-#define Not_Pickup_y_min  3
+#define Not_Pickup_x_min  4		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
+#define Not_Pickup_y_min  4
 
-#define Not_Pickup_x_max  17
-#define Not_Pickup_y_max  17
+#define Not_Pickup_x_max  16
+#define Not_Pickup_y_max  16
 
 //タイヤ交換したときに変更するパラメータ
 #define W_D	(220) //ホイールの直径(0.1mm)
