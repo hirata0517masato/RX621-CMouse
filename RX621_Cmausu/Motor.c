@@ -209,7 +209,7 @@ void Smotor(int M,char w_flag){
 	if(w_flag == 3){
 	    if((get_encoder_L() > 30 && get_encoder_R() > 30) ){// && abs(GyroSum_get()) < 2000){
 		//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
-		if(   get_IR(IR_FL) > 30 && abs(GyroSum_get()) < 1200){//左前のみ
+		if(   get_IR(IR_FL) > 25 && abs(GyroSum_get()) < 2000){//左前のみ
 		    cnt3++;
 		    if(cnt3 > 0){
 			cnt3 = 0;
@@ -219,7 +219,7 @@ void Smotor(int M,char w_flag){
 				}
 				
 				if(get_IR(IR_FL) > 100){// 左前がかなり近い
-				    GyroSum_add(100);
+				    GyroSum_add(200);
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FL) > 70){// || get_IR(IR_F) > 20){ // 左前がかなり近い　|| 正面にも壁があるとき
@@ -227,11 +227,15 @@ void Smotor(int M,char w_flag){
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FL) > 55  ){
-				    GyroSum_add(25);
+				    GyroSum_add(30);
 				    naname_flag = 1;
 				    
 				}else if(get_IR(IR_FL) > 45 ){
-				    GyroSum_add(15);
+				    GyroSum_add(20);
+				   naname_flag = 1;
+				
+				}else if(get_IR(IR_FL) > 30 ){
+				    GyroSum_add(10);
 				   naname_flag = 1;
 				  
 				}else{
@@ -258,7 +262,7 @@ void Smotor(int M,char w_flag){
 		}
 				
 		//if(get_IR(IR_FL) < 30 &&  get_IR(IR_FR) > 35  ){//右前のみ
-		if(get_IR(IR_FR) > 30 && abs(GyroSum_get()) < 1200 ){//右前のみ
+		if(get_IR(IR_FR) > 25 && abs(GyroSum_get()) < 2000 ){//右前のみ
 		    cnt4++;
 		    if(cnt4 > 0){
 			cnt4 = 0;
@@ -269,7 +273,7 @@ void Smotor(int M,char w_flag){
 				}
 				
 				if(get_IR(IR_FR) > 100){// 右前がかなり近い
-				    GyroSum_add(-100);
+				    GyroSum_add(-200);
 				    naname_flag = 1;
 				    
 				}else if(get_IR(IR_FR) > 70){// || get_IR(IR_F) > 20){ // 右前がかなり近い　|| 正面にも壁があるとき
@@ -277,11 +281,15 @@ void Smotor(int M,char w_flag){
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FR) > 55){
-				    GyroSum_add(-25);
+				    GyroSum_add(-30);
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FR) > 45){
-				    GyroSum_add(-15);
+				    GyroSum_add(-20);
+				    naname_flag = 1;
+				
+				}else if(get_IR(IR_FR) > 30){
+				    GyroSum_add(-10);
 				    naname_flag = 1;
 				  
 				}else{
@@ -403,37 +411,40 @@ void Smotor(int M,char w_flag){
 		
 		
 	//前壁補正　
-	if(w_flag != 3 && kusi_flag == 0){ //斜め中ではない かつ　串対策が反応してない
-	    if((get_encoder_L() >= 0 || get_encoder_R() >= 0) && abs(GyroSum_get()) < 1000){
-            
-		if(get_IR(IR_L) < 180 && get_IR(IR_FL) > 40 && (get_IR(IR_F) > 40) &&  get_IR(IR_FR) > 40 && get_IR(IR_R) < 180 ){//前壁あり 横壁が近くない
+	if(motor_pid_mode == 0){//低速
+		if(w_flag != 3 && kusi_flag == 0){ //斜め中ではない かつ　串対策が反応してない
+		
+		    if((get_encoder_L() >= 0 || get_encoder_R() >= 0) && abs(GyroSum_get()) < 1000){
+	            
+			if(get_IR(IR_L) < 180 && get_IR(IR_FL) > 40 && (get_IR(IR_F) > 40) &&  get_IR(IR_FR) > 40 && get_IR(IR_R) < 180 ){//前壁あり 横壁が近くない
+					
 				
-			
-		    long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
-		    if(abs(diff) > 5 && abs(diff) < 50){
-			//if(abs(diff) > 0 && abs(diff) < 80){
-			cnt5++;
-			if(cnt5 > 0){
-			    cnt5 = 0;
-							
-			    if(get_IR(IR_F) > 250){
-				if(diff > 5)diff = 5;
-				if(diff < -5)diff = -5;
+			    long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
+			    if(abs(diff) > 5 && abs(diff) < 50){
+				//if(abs(diff) > 0 && abs(diff) < 80){
+				cnt5++;
+				if(cnt5 > 0){
+				    cnt5 = 0;
 								
-			    }else if(get_IR(IR_F) > 200){
-				if(diff > 10)diff = 10;
-				if(diff < -10)diff = -10;
-			    }else{
-				if(diff > 20)diff = 20;
-				if(diff < -20)diff = -20;
-			    }
-			    
-			    mae_flag = 1;
-			    GyroSum_add(diff);
-			}
-		    }else cnt5 = 0;	
-		}else cnt5 = 0;
-	    }
+				    if(get_IR(IR_F) > 250){
+					if(diff > 5)diff = 5;
+					if(diff < -5)diff = -5;
+									
+				    }else if(get_IR(IR_F) > 200){
+					if(diff > 10)diff = 10;
+					if(diff < -10)diff = -10;
+				    }else{
+					if(diff > 20)diff = 20;
+					if(diff < -20)diff = -20;
+				    }
+				    
+				    mae_flag = 1;
+				    GyroSum_add(diff);
+				}
+			    }else cnt5 = 0;	
+			}else cnt5 = 0;
+		    }
+		}
 	}
 	    
 	if(motor_pid_flag == 0 && w_flag != 3 && kusi_flag == 0){//1msの割り込み内でフラグはリセットされる && 斜めではない && 串が反応していない
@@ -515,7 +526,7 @@ void Smotor(int M,char w_flag){
 		    }else{//高速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core/2) {// 左右の差が小さきすぎない
 						
-			    ir_sa =  (get_IR(IR_L) - ir_wall) * 2;// * 20 /10;
+			    ir_sa =  (get_IR(IR_L) - ir_wall) ;//* 2;// * 20 /10;
 			    motor_pid_flag = 1;
 			}
 		    }
@@ -534,7 +545,7 @@ void Smotor(int M,char w_flag){
 		    }else{//高速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//左右の差が小さきすぎない
 					
-			    ir_sa =  (ir_wall - get_IR(IR_R)) * 2;//  * 20 /10;
+			    ir_sa =  (ir_wall - get_IR(IR_R)) ;// * 2;//  * 20 /10;
 			    motor_pid_flag = 1;
 			}
 		    }
