@@ -13,13 +13,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Goal_x  7
-#define Goal_y  7
+#define Goal_x  0
+#define Goal_y  1
 #define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
-//#define Pickup_x  1	
-//#define Pickup_y  0
+#define Pickup_x  1	
+#define Pickup_y  1
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
 #define Not_Pickup_x_min  4		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
@@ -64,10 +64,10 @@
 #define rslsr90 	(980)	//スラローム 664
 #define rslsr90_offset  (-0)
 
-#define rslsl90_BIG (1600)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsl90_BIG_offset  (-150)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1600)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsr90_BIG_offset  (-150)	      //タイヤ削れた時：-100
+#define rslsl90_BIG (1625)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsl90_BIG_offset  (-100)	      //タイヤ削れた時：-100	
+#define rslsr90_BIG (1625)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsr90_BIG_offset  (-100)	      //タイヤ削れた時：-100
 
 #define usll180     (2250)	//Uターン
 #define usll180_fin (0)	//Uターン 微調整
@@ -84,7 +84,7 @@
 #define F_min 235
 #define F_pow 10
 #define F_cnt 4000
-#define F_max_time 1000
+#define F_max_time 500
 
 #define MAKE_KABE_tikai (135 + 60)
 #define MAKE_KABE_tooi (135 - 60)

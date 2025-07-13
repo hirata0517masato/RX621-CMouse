@@ -786,11 +786,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		    if(A <= s1){//距離が１マス以下の場合
 		    	 M = min_M_use + ((enc_now) / 2);
 		    }else{
-			if(enc_now < 200){//出だしは加速しすぎないように
+			if(enc_now < 150){//出だしは加速しすぎないように
 			    M = min_M_use ;
 					
 			}else{
-		            M = min_M_use + ((enc_now-200) / 6);
+		            M = min_M_use + ((enc_now-150) / 4);
 			}
 		    }
 		}
@@ -799,7 +799,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			
 	    if(max_M < M)M = max_M;
 			
-	    if(ir_L_now > 200 || ir_R_now > 200){//横壁が近すぎる場合は減速
+	    if(ir_L_now > 220 || ir_R_now > 220){//横壁が近すぎる場合は減速
 		//if(ir_L_now > 999 || ir_R_now > 999){//横壁が近すぎる場合は減速
 		if(M_max_safe < M)M = M_max_safe;
 	    }

@@ -1910,8 +1910,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 			    break;
 			} 
 		 }else{*/
-			if(get_IR(IR_RT) < 15
-			){
+			if(get_IR(IR_RT) < 15){
 			    led(0);
 			    break;
 			}
@@ -2119,7 +2118,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     	if(Lflag == 0 && Rflag == 0){
 		ESmotor(100,powor,true,false);
 	}else{
-    		ESmotor(200,powor,true,false);// 200
+    		ESmotor(300,powor,true,false);// 200
 	}
     }else if(v2_flag == 3){//‚Qƒ}ƒXˆÈã‚ÌVƒ^[ƒ“ŠJn
     	ESmotor(120,powor,true,false);
@@ -5411,7 +5410,10 @@ void run_shortest_path_fin(	char naname){
 				    if(path_num <= 1){
 					 //S_run_kabe_BIG(40,0,1,path_num); //•Ç•â³–³‚µ
 					 
-					 S_run_kabe_BIG(40,4,1,path_num); //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+					 S_run_kabe_BIG(50,4,1,path_num); //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+					 
+					 ESmotor(100,40,true,true);//‹——£AƒXƒs[ƒh 
+					 
 				    }else{
 					 S_run_kabe_BIG(30,4,1,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è 
 				    }
