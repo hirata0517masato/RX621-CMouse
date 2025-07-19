@@ -481,26 +481,31 @@ void Smotor(int M,char w_flag){
 	    }else{//高速
 	    	
 	    	if(get_encoder_L() > 5 && get_encoder_R() > 5){
-			ir_core = 15; // 25  //左右の差の許容範囲
+			ir_core = 5; // 25  //左右の差の許容範囲
 					
-			kp = 0.2; //0.3 0.5
-			kd = 8.0; //1.5 15.0
+			kp = 0.3; //0.3 0.5
+			kd = 17.0; //1.5 15.0
 		}else{
 			ir_core = 15; // 25  //左右の差の許容範囲
 					
 			kp = 0.4;//0.4
-			kd = 15.0;//15.0
+			kd = 20.0;//15.0
 		}
 	    }
 			
 			
-	    if((get_encoder_L() > 10 && get_encoder_R() > 10)  && (w_flag != 3) ){
+	    //if((get_encoder_L() > 10 && get_encoder_R() > 10)  && (w_flag != 3) ){
+	    if((get_encoder_L() > 2 && get_encoder_R() > 2)  && (w_flag != 3) ){
 				
 		//左右に壁がある 
 		if(get_IR(IR_L) > 40 && get_IR(IR_R) > 40 ){
 		    if(abs(get_IR(IR_L) - get_IR(IR_R)) > ir_core){//  左右の差が小さきすぎない
-					
-			ir_sa =  get_IR(IR_L) - get_IR(IR_R);
+		    
+		    	if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 ){//どちらかの壁が近い
+				ir_sa =  (get_IR(IR_L) - get_IR(IR_R)) * 1;
+			}else{
+				ir_sa =  get_IR(IR_L) - get_IR(IR_R);
+			}
 						
 			motor_pid_flag = 1;
 		    }
@@ -525,9 +530,14 @@ void Smotor(int M,char w_flag){
 			}
 		    }else{//高速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core/2) {// 左右の差が小さきすぎない
-						
-			    ir_sa =  (get_IR(IR_L) - ir_wall) ;//* 2;// * 20 /10;
-			    motor_pid_flag = 1;
+					
+				if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 ){//どちらかの壁が近い
+					ir_sa =  (get_IR(IR_L) - ir_wall) * 1 ;
+					
+				}else{
+			    		ir_sa =  (get_IR(IR_L) - ir_wall) ;//* 2;// * 20 /10;
+				}
+			    	motor_pid_flag = 1;
 			}
 		    }
 					
@@ -544,9 +554,15 @@ void Smotor(int M,char w_flag){
 			}
 		    }else{//高速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//左右の差が小さきすぎない
+				
+				if(get_IR(IR_L) > 200 || get_IR(IR_R) > 200 ){//どちらかの壁が近い
+					ir_sa =  (ir_wall - get_IR(IR_R)) * 1;
 					
-			    ir_sa =  (ir_wall - get_IR(IR_R)) ;// * 2;//  * 20 /10;
-			    motor_pid_flag = 1;
+				}else{
+			    		ir_sa =  (ir_wall - get_IR(IR_R)) ;// * 2;//  * 20 /10;
+				}
+			    
+			    	motor_pid_flag = 1;
 			}
 		    }
 					
@@ -588,7 +604,7 @@ void Smotor(int M,char w_flag){
 			
 		    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 		    
-		    ir_sa = max(min(ir_sa,500),-500);
+		    ir_sa = max(min(ir_sa,1000),-1000);
 					
 		    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
 					
@@ -709,7 +725,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	if(h1 < A){//距離が半マス以上
 	    non_stop_min_M = 50;
 	}else{
-	    non_stop_min_M = 30;
+	    non_stop_min_M = 20;
 	}
     }
 	
@@ -765,12 +781,12 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 					M = min_M_use;
 				
 				}else{
-					M = min_M_use + ( (A - enc_now -200) / 15);
+					M = min_M_use + ( (A - enc_now -200) / 20);
 				}
 			}
 		}
 			
-	    }else{
+	    }else{//加速区間
 		if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
 		    if(enc_now < 100){//出だしは加速しすぎないように
 			M = min_M_use + (enc_now / 10);
@@ -786,11 +802,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		    if(A <= s1){//距離が１マス以下の場合
 		    	 M = min_M_use + ((enc_now) / 2);
 		    }else{
-			if(enc_now < 150){//出だしは加速しすぎないように
+			if(enc_now < 200){//出だしは加速しすぎないように
 			    M = min_M_use ;
 					
 			}else{
-		            M = min_M_use + ((enc_now-150) / 4);
+		            M = min_M_use + ((enc_now-200) / 4);
 			}
 		    }
 		}
@@ -1362,7 +1378,7 @@ void ETmotor(long long A, long long E, char non_stop){
 	
     int M_kabe = 25;
     int M 		= 25;
-    int M_kabe2 = 25;
+    int M_kabe2 = 20;
 	
     //char flag = 0;
 	

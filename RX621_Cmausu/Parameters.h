@@ -13,13 +13,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Goal_x  0
-#define Goal_y  1
+#define Goal_x  8
+#define Goal_y  7
 #define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
-#define Pickup_x  1	
-#define Pickup_y  1
+//#define Pickup_x  1	
+//#define Pickup_y  1
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
 #define Not_Pickup_x_min  4		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
@@ -57,16 +57,17 @@
 #define s45_V2 (100)	//140	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2_out (300)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2_out_LR (120)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する　壁切れ後にカーブ
-#define s45_V2not (200)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2not (300)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2notFirst (350)	//初手斜め用　２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 
 #define rslsl90 	(980)	//スラローム 664
 #define rslsl90_offset  (0)
 #define rslsr90 	(980)	//スラローム 664
 #define rslsr90_offset  (-0)
 
-#define rslsl90_BIG (1625)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsl90_BIG (1610)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsl90_BIG_offset  (-100)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1625)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsr90_BIG (1610)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsr90_BIG_offset  (-100)	      //タイヤ削れた時：-100
 
 #define usll180     (2250)	//Uターン
