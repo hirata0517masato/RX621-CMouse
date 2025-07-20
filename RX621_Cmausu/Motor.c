@@ -188,7 +188,7 @@ void Smotor(int M,char w_flag){
     static int cnt5 = 0;
 	
     static int ir_sa = 0,ir_sa_buf = 0;
-    static int ir_wall = 140,ir_core = 0,ir_wall2 = 50;
+    static int ir_wall = 130,ir_core = 0,ir_wall2 = 50;
     static float kp = 0,kd = 0;
     
     static int naname_flag_old = 0;
@@ -452,7 +452,7 @@ void Smotor(int M,char w_flag){
 	    //ir_wall = 115;//マス中央でのセンサー値
 	    if(get_IR(IR_L) > 100 && get_IR(IR_R) > 100 &&  get_encoder_L() > 5 &&  get_encoder_R() > 5){//左右に壁がある &&  動いている
 				
-		if(abs(get_IR(IR_L) - get_IR(IR_R)) < 80 && abs(GyroSum_get()) < 1000 ){//左右の差が少ない && まっすぐ
+		if(abs(get_IR(IR_L) - get_IR(IR_R)) < 50 && abs(GyroSum_get()) < 500 ){//左右の差が少ない && まっすぐ
 		    ir_wall = ir_wall*1/10 + ((get_IR(IR_L) + get_IR(IR_R))/2)*9/10 ; //マス中央でのセンサー値を更新
 		}
 	    }
@@ -484,7 +484,7 @@ void Smotor(int M,char w_flag){
 			ir_core = 5; // 25  //左右の差の許容範囲
 					
 			kp = 0.3; //0.3 0.5
-			kd = 17.0; //1.5 15.0
+			kd = 25.0; //1.5 15.0
 		}else{
 			ir_core = 15; // 25  //左右の差の許容範囲
 					
@@ -535,7 +535,7 @@ void Smotor(int M,char w_flag){
 					ir_sa =  (get_IR(IR_L) - ir_wall) * 1 ;
 					
 				}else{
-			    		ir_sa =  (get_IR(IR_L) - ir_wall) ;//* 2;// * 20 /10;
+			    		ir_sa =  (get_IR(IR_L) - ir_wall) * 2 / 4 ;//* 2;// * 20 /10;
 				}
 			    	motor_pid_flag = 1;
 			}
@@ -559,7 +559,7 @@ void Smotor(int M,char w_flag){
 					ir_sa =  (ir_wall - get_IR(IR_R)) * 1;
 					
 				}else{
-			    		ir_sa =  (ir_wall - get_IR(IR_R)) ;// * 2;//  * 20 /10;
+			    		ir_sa =  (ir_wall - get_IR(IR_R)) * 2 / 4;// * 2;//  * 20 /10;
 				}
 			    
 			    	motor_pid_flag = 1;
@@ -636,13 +636,17 @@ void Smotor(int M,char w_flag){
 	    }else{
 		if( get_encoder_L() < 30 || get_encoder_R() < 30){//速度が遅い時はジャイロ弱める
 		
-		    if( get_encoder_L() < 10 || get_encoder_R() < 10){
+		    if( get_encoder_L() < 5 || get_encoder_R() < 5){
+			powor = powor * 1 / 4;
+			powor_max = 5;
+			
+		    }else if( get_encoder_L() < 10 || get_encoder_R() < 10){
 			powor = powor * 2 / 4;
-			powor_max = 40;
+			powor_max = 10;
 			
 		    }else{
 			powor = powor * 3 / 4;
-			powor_max = 50;
+			powor_max = 40;
 		    }
 
 		}else{
@@ -695,7 +699,7 @@ void Smotor(int M,char w_flag){
 
 
 void ESmotor(long long A, int max_M,char non_stop,char w_flag){
-    //    Encoder_reset();
+        Encoder_reset();
 	
     //long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
     long long enc_base_L = get_encoder_total_L();
@@ -725,7 +729,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	if(h1 < A){//距離が半マス以上
 	    non_stop_min_M = 50;
 	}else{
-	    non_stop_min_M = 20;
+	    non_stop_min_M = 25;
 	}
     }
 	
