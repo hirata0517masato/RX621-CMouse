@@ -44,6 +44,8 @@
       <Path>typedefine.h</Path>
       <Path>vect.h</Path>
       <Path>Parameters.h</Path>
+      <Path>dijkstra.c</Path>
+      <Path>dijkstra.h</Path>
     </Files>
     <DebugOptions>
       <ConnectSettings>
@@ -118,6 +120,7 @@
           <Path>DefaultBuild\Motor.obj</Path>
           <Path>DefaultBuild\Queue.obj</Path>
           <Path>DefaultBuild\IR.obj</Path>
+          <Path>DefaultBuild\dijkstra.obj</Path>
         </LinkOrder>
         <CommonOptions>
           <IncludePathForC>USBStack\CDC</IncludePathForC>

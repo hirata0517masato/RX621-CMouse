@@ -16,6 +16,7 @@
 -input=DefaultBuild\Motor.obj
 -input=DefaultBuild\Queue.obj
 -input=DefaultBuild\IR.obj
+-input=DefaultBuild\dijkstra.obj
 -noprelink
 -output=DefaultBuild\RX621_Cmausu.abs
 -list=DefaultBuild\RX621_Cmausu.map

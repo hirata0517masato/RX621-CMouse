@@ -699,7 +699,7 @@ void Smotor(int M,char w_flag){
 
 
 void ESmotor(long long A, int max_M,char non_stop,char w_flag){
-        Encoder_reset();
+     //   Encoder_reset();
 	
     //long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
     long long enc_base_L = get_encoder_total_L();
@@ -1365,6 +1365,8 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 		
     }
 
+    //motor(0,0);
+     
     GyroSum_reset();
 	
    // ESmotor(140,M,true,true);//‹——£A‘¬“x
@@ -1524,6 +1526,7 @@ void ETmotor(long long A, long long E, char non_stop){
 		
     }
 
+    //motor(0,0);
     GyroSum_reset();
 		
     PORTA.DR.BIT.B0 = 0;
@@ -1659,6 +1662,7 @@ void ETmotor_afterNaname(long long A, long long E, char non_stop){
 		
     }
 
+   // motor(0,0);
     GyroSum_reset();
 		
     PORTA.DR.BIT.B0 = 0;
@@ -1773,6 +1777,7 @@ void Tmotor_naname_in(long long A){
 	    if(GyroSum_get() > 0)break;
 	}
     }
+    //motor(0,0);
     GyroSum_reset();
     //motor(0,0);
 	
@@ -1859,6 +1864,8 @@ void Tmotor_naname_in_BIG(long long A ){
 	    if(GyroSum_get() > 0)break;
 	}
     }
+    
+    //motor(0,0);
     GyroSum_reset();
     //motor(0,0);
 	
@@ -1931,6 +1938,8 @@ void Tmotor_naname_out(long long A ){
 	    if(GyroSum_get() > 0)break;
 	}
     }
+    
+    //motor(0,0);
     GyroSum_reset();
     //motor(0,0);
 	
