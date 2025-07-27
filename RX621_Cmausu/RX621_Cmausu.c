@@ -4407,7 +4407,7 @@ void maze_search_all(){
     //short target_x_tmp,target_y_tmp;
     char path_ng = 0;
     
-    char phese_flag = 0;//0=大まかに探索, 　1=最短経路の未確定マスを探索
+    static char phese_flag = 0;//0=大まかに探索, 　1=最短経路の未確定マスを探索
     
     
     //time_limit = xxxx;//60秒  別のところで設定するように変更
@@ -4439,35 +4439,42 @@ void maze_search_all(){
 	}
 	
 	//これ以降は確実に最短経路が存在する迷路情報を持っている必要がある
-	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得	
+	
+	if(phese_flag == 0){
+		maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得	
 		
-	if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ、斜めも考慮する
+		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
+			phese_flag = 1;
+		}
 		
+	}
+	
+	if(phese_flag == 1){
 		shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
-		    
-		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ終了
 		
-			shortest_path_search_dijkstra_unknown(&target_x,&target_y);//ダイクストラ　最短経路上の未確定マスの座標を取得
+		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
+			phese_flag = 2;
+		}
+	}
+	
+	if(phese_flag == 2){
+		shortest_path_search_dijkstra_unknown(&target_x,&target_y);//ダイクストラ　最短経路上の未確定マスの座標を取得
 		
-			if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ終了
-				motor(0,0);
+		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
+			motor(0,0);
 							
-				maze_search_adachi(Start_x,Start_y);
-				led_down();
-				led_up();
-				led_down();
-				led_up();
+			maze_search_adachi(Start_x,Start_y);
+			led_down();
+			led_up();
+			led_down();
+			led_up();
 						
-				motor(0,0);
-				return;
-			}else{
-				if(target_x == my_x && target_y == my_y){//目標地点と現在地点が同じ = 本来はありえない
-					target_x = 1; //座標に意味はないが別の場所に移動してほしいので目標地点を変更する
-					target_y = 0;
-				}
-			}
-			
-		}else{//最短経路上に未確定のマスがある
+			motor(0,0);
+			return;
+		}
+	}
+	
+	
 		
 		/*
 			//確実に最短経路にならないマスも探索することになる　無効化する
@@ -4488,17 +4495,8 @@ void maze_search_all(){
 				
 			}
 		*/	
-			phese_flag = 1;//↑を無効化するので必要な行
-			if(phese_flag == 1){ //最短経路の未確定マスを探索
 		
-				if(target_x == my_x && target_y == my_y){//目標地点と現在地点が同じ = 本来はありえない
-					target_x = 1; //座標に意味はないが別の場所に移動してほしいので目標地点を変更する
-					target_y = 0;
-				}
-			}
-			
-		}
-	}
+	
 		
 	
     	shortest_path_search(target_x,target_y);
@@ -5952,7 +5950,7 @@ void run_shortest_path_fin(	char naname){
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		L_curve(sl90,true);
 		
-		ESmotor(40,25,true,true);//距離、スピード
+		ESmotor(80,25,true,true);//距離、スピード
 		
 	    }else if(comand_old == -13){//斜め終わり直後のカーブ
 		L_curve_afterNaname(sl90,true);
@@ -6152,6 +6150,8 @@ void run_shortest_path_fin(	char naname){
 					 
 				    }else{
 					 S_run_kabe_BIG(30,4,1,path_num);  //w_flag = 4 串の壁補正あり 
+					 
+					 ESmotor(80,30,true,true);//距離、スピード
 				    }
 						
 				}else if(queue_next(1) > 0){//次　右
@@ -6169,6 +6169,8 @@ void run_shortest_path_fin(	char naname){
 					 }
 				    }else{
 					 S_run_kabe_BIG(30,4,2,path_num);  //w_flag = 4 串の壁補正あり
+					 
+					 ESmotor(80,30,true,true);//距離、スピード
 				    }
 
 				}
@@ -6360,7 +6362,7 @@ void run_shortest_path_fin(	char naname){
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		R_curve(sr90,true);
 		
-		ESmotor(40,25,true,true);//距離、スピード
+		ESmotor(80,25,true,true);//距離、スピード
 		
 	    }else if(comand_old == 13){//斜め終わり直後のカーブ
 		R_curve_afterNaname(sr90,true);
