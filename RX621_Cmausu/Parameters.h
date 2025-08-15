@@ -41,6 +41,9 @@
 #define sl90  (24500)	//スラローム 23000 25000
 #define sr90  (24500)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
 
+#define sl90_search  (24500)	//スラローム 探索用
+#define sr90_search  (24500)	//スラローム 探索用 //左右で同じ値でないと連続時にずれていく
+
 #define sl90BIG  (26000)	//スラローム 大曲
 #define sr90BIG  (26000)	//スラローム 大曲
 
@@ -59,6 +62,12 @@
 #define s45_V2_out_LR (120)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する　壁切れ後にカーブ
 #define s45_V2not (300)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2notFirst (350)	//初手斜め用　２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
+
+#define rslsl90_search 		(980)	//スラローム 664 探索用
+#define rslsl90_search_offset  (-0)	
+#define rslsr90_search 		(980)	//スラローム 664 探索用
+#define rslsr90_search_offset  (-0)
+
 
 #define rslsl90 	(980)	//スラローム 664
 #define rslsl90_offset  (-80)
