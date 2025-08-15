@@ -13,13 +13,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Goal_x  7 //8 //7
-#define Goal_y  7 //8 //7
-#define Goal_angle 3 //2 //3 //ゴールした直後の向き スタートの向きが1
+#define Goal_x  0
+#define Goal_y  1
+#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
-//#define Pickup_x  1	
-//#define Pickup_y  1
+#define Pickup_x  1	
+#define Pickup_y  1
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
 #define Not_Pickup_x_min  4		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
@@ -37,7 +37,7 @@
 #define r45  (11500)	//45度 右回転 11500 10500
 #define l90  (21500)	//90度 左回転
 #define r90  (21500) 	//90度 右回転
-#define r180  (-43000)	//180度 右回転
+#define r180  (-40000)	//180度 右回転
 #define sl90  (24500)	//スラローム 23000 25000
 #define sr90  (24500)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
 
@@ -55,25 +55,25 @@
 #define h1_2 (520)		//半マス直進 	タイヤ削れた時：525  探索の壁切れ用
 
 #define s45_V2 (100)	//140	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
-#define s45_V2_out (300)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2_out (200)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2_out_LR (120)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する　壁切れ後にカーブ
 #define s45_V2not (300)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2notFirst (350)	//初手斜め用　２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 
 #define rslsl90 	(980)	//スラローム 664
-#define rslsl90_offset  (0)
+#define rslsl90_offset  (-80)
 #define rslsr90 	(980)	//スラローム 664
-#define rslsr90_offset  (-0)
+#define rslsr90_offset  (-80)
 
-#define rslsl90_BIG (1610)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsl90_BIG (1650)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsl90_BIG_offset  (-100)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1610)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsr90_BIG (1650)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsr90_BIG_offset  (-100)	      //タイヤ削れた時：-100
 
-#define usll180     (2250)	//Uターン
-#define usll180_fin (0)	//Uターン 微調整
-#define uslr180     (2250)	//Uターン
-#define uslr180_fin (0)	//Uターン　微調整
+#define usll180     (2240)	//Uターン
+#define usll180_fin (-100)	//Uターン 微調整
+#define uslr180     (2240)	//Uターン
+#define uslr180_fin (-100)	//Uターン　微調整
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 
