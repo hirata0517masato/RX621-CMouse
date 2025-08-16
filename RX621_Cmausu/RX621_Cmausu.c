@@ -2016,6 +2016,63 @@ void S_run(long long path,int powor, char non_stop,char kabe){
     //GyroSum_reset();
 }
 
+void S_run_kabe_rev(int powor, char flag, int LR){//柱が見えるまで走行
+    int Lflag = 0,Rflag = 0;
+    //long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
+    long long enc_base_L = get_encoder_total_L();
+    long long enc_base_R = get_encoder_total_R();
+    
+    //   int cnt2 = 0;
+	
+    led(6);
+    while(1){
+	if(LR == 3 || LR == 1){//両方 || Lだけ
+	    if(Lflag == 0){	
+		if(get_IR(IR_L) < 10){
+		    Lflag = 1;
+		    led(8);
+		}
+	    }else if(Lflag == 1){
+		if(get_IR(IR_L) > 25){
+		    led(0);
+		    break;
+		}
+	    }
+	}
+
+	if(LR == 3 || LR == 2){//両方 || Rだけ
+	    if(Rflag == 0){
+		if(get_IR(IR_R) < 10){
+		    Rflag = 1;
+		    led(1);
+		}
+	    }else if(Rflag == 1){
+		if(get_IR(IR_R) > 25){
+		    led(0);
+		    break;
+		}
+	    }
+	}
+    
+    	Smotor(powor,flag);
+	
+	
+	  if(Lflag == 0 && Rflag == 0){
+		//if(abs((get_encoder_total_L() + get_encoder_total_R())/2 -  enc_base) > (s1 + h1/2) ){
+		if(min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R)  > (s1 + h1/2) ){
+			led(9);
+			break; //壁切れが来なかったらブレーク
+		}
+	  }
+	
+    }
+  
+    status_log = 4;//ログに壁切れ後の距離補正を記録するため
+    
+    ESmotor(60,powor,true,false);//1cmくらい？
+    led(0);
+}
+    
 void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
     int Lflag = 0,Rflag = 0;
     //long long enc_base = (get_encoder_total_L() + get_encoder_total_R())/2;
@@ -2626,10 +2683,10 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 */		
 		
 	if(enc_now < (long long)path * s1 /4){// 進んだ距離 < 目標距離 * 1/4　＝ 加速区間
-	    M_pwm = M_pwm_min + (enc_now / 8);	
+	    M_pwm = M_pwm_min + (enc_now / 10);	
 			
 	}else if(enc_now > (long long)path * s1 * 3/4){// 進んだ距離 < 目標距離 * 3/4 = //減速区間
-	    M_pwm = M_pwm_min + ( ((long long)path * s1 - enc_now) / 8);	
+	    M_pwm = M_pwm_min + ( ((long long)path * s1 - enc_now) / 10);	
 			
 	}else{
 	    if((get_IR(IR_F) < ir_up) && (path_cnt < path-1)){//前壁が確実になければ速度上げる && 目標まで１マス以上残ってる
@@ -3031,16 +3088,18 @@ void run_shortest_path(){
     Encoder_reset();
 	
     short comand ,path_num,path_num_tmp;
+ 
     int r_flag = 0,r_flag2 = 0;//スラロームに変更するフラグ
+    int nx,ny,tx,ty;
     
     int time = 1;
     
-    int run_speed = 40;
-    int run_speed_up = 50;    //未知区間加速
-    int run_speed_boost = 60; //既知区間加速
+    int run_speed = 35;
+    int run_speed_up = 45;    //未知区間加速
+    int run_speed_boost = 70; //既知区間加速
     
     int run_speed_kabe = 15; //次が停止の時
-    int run_speed_kabe_sr = 25; //次がスラロームの時
+    int run_speed_kabe_sr = 15; //次がスラロームの時
 
   
     while(!queue_empty()){
@@ -3068,8 +3127,10 @@ void run_shortest_path(){
 			mae_kabe();//前壁距離補正
 			
 			delay(time);
+			GyroSum_reset();
 			L_rotate(l90);
 			delay(time);
+			GyroSum_reset();
 			if(get_IR(IR_F) > 40){
 				mae_kabe();//前壁距離補正
 				delay(time);
@@ -3083,6 +3144,11 @@ void run_shortest_path(){
 		    }
 		    delay(time);
 		    maze_update(my_x,my_y,my_angle,3);
+		    
+		    GyroSum_reset();
+		    
+		    r_flag = 0;
+		    r_flag2 = 0;
 	    }
 	    break;
 	case 0://S
@@ -3105,6 +3171,8 @@ void run_shortest_path(){
 			L_rotate(l90);
 			delay(time);
 			
+			GyroSum_reset();
+			
 		    }else if(get_IR(IR_L) > MAKE_KABE_tikai || (get_IR(IR_L) > 40 && get_IR(IR_L) < MAKE_KABE_tooi)){//左壁との距離が近い || 左壁との距離が遠い
 			L_rotate(l90);
 		
@@ -3114,28 +3182,136 @@ void run_shortest_path(){
 			R_rotate(r90);
 			delay(time);
 			
+			GyroSum_reset();
 		    }
 	    }
 	    
 	    if(queue_empty()){
+		switch(my_angle){//一つ手前の座標を取得する
+			    case 0:
+			    	nx = my_x;
+				ny = my_y - (path_num_tmp - 1);
+				tx = my_x;
+				ty = my_y - (path_num_tmp);
+				break;
+			    case 1:
+			    	nx = my_x + (path_num_tmp - 1);
+				ny = my_y;
+				tx = my_x + (path_num_tmp );
+				ty = my_y;
+				break;
+			    case 2:
+			    	nx = my_x;
+				ny = my_y + (path_num_tmp - 1);
+				tx = my_x;
+				ty = my_y + (path_num_tmp);
+				break;
+			    case 3:
+			    	nx = my_x - (path_num_tmp - 1);
+				ny = my_y;
+				tx = my_x - (path_num_tmp);
+				ty = my_y;
+				break;
+		} 
 			
-			
-		if(path_num == 1){
+		if(path_num == 0){
 			if(r_flag == 2){//スラロームの直後
-				S_run(h1_2 + s1,run_speed + run_fin_speed_offset,4,true);//加速速め non_stop = 4
+				S_run(h1_2 ,run_speed + run_fin_speed_offset,4,true);//加速速め non_stop = 4
 				r_flag = 0;
 			}else{
-		    		S_run(s1,run_speed + run_fin_speed_offset,false,true);
-		    		//S_run(s1,run_speed + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+			    	//不要
+			}
+		}else if(path_num == 1){
+			
+			//一つ手前の壁が無ければ、壁無し→柱　で距離補正できる
+			if((tx != Get_Goal_x() || ty != Get_Goal_y())   &&   ((maze_w[ny][nx] & (1 << (((my_angle+4 -1)%4))+4)) != 0) && ((maze_w[ny][nx] & (1 << (((my_angle+4 -1)%4)))) == 0)  ){ //左
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2 ,run_speed + run_fin_speed_offset,4,true);//加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+			    		//不要
+				}
+				
+				status_log = 3;//ログに壁切れ開始を記録するため
+				
+				S_run_kabe_rev(run_speed_kabe + run_fin_speed_offset,true,1);//左 
+				
+				status_log = 4;//ログに壁切れ終了を記録するため
+				
+				S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
+				
+			}else if((tx != Get_Goal_x() || ty != Get_Goal_y())   &&   ((maze_w[ny][nx] & (1 << (((my_angle+4 +1)%4))+4)) != 0) && ((maze_w[ny][nx] & (1 << (((my_angle+4 +1)%4)))) == 0) ){//右
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+			    		//不要
+				}
+				
+				status_log = 3;//ログに壁切れ開始を記録するため
+				
+				S_run_kabe_rev(run_speed_kabe + run_fin_speed_offset,true,2);//右
+				
+				status_log = 4;//ログに壁切れ終了を記録するため
+				
+				S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
+				
+			}else{
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2 + s1,run_speed + run_fin_speed_offset,4,true);//加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+			    		S_run(s1,run_speed + run_fin_speed_offset,false,true);
+			    		//S_run(s1,run_speed + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+				}
 			}
 			
 		}else{
-			if(r_flag == 2){//スラロームの直後
-				S_run(h1_2 +  s1 * (long long)path_num,run_speed_boost + run_fin_speed_offset,4,4);// w_flag = 4 串の壁補正あり //加速速め non_stop = 4
-				r_flag = 0;
+			
+			//一つ手前の壁が無ければ、壁無し→柱　で距離補正できる
+			if((tx != Get_Goal_x() || ty != Get_Goal_y())   &&   ((maze_w[ny][nx] & (1 << (((my_angle+4 -1)%4))+4)) != 0) && ((maze_w[ny][nx] & (1 << (((my_angle+4 -1)%4)))) == 0)  ){ //左
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2 +  s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,4,4);// w_flag = 4 串の壁補正あり //加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+			    		S_run(s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+				}
+				
+				status_log = 3;//ログに壁切れ開始を記録するため
+				
+				S_run_kabe_rev(run_speed_kabe + run_fin_speed_offset,true,1);//左 
+				
+				status_log = 4;//ログに壁切れ終了を記録するため
+				
+				S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
+				
+				
+				
+			}else if((tx != Get_Goal_x() || ty != Get_Goal_y())   &&   ((maze_w[ny][nx] & (1 << (((my_angle+4 +1)%4))+4)) != 0) && ((maze_w[ny][nx] & (1 << (((my_angle+4 +1)%4)))) == 0) ){//右
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2 +  s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,4,4);// w_flag = 4 串の壁補正あり //加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+			    		S_run(s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+				}
+				
+				status_log = 3;//ログに壁切れ開始を記録するため
+				
+				S_run_kabe_rev(run_speed_kabe + run_fin_speed_offset,true,2);//右
+				
+				status_log = 4;//ログに壁切れ終了を記録するため
+				
+				S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
+				
+				
 			}else{
-				//S_run(s1 * (long long)path_num,run_speed_boost + run_fin_speed_offset,false,true);
-		    		S_run(s1 * (long long)path_num,run_speed_boost + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2 +  s1 * (long long)path_num,run_speed_boost + run_fin_speed_offset,4,4);// w_flag = 4 串の壁補正あり //加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+					//S_run(s1 * (long long)path_num,run_speed_boost + run_fin_speed_offset,false,true);
+			    		S_run(s1 * (long long)path_num,run_speed_boost + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+				}	
 			}
 		}
 			
@@ -3153,7 +3329,20 @@ void run_shortest_path(){
 		}
 		
 		if(path_num == 0){//連続スラローム
-			
+			switch(my_angle){
+			    case 0:
+				maze_update3(my_x,my_y - path_num_tmp,my_angle,3);//柱の位置から壁を確認する
+				break;
+			    case 1:
+				maze_update3(my_x + path_num_tmp,my_y,my_angle,3);//柱の位置から壁を確認する
+				break;
+			    case 2:
+				maze_update3(my_x,my_y+path_num_tmp,my_angle,3);//柱の位置から壁を確認する
+				break;
+			    case 3:
+				maze_update3(my_x - path_num_tmp,my_y,my_angle,3);//柱の位置から壁を確認する
+				break;
+			} 
 		}else if(path_num == 1){
 		    
 		    if(r_flag2 == 1){//スラロームの直後
@@ -3164,6 +3353,8 @@ void run_shortest_path(){
 			}
 			r_flag2 = 0;
 		    }
+		    
+		    status_log = 3;//ログに壁切れ開始を記録するため
 		    
 		    if(queue_next(1) < 0){//次　左
 		    
@@ -3188,7 +3379,7 @@ void run_shortest_path(){
 			//S_run_kabe(run_speed_kabe + run_fin_speed_offset,4,3);// w_flag = 4 串の壁補正あり
 		    }
 		    
-		   
+		   status_log = 4;//ログに壁切れ終了を記録するため
 		    
 		    if(r_flag == 0){
 		   	 S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
@@ -3213,7 +3404,7 @@ void run_shortest_path(){
 		}else{
 		    
 		    
-		 //   Set_motor_pid_mode(1);//高速
+		    //Set_motor_pid_mode(1);//高速
 		    
 		    if(r_flag2 == 1){//スラロームの直後
 		    	if(r_flag == 1){//次がスラロームの時
@@ -3227,6 +3418,10 @@ void run_shortest_path(){
 		    	//S_run(s1 * ((long long)path_num - 1),run_speed_boost + run_fin_speed_offset,3,true);//non_stop = 3
 		    	S_run(s1 * ((long long)path_num - 1),run_speed_boost + run_fin_speed_offset,3,4);//non_stop = 3 // w_flag = 4 串の壁補正あり
 		    }
+		    
+		   // Set_motor_pid_mode(0);//低速
+		    
+		    status_log = 3;//ログに壁切れ開始を記録するため
 		    
 		    if(queue_next(1) < 0){//次　左
 		    	if(r_flag == 1){//次がスラロームの時
@@ -3252,6 +3447,7 @@ void run_shortest_path(){
 			}
 		    }
 			
+		    status_log = 4;//ログに壁切れ終了を記録するため
 		    
 		    if(r_flag == 0){
 		    	S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
@@ -3323,6 +3519,7 @@ void run_shortest_path(){
 	case 10://S 未確定の直線
 	
 	    r_flag = 0;
+	    r_flag2 = 0;
 	    
 	    if(get_IR(IR_R) > MAKE_KABE_tikai  || (get_IR(IR_R) > 40 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
 		R_rotate(r90);
@@ -3398,8 +3595,10 @@ void run_shortest_path(){
 			mae_kabe();//前壁距離補正
 			
 			delay(time);
+			GyroSum_reset();
 			R_rotate(r90);
 			delay(time);
+			GyroSum_reset();
 			if(get_IR(IR_F) > 40){
 				mae_kabe();//前壁距離補正
 				delay(time);
@@ -3415,14 +3614,20 @@ void run_shortest_path(){
 			
 		    delay(time);
 		    maze_update(my_x,my_y,my_angle,3);
+		    GyroSum_reset();
+		    
+		    r_flag = 0;
+		    r_flag2 = 0;
 	    }
 	    break;
 	case 2://B
 	
 	    r_flag = 0;
+	    r_flag2 = 0;
 	    
 	    delay(time);
-		
+	    GyroSum_reset();
+	    
 	    if(get_IR(IR_R) > MAKE_KABE_tikai  || (get_IR(IR_R) > 40 && get_IR(IR_R) < MAKE_KABE_tooi)){//右壁との距離が近い || 右壁との距離が遠い
 		R_rotate(r90);
 		
@@ -3450,6 +3655,8 @@ void run_shortest_path(){
 		
 	    delay(time);
 	    maze_update(my_x,my_y,my_angle,3);
+	    GyroSum_reset();
+	    
 	    break;
 	}
     }
@@ -6155,8 +6362,8 @@ void run_shortest_path_fin(	char naname){
     int over_run = -400;//速度上げるとオーバーランぎみなので少し手前で止める マイナスにすると距離がプラスになる
     int over_run2 = -400; // 直線距離が短い時に使用する
 
-    int run_speed = 100;
-    int run_speed_naname = 80;
+    int run_speed = 90;
+    int run_speed_naname = 50;
     
     /*   
 	 R_curveU(ur180,true);
@@ -6409,7 +6616,7 @@ void run_shortest_path_fin(	char naname){
 						ESmotor(150,45,true,true);//距離、スピード
 						
 					 }else{
-						ESmotor(100,35,true,true);//距離、スピード 
+						//ESmotor(50,35,true,true);//距離、スピード 
 					 }
 					 
 				    }else{
@@ -6429,7 +6636,7 @@ void run_shortest_path_fin(	char naname){
 					 	first_naname_z = 1;
 						ESmotor(150,45,true,true);//距離、スピード 
 					 }else{
-						ESmotor(100,35,true,true);//距離、スピード  
+						//ESmotor(50,35,true,true);//距離、スピード  
 					 }
 				    }else{
 					 S_run_kabe_BIG(25,4,2,path_num);  //w_flag = 4 串の壁補正あり
@@ -6441,14 +6648,14 @@ void run_shortest_path_fin(	char naname){
 			}else if(BIG_NG_flag == 0 && (queue_next(1) == 12 || queue_next(1) == -12)){//直線後に大曲
 				if(queue_next(1) < 0){//次　左
 				    if(path_num <= 1){
-				        S_run_kabe_BIG(35,4,1,path_num); //w_flag = 4 串の壁補正あり
+				        S_run_kabe_BIG(30,4,1,path_num); //w_flag = 4 串の壁補正あり
 				    }else{
 					S_run_kabe_BIG(25,4,1,path_num);  //w_flag = 4 串の壁補正あり
 				    }
 						
 				}else if(queue_next(1) > 0){//次　右
 				    if(path_num <= 1){
-				        S_run_kabe_BIG(35,4,2,path_num);  //w_flag = 4 串の壁補正あり
+				        S_run_kabe_BIG(30,4,2,path_num);  //w_flag = 4 串の壁補正あり
 				    }else{
 					S_run_kabe_BIG(25,4,2,path_num);   //w_flag = 4 串の壁補正あり
 				    }      
