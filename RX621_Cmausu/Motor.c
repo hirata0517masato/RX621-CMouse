@@ -1733,8 +1733,8 @@ void ETmotor_afterNaname(long long A, long long E, char non_stop){
     //Encoder_reset();
 	
     //int M_kabe = 30; //不要　これが無い版のカーブだから
-    int M 		= 20;
-    int M_kabe2 = 20;
+    int M 		= 18;
+    int M_kabe2 = 15;
 	
     //	char flag = 0;
 
