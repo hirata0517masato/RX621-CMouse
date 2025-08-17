@@ -2685,7 +2685,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	if(enc_now < (long long)path * s1 /4){// 進んだ距離 < 目標距離 * 1/4　＝ 加速区間
 	    M_pwm = M_pwm_min + (enc_now / 10);	
 			
-	}else if(enc_now > (long long)path * s1 * 3/4){// 進んだ距離 < 目標距離 * 3/4 = //減速区間
+	}else if(enc_now > (long long)path * s1 * 5/8){// 進んだ距離 > 目標距離 * 3/4 = //減速区間
 	    M_pwm = M_pwm_min + ( ((long long)path * s1 - enc_now) / 10);	
 			
 	}else{
@@ -3335,7 +3335,41 @@ void run_shortest_path(){
 				status_log = 4;//ログに壁切れ終了を記録するため
 				
 				S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
+			
+			//目標地点の横壁が無いことが確定なら　壁切れで距離補正できる
+			}else if((tx != Get_Goal_x() || ty != Get_Goal_y())   &&   ((maze_w[ty][tx] & (1 << (((my_angle+4 -1)%4))+4)) != 0) && ((maze_w[ty][tx] & (1 << (((my_angle+4 -1)%4)))) == 0)  ){ //左
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2 +  s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,4,4);// w_flag = 4 串の壁補正あり //加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+			    		S_run(s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+				}
 				
+				status_log = 3;//ログに壁切れ開始を記録するため
+				
+				S_run_kabe(run_speed_kabe + run_fin_speed_offset,true,1);//左 
+				
+				status_log = 4;//ログに壁切れ終了を記録するため
+				
+				S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
+				
+				
+				
+			}else if((tx != Get_Goal_x() || ty != Get_Goal_y())   &&   ((maze_w[ty][tx] & (1 << (((my_angle+4 +1)%4))+4)) != 0) && ((maze_w[ty][tx] & (1 << (((my_angle+4 +1)%4)))) == 0) ){//右
+				if(r_flag == 2){//スラロームの直後
+					S_run(h1_2 +  s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,4,4);// w_flag = 4 串の壁補正あり //加速速め non_stop = 4
+					r_flag = 0;
+				}else{
+			    		S_run(s1 * (long long)(path_num -1),run_speed_boost + run_fin_speed_offset,false,4);// w_flag = 4 串の壁補正あり
+				}
+				
+				status_log = 3;//ログに壁切れ開始を記録するため
+				
+				S_run_kabe(run_speed_kabe + run_fin_speed_offset,true,2);//右
+				
+				status_log = 4;//ログに壁切れ終了を記録するため
+				
+				S_run(h1_2,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
 				
 			}else{
 				if(r_flag == 2){//スラロームの直後
