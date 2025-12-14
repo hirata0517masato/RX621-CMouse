@@ -481,10 +481,10 @@ void Smotor(int M,char w_flag){
 	    }else{//高速
 	    	
 	    	if(get_encoder_L() > 5 && get_encoder_R() > 5){
-			ir_core = 10; // 25  //左右の差の許容範囲
+			ir_core = 15; // 25  //左右の差の許容範囲
 					
 			kp = 0.3; //0.3 0.5
-			kd = 12.0; //1.5 15.0
+			kd = 10.0; //1.5 15.0
 		}else{
 			ir_core = 15; // 25  //左右の差の許容範囲
 					
@@ -1053,12 +1053,12 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	if(non_stop != 0){
 	    if(A - enc_now  < 30)break; 
 	}else{
-	    if(abs(enc_now - A) < 20){
+	    if(abs(enc_now - A) < 30){
 		cnt++;	
 	    }else{
 		cnt = 0;
 	    }
-	    if(cnt > 20000)break;
+	    if(cnt > 10000)break;
 	}
 		
 		

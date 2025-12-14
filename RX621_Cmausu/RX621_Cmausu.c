@@ -6977,7 +6977,7 @@ void run_shortest_path_fin(	char naname){
 		
 		
 		
-		if((get_IR(IR_R) > 20 && get_IR(IR_R) < 80 ) || (get_IR(IR_L) > 20 && get_IR(IR_L) < 80 ) || get_IR(IR_L) > 200 || get_IR(IR_R) > 200){
+		if((get_IR(IR_R) > 20 && get_IR(IR_R) < 70 ) || (get_IR(IR_L) > 20 && get_IR(IR_L) < 70 ) || get_IR(IR_L) > 230 || get_IR(IR_R) > 230){
     			
 			if(queue_next(1) == -12 || queue_next(1) == 12){//ŽŸ‚Í‘å‹È—\’è
     				BIG_NG_flag = 1;//‚¸‚ê‚ª‘å‚«‚¢‚Ì‚Å‘å‹È‹ÖŽ~

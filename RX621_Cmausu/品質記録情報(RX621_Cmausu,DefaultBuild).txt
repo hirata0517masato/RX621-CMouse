@@ -1,15 +1,16 @@
 品質記録情報
-2025年12月14日 0:37:45
+2025年12月15日 0:04:01
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 RX621_Cmausu.c(1736):W0520186:Pointless comparison of unsigned integer with zero
 RX621_Cmausu.c(1736):W0520186:Pointless comparison of unsigned integer with zero
+Motor.c(730):W0520177:Variable "p" was declared but never referenced
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:4個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:5個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -47,8 +48,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 367c371d03753476bfc257d1457f4500ea304fba
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 0a44a02f6c71374025065bd832a2c26408da5fdc
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: a67bc862f70d28c4a5ee339ee5ebf211ec3d7437
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: b75f1715b87b99e5e1ed2da846ae39f6349447a5
 
 
 --- システム情報 ---
@@ -74,11 +75,11 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 0a44a02f6c71374025065bd
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  321 MB
+  282 MB
  *GDIオブジェクト数
-  2072
+  2052
  *USERオブジェクト数
-  974
+  945
  *開いているファイル
   4 editors, 4 files, 256 KB
 
