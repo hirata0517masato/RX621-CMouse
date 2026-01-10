@@ -427,15 +427,15 @@ void Smotor(int M,char w_flag){
 				    cnt5 = 0;
 								
 				    if(get_IR(IR_F) > 250){
-					if(diff > 5)diff = 5;
-					if(diff < -5)diff = -5;
-									
-				    }else if(get_IR(IR_F) > 200){
 					if(diff > 10)diff = 10;
 					if(diff < -10)diff = -10;
-				    }else{
+									
+				    }else if(get_IR(IR_F) > 200){
 					if(diff > 20)diff = 20;
 					if(diff < -20)diff = -20;
+				    }else{
+					if(diff > 30)diff = 30;
+					if(diff < -30)diff = -30;
 				    }
 				    
 				    mae_flag = 1;
@@ -466,12 +466,12 @@ void Smotor(int M,char w_flag){
 			
 	    if(motor_pid_mode == 0){//低速
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
-			ir_core = 2;//1;//左右の差の許容範囲
+			ir_core = 20;//1;//左右の差の許容範囲
 			
 			kp = 0.3;//0.7;
 			kd = 10.0;//3.5;
 		}else{
-			ir_core = 2;//1;//左右の差の許容範囲
+			ir_core = 50;//1;//左右の差の許容範囲
 			
 			kp = 0.2;//0.2;
 			kd = 10.0;
@@ -480,17 +480,19 @@ void Smotor(int M,char w_flag){
 		
 	    }else{//高速
 	    	
-	    	if(get_encoder_L() > 5 && get_encoder_R() > 5){
-			ir_core = 15; // 25  //左右の差の許容範囲
+	    
+	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
+			ir_core = 2; // 25  //左右の差の許容範囲
 					
 			kp = 0.3; //0.3 0.5
 			kd = 10.0; //1.5 15.0
 		}else{
-			ir_core = 15; // 25  //左右の差の許容範囲
+			ir_core = 2; // 25  //左右の差の許容範囲
 					
 			kp = 0.2;//0.4
 			kd = 10.0;//15.0
 		}
+		
 	    }
 			
 			
@@ -1163,11 +1165,11 @@ void Tmotor(long long A){
     L = get_encoder_total_L();
     R = get_encoder_total_R();
     if(A > 0){//R
-	while(R >= get_encoder_total_R() -5){
+	while(R >= get_encoder_total_R() -30){
 		motor(0,10);
 	}
     }else{//L
-	while(L >= get_encoder_total_L() -5){
+	while(L >= get_encoder_total_L() -30){
 		motor(10,0);
 	}
     }
@@ -1242,8 +1244,8 @@ void ETmotorU(long long A, long long E, char non_stop){
 		    E_add += 1;
 		}
 	    }else cnt1 = 0;
-		
-	    GyroSum_add( (A * (((L - L_prev)*100000) / E)) / 100000);
+	
+	    GyroSum_add( (A * (((L - L_prev  )*100000) / E)) / 100000);
 	    E_sum += (L - L_prev);
 			
 	}else{//L
@@ -1256,7 +1258,7 @@ void ETmotorU(long long A, long long E, char non_stop){
 		}
 	    }else cnt1 = 0;
 		
-	    GyroSum_add( (A * (((R - R_prev)*100000) / E)) / 100000);
+	    GyroSum_add( (A * (((R - R_prev )*100000) / E)) / 100000);
 	    E_sum += (R - R_prev);
 	}
 		
