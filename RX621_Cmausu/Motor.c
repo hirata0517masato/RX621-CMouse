@@ -193,6 +193,8 @@ void Smotor(int M,char w_flag){
     
     static int naname_flag_old = 0;
     
+    static int motor_pid_flag_fast = 0;
+    
     int kusi_flag = 0;
     int naname_flag = 0;
     int mae_flag = 0;
@@ -603,14 +605,33 @@ void Smotor(int M,char w_flag){
 		}
 				
 		if(motor_pid_flag == 1){
-			
-		    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
+		    if(motor_pid_mode == 0){//低速
 		    
-		    ir_sa = max(min(ir_sa,1000),-1000);
-					
-		    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
-					
-		    ir_sa_buf = ir_sa;
+			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
+			    
+			    ir_sa = max(min(ir_sa,1000),-1000);
+						
+			    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
+						
+			    ir_sa_buf = ir_sa;
+		    }else{//高速
+		    	
+			if(motor_pid_flag_fast == 0){
+			    
+			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
+			    
+			    ir_sa = max(min(ir_sa,200),-200);
+						
+			    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
+						
+			    ir_sa_buf = ir_sa;
+			}
+			motor_pid_flag_fast++;
+			if(motor_pid_flag_fast > 3)motor_pid_flag_fast = 0;//壁補正の周期を調整する
+			    
+		    }
+		}else{
+			motor_pid_flag_fast = 0;	
 		}
 				
 	    }
@@ -751,7 +772,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     }
 	
 	
-    int M_max_safe = 50;//横壁が近すぎる場合は減速
+    int M_max_safe = 80;//横壁が近すぎる場合は減速
+    
+    int M_max_safe_fin = 30;//前壁が近すぎる場合は減速
 	
  //   kame_hosei = 530;
 	
@@ -840,6 +863,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    if(ir_L_now > 220 || ir_R_now > 220){//横壁が近すぎる場合は減速
 		//if(ir_L_now > 999 || ir_R_now > 999){//横壁が近すぎる場合は減速
 		if(M_max_safe < M)M = M_max_safe;
+		
+	    }else if(motor_pid_mode == 1 && non_stop == 4 && 180 < get_IR(IR_F)){// 高速モード　＆＆ゴール直前の直線　＆＆　前壁が近すぎる
+		if(M_max_safe_fin < M)M = M_max_safe_fin;
 	    }
 
 	    if(non_stop == 1){
@@ -1185,7 +1211,7 @@ void ETmotorU(long long A, long long E, char non_stop){
     //Encoder_reset();
 
     int M_kabe = 15;
-    int M 		= 20;
+    int M 		= 30;//20 25
 	
     //壁切れ
     if(A > 0){//R
@@ -1320,8 +1346,8 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 //    GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 25;
-    int M 		= 25;
+    int M_kabe = 18;
+    int M 		= 30;//25
 
     
     ESmotor(80,M_kabe,true,true);
@@ -1619,23 +1645,23 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     int M 		= 18;
     int M_kabe2 = 15;
 	
-    //char flag = 0;
+    char flag = 0;
 	
     //壁切れ
     if(A > 0){//R 
 	//while(get_IR(IR_R) > 10){
 	while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){ //前壁補正は斜めになると悪影響がある
 	    Smotor(M_kabe,true);
-	   // flag = 1;
+	    flag = 1;
 	}
-	//if(flag)ESmotor(45,M_kabe,true,false);
+	if(flag)ESmotor(45,M_kabe,true,false);
     }else{//L
 	//while(get_IR(IR_L) > 10){
 	while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){
 	    Smotor(M_kabe,true);
-	    //flag = 1;
+	    flag = 1;
 	}
-	//if(flag)ESmotor(45,M_kabe,true,false);
+	if(flag)ESmotor(45,M_kabe,true,false);
     }
 
     GyroSum_reset();
