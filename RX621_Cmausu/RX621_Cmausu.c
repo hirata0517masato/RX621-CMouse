@@ -686,6 +686,8 @@ void main(void)
 	    break;
 
 	case 7://最短走行 ダイクストラ　経路選択モード
+	    buf_a = Goal_angle_offset;
+	 
 	    shortest_path_search_dijkstra();
 	    
 	    remake_shortest_path_list_naname2(); //２マスも斜めにするモード
@@ -716,7 +718,9 @@ void main(void)
 
 	    Set_motor_pid_mode(0);//低速
 	    //maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
-	    run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する		
+	    run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
+	    
+	    Goal_angle_offset = buf_a;//ゴール方角を元に戻す
 	    break;
 	    
 	//8以降は走行以外の調整モード
@@ -4856,6 +4860,24 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 /* 戻  り   値： なし										    									*/
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 int get_node_num(int x,int y,int a){
+	//aの変換 (上、右、下、左、中央) →(中央、上、左、右、下）
+	switch(a){
+		case 0:
+			a = 1;
+			break;
+		case 1:
+			a = 3;
+			break;
+		case 2:
+			a = 4;
+			break;
+		case 3:
+			a = 2;
+			break;
+		case 4:
+			a = 0;
+			break;
+	}
 /*
   ノード番号の考え方
   
@@ -4874,24 +4896,7 @@ int get_node_num(int x,int y,int a){
 	ノード番号= ((y * 16) + x ) + (a * 256)
    
  */
- 	//aの変換 (上、右、下、左、中央) →(中央、上、左、右、下）
-	switch(a){
-		case 0:
-			a = 1;
-			break;
-		case 1:
-			a = 3;
-			break;
-		case 2:
-			a = 4;
-			break;
-		case 3:
-			a = 2;
-			break;
-		case 4:
-			a = 0;
-			break;
-	}
+ 	
 	
  	if(a == 3){//右の場合
 		if(x < 15){ //一番したのマスの場合でなければ
@@ -5292,6 +5297,9 @@ void shortest_path_search_dijkstra(){
     }
   
     led_down();
+    
+    //ゴール方角を変更する
+    Goal_angle_offset = (my_angle - Goal_angle + 4)%4;
   
     //現在位置をバックアップから復元
     my_x = my_x_tmp;
