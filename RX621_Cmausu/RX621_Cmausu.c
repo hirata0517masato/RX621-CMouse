@@ -2157,7 +2157,11 @@ void S_run(long long path,int powor, char non_stop,char kabe){
 	// GyroSum_reset();
 	if(50 < get_IR(IR_F) ){//‘O•Ç•â³
 	    motor(0,0);
-			
+	
+	    if(Get_motor_pid_mode() == 1 && non_stop == 4){
+	    	Set_motor_pid_mode(0);//’á‘¬ ƒ}ƒCƒiƒX‚ª‚ ‚é‚Ì‚Å’á‘¬ƒ‚[ƒh‚É–ß‚·
+	    }
+	    
 	    if(150 < get_IR(IR_F) ){//‘O•Ç@Œƒ“Ë‘Îô
 		ESmotor(-50,F_pow,true,false);//‚¿‚å‚Á‚Æ‰º‚ª‚é
 	    }
@@ -2662,7 +2666,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     status_log = 4;//ƒƒO‚É•ÇØ‚êŒã‚Ì‹——£•â³‚ð‹L˜^‚·‚é‚½‚ß
     
     if(v2_flag == 1){//‚Qƒ}ƒXVƒ^[ƒ“ŠJŽn
-	ESmotor(80,powor,true,false);  //140
+	ESmotor(120,powor,true,false);  //140
 	
     }else if(v2_flag == 2){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
     
@@ -7090,7 +7094,7 @@ void run_shortest_path_fin(	char naname){
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		L_curve(sl90,true);
 		
-		ESmotor(100,20,true,true);//‹——£AƒXƒs[ƒh
+		ESmotor(60,20,true,true);//‹——£AƒXƒs[ƒh
 		
 	    }else if(comand_old == -13){//ŽÎ‚ßI‚í‚è’¼Œã‚ÌƒJ[ƒu
 		L_curve_afterNaname(sl90,true);
@@ -7137,7 +7141,7 @@ void run_shortest_path_fin(	char naname){
 	  	
 	    if(queue_next(1) == -11){//Vƒ^[ƒ“
 	    	if(comand_old != 10 || path_num_old <= 2){//‚Qƒ}ƒXVƒ^[ƒ“
-			L_rotate_naname(l45 * path_num * 2.05,false);//0.75
+			L_rotate_naname(l45 * path_num * 2.00,false);//0.75
 			v2_flag = 1;
 		}else{
 			L_rotate_naname(l45 * path_num * 2.00,false);//0.75
@@ -7506,7 +7510,7 @@ void run_shortest_path_fin(	char naname){
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		R_curve(sr90,true);
 		
-		ESmotor(100,20,true,true);//‹——£AƒXƒs[ƒh
+		ESmotor(60,20,true,true);//‹——£AƒXƒs[ƒh
 		
 	    }else if(comand_old == 13){//ŽÎ‚ßI‚í‚è’¼Œã‚ÌƒJ[ƒu
 		R_curve_afterNaname(sr90,true);
@@ -7551,7 +7555,7 @@ void run_shortest_path_fin(	char naname){
         
 	    if(queue_next(1) == 11){//Vƒ^[ƒ“
 	    	if(comand_old != 10 || path_num_old <= 2){//‚Qƒ}ƒXVƒ^[ƒ“
-			R_rotate_naname(r45 * path_num * 2.05,false);//0.75
+			R_rotate_naname(r45 * path_num * 2.00,false);//0.75
 			v2_flag = 1;
 		}else{
 			R_rotate_naname(r45 * path_num * 2.00,false);//0.75
