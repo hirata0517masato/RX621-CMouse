@@ -171,8 +171,12 @@ void main(void)
     volatile int i = 0;
     //int mode = 0;   Š„‚è‚İ‚Å‚àg—p‚µ‚½‚¢‚Ì‚ÅƒOƒ[ƒoƒ‹‚ÉˆÚ“®@
     int first_flag = 0;
+    
+    int tmp_d,tmp_i,buf_a;
+	    
     ir_flag = 0;//ÔŠOüOFF
 	
+    
     ALL_init();//‰Šú‰»
 	
     delay(100);
@@ -428,6 +432,24 @@ void main(void)
 	    break;
 	    
 	case 3://Å’Z‘–sƒ‚[ƒh  ¬‹È‚°
+	    //ƒS[ƒ‹‚Ì•ûŠp‚ğ’²®
+	    tmp_d = 9999;
+	    tmp_i = 0;
+	    buf_a = Goal_angle_offset;
+	    for(int i = 0; i < 4; i++){
+		    Goal_angle_offset = i;
+		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//–Ú‚Ì‘O‚ªŠm’è‚Ì•Ç‚Ìê‡
+			
+		    	shortest_path_search_fin();
+			
+			if(tmp_d > maze_d[Start_y][Start_x][Start_angle]){
+				tmp_d = maze_d[Start_y][Start_x][Start_angle];
+				tmp_i = i;
+			}
+		    }
+	    }
+	    Goal_angle_offset = tmp_i;//ƒS[ƒ‹‚Ì•ûŠp‚ğ•ÏX‚·‚é
+	    
 	    shortest_path_search_fin();
 	   // path_compression();
 	    
@@ -457,6 +479,8 @@ void main(void)
 	    Set_motor_pid_mode(0);//’á‘¬
 	    maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
 	    //run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
+	    
+	    Goal_angle_offset = buf_a;//ƒS[ƒ‹•ûŠp‚ğŒ³‚É–ß‚·
 	    break;
 /*	    
 	case 4://Å’Z‘–sƒ‚[ƒh  ‘å‹È‚ ‚è
@@ -492,6 +516,24 @@ void main(void)
 	    break;
 */	    
 	case 4://Å’Z‘–sƒ‚[ƒh@Î‚ßi‚Qƒ}ƒXˆÈãj‘å‹È‚ ‚è
+	    //ƒS[ƒ‹‚Ì•ûŠp‚ğ’²®
+	    tmp_d = 9999;
+	    tmp_i = 0;
+	    buf_a = Goal_angle_offset;
+	    for(int i = 0; i < 4; i++){
+		    Goal_angle_offset = i;
+		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//–Ú‚Ì‘O‚ªŠm’è‚Ì•Ç‚Ìê‡
+			
+		    	shortest_path_search_fin();
+			
+			if(tmp_d > maze_d[Start_y][Start_x][Start_angle]){
+				tmp_d = maze_d[Start_y][Start_x][Start_angle];
+				tmp_i = i;
+			}
+		    }
+	    }
+	    Goal_angle_offset = tmp_i;//ƒS[ƒ‹‚Ì•ûŠp‚ğ•ÏX‚·‚é
+	
 	    shortest_path_search_fin();
 	    remake_shortest_path_list_naname();
 	    path_compression();
@@ -521,10 +563,30 @@ void main(void)
 
 	    Set_motor_pid_mode(0);//’á‘¬
 	    //maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
-	    run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é			
+	    run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
+	    
+	    Goal_angle_offset = buf_a;//ƒS[ƒ‹•ûŠp‚ğŒ³‚É–ß‚·
 	    break;
 							
 	case 5://Å’Z‘–sƒ‚[ƒh @Î‚ß@‘å‹È‚ ‚è
+	    //ƒS[ƒ‹‚Ì•ûŠp‚ğ’²®
+	    tmp_d = 9999;
+	    tmp_i = 0;
+	    buf_a = Goal_angle_offset;
+	    for(int i = 0; i < 4; i++){
+		    Goal_angle_offset = i;
+		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//–Ú‚Ì‘O‚ªŠm’è‚Ì•Ç‚Ìê‡
+			
+		    	shortest_path_search_fin();
+			
+			if(tmp_d > maze_d[Start_y][Start_x][Start_angle]){
+				tmp_d = maze_d[Start_y][Start_x][Start_angle];
+				tmp_i = i;
+			}
+		    }
+	    }
+	    Goal_angle_offset = tmp_i;//ƒS[ƒ‹‚Ì•ûŠp‚ğ•ÏX‚·‚é
+	    
 	    shortest_path_search_fin();
 	    remake_shortest_path_list_naname2(); //‚Qƒ}ƒX‚àÎ‚ß‚É‚·‚éƒ‚[ƒh
 	    path_compression();//‘å‹È‚È‚Ç
@@ -554,10 +616,40 @@ void main(void)
 
 	    Set_motor_pid_mode(0);//’á‘¬
 	    //maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
-	    run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é		
+	    run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
+	    
+	    Goal_angle_offset = buf_a;//ƒS[ƒ‹•ûŠp‚ğŒ³‚É–ß‚·
 	    break;
 	
 	case 6://Å’Z‘–s Î‚ß‚àl—¶‚µ‚½Œo˜H‘I‘ğƒ‚[ƒh
+	    //ƒS[ƒ‹‚Ì•ûŠp‚ğ’²®
+	    tmp_d = 9999;
+	    tmp_i = 0;
+	    buf_a = Goal_angle_offset;
+	    for(int i = 0; i < 4; i++){
+		    Goal_angle_offset = i;
+		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//–Ú‚Ì‘O‚ªŠm’è‚Ì•Ç‚Ìê‡
+		    	/*
+			//‚È‚º‚©ƒoƒO‚é@•Û—¯
+		    	shortest_path_search_perfect();
+			
+			if(tmp_d > maze_d_perfect[Start_y][Start_x]){
+				tmp_d = maze_d_perfect[Start_y][Start_x];
+				tmp_i = i;
+			}*/
+			
+			
+			shortest_path_search_fin();
+			
+			if(tmp_d > maze_d[Start_y][Start_x][Start_angle]){
+				tmp_d = maze_d[Start_y][Start_x][Start_angle];
+				tmp_i = i;
+			}
+		    }
+	    }
+	    Goal_angle_offset = tmp_i;//ƒS[ƒ‹‚Ì•ûŠp‚ğ•ÏX‚·‚é
+	   
+	    
 	    shortest_path_search_perfect();
 	    
 	    remake_shortest_path_list_naname2(); //‚Qƒ}ƒX‚àÎ‚ß‚É‚·‚éƒ‚[ƒh
@@ -588,7 +680,9 @@ void main(void)
 
 	    Set_motor_pid_mode(0);//’á‘¬
 	    //maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
-	    run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é		
+	    run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
+	    
+	    Goal_angle_offset = buf_a;//ƒS[ƒ‹•ûŠp‚ğŒ³‚É–ß‚·
 	    break;
 
 	case 7://Å’Z‘–s ƒ_ƒCƒNƒXƒgƒ‰@Œo˜H‘I‘ğƒ‚[ƒh
@@ -2564,7 +2658,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     status_log = 4;//ƒƒO‚É•ÇØ‚êŒã‚Ì‹——£•â³‚ğ‹L˜^‚·‚é‚½‚ß
     
     if(v2_flag == 1){//‚Qƒ}ƒXVƒ^[ƒ“ŠJn
-	ESmotor(120,powor,true,false);  //140
+	ESmotor(80,powor,true,false);  //140
 	
     }else if(v2_flag == 2){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
     
@@ -2584,16 +2678,16 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     	ESmotor(120,powor,true,false);
 	
     }else if(v2_flag == 4){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚é‚Æ‚«
-    	ESmotor(460,powor,true,false);
+    	ESmotor(400,powor,true,false);
 	
     }else if(v2_flag == 5){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚½‚ ‚ÆƒJ[ƒu
-    	ESmotor(100,powor,true,false);
+    	ESmotor(50,powor,true,false);
 
     }else if(v2_flag == 6){//Î‚ß‚ÌŒã@’¼ü
-    	ESmotor(240,powor,true,false);
+    	ESmotor(260,powor,true,false);
 
     }else if(v2_flag == 7){//‚Å‚½‚ ‚ÆƒJ[ƒu
-    	ESmotor(100,powor,true,false);
+    	ESmotor(50,powor,true,false);
 	
     }else{
     	ESmotor(250,powor,true,false);
@@ -3470,8 +3564,8 @@ void run_shortest_path(){
     
     //Šù’m‹æŠÔ‰Á‘¬ ‚Ì‹——£•â³
     int path_hosei[16] = {0,
- 			 	  0,200,200,200,200,200,200,200, 
- 			  	200,200,200,200,200,200,200};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
+ 			 	  0,100,100,100,100,100,100,100, 
+ 			  	100,100,100,100,100,100,100};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
 				
     int run_speed = 35;
     int run_speed_up = 45;    //–¢’m‹æŠÔ‰Á‘¬
@@ -3762,7 +3856,7 @@ void run_shortest_path(){
 			//}
 		}
 			
-	    }else{
+	    }else{//queue_empty()‚Å‚Í‚È‚¢
 		   
 		if(path_num > 0){
 			if(r_flag == 2){//ƒXƒ‰ƒ[ƒ€‚Ì’¼Œã
@@ -5560,11 +5654,25 @@ char shortest_path_search_check(){
 	    }
 	}
     }
+    /*
     for(int k = 0; k < 4; k++){
 	//if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<k)) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+k))) != 0 )){
 	    maze_d[Get_Goal_y()][Get_Goal_x()][k] = 0;
 	//}
-    }
+    }*/
+    
+    //ƒS[ƒ‹•ûŠp
+    maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +2)%4] = 0;
+    
+    //ƒS[ƒ‹•ûŠp+1
+    maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +3)%4] = get_r_cost();
+    
+    //ƒS[ƒ‹•ûŠp-1
+    maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +1)%4] = get_r_cost();
+    
+    //ƒS[ƒ‹•ûŠp+2
+    maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +4)%4] = get_r_cost() *2;
+    
     enqueue(Get_Goal_x()*100 + Get_Goal_y());
   
     while(!queue_empty()){
@@ -5661,11 +5769,31 @@ char shortest_path_search_check_full(){
 	    }
 	}
     }
+    
+    /*
     for(int k = 0; k < 4; k++){
 	if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<k)) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+k))) != 0 )){
 	    maze_d[Get_Goal_y()][Get_Goal_x()][k] = 0;
 	}
+    }*/
+    
+    //ƒS[ƒ‹•ûŠp
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +2)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +2)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +2)%4] = 0;
     }
+    //ƒS[ƒ‹•ûŠp+1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +3)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +3)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +3)%4] = get_r_cost();
+    }
+    //ƒS[ƒ‹•ûŠp-1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +1)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +1)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +1)%4] = get_r_cost();
+    }
+    //ƒS[ƒ‹•ûŠp+2
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +4)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +4)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +4)%4] = get_r_cost() *2;
+    }
+    
     enqueue(Get_Goal_x()*100 + Get_Goal_y());
   
     while(!queue_empty()){
@@ -5761,11 +5889,31 @@ void shortest_path_search_fin(){
 	    }
 	}
     }
+    /*
     for(int k = 0; k < 4; k++){
 	if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<k)) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+k))) != 0 )){
 	    maze_d[Get_Goal_y()][Get_Goal_x()][k] = 0;
 	}
+    }*/
+    
+    //ƒS[ƒ‹•ûŠp
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +2)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +2)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +2)%4] = 0;
     }
+    //ƒS[ƒ‹•ûŠp+1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +3)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +3)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +3)%4] = get_r_cost();
+    }
+    //ƒS[ƒ‹•ûŠp-1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +1)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +1)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +1)%4] = get_r_cost();
+    }
+    //ƒS[ƒ‹•ûŠp+2
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +4)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +4)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +4)%4] = get_r_cost() *2;
+    }
+    
+    
     enqueue(Get_Goal_x()*100 + Get_Goal_y());
   
     while(!queue_empty()){
@@ -5977,11 +6125,31 @@ void shortest_path_search_perfect(){
 	    }
 	}
     }
+    /*
     for(int k = 0; k < 4; k++){
 	if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<k)) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+k))) != 0 )){
 	    maze_d[Get_Goal_y()][Get_Goal_x()][k] = 0;
 	}
+    }*/
+    
+    //ƒS[ƒ‹•ûŠp
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +2)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +2)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +2)%4] = 0;
     }
+    //ƒS[ƒ‹•ûŠp+1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +3)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +3)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +3)%4] = get_r_cost();
+    }
+    //ƒS[ƒ‹•ûŠp-1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +1)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +1)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +1)%4] = get_r_cost();
+    }
+    //ƒS[ƒ‹•ûŠp+2
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +4)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +4)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +4)%4] = get_r_cost() *2;
+    }
+    
+    
     enqueue(Get_Goal_x()*100 + Get_Goal_y());
   
     while(!queue_empty()){
@@ -6986,7 +7154,11 @@ void run_shortest_path_fin(	char naname){
 		//S_run(h1 * (long long)path_num ,run_speed + run_fin_speed_offset,4,true);//non_stop = 4
 		
 		if(path_num >= 2){
-			S_run((h1 * (long long)path_num-1) + path_hosei[path_num-1] ,run_speed + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+			if(comand_old == 13 || comand_old == -13){//‘O‰ñ‚ªÎ‚ßI‚í‚è‚¾‚Á‚½‚ç
+			  path_add = - (h1) *2/3 ;//70;  
+		    	}
+			S_run((h1 * (long long)path_num) + path_add + path_hosei[path_num] ,run_speed + run_fin_speed_offset,4,4);//non_stop = 4 // w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+			path_add = 0;
 		}
 		
 		motor(0,0);
@@ -7024,7 +7196,7 @@ void run_shortest_path_fin(	char naname){
 			  path_add = 250; 
 			  
 		    }else if(comand_old == 13 || comand_old == -13){//‘O‰ñ‚ªÎ‚ßI‚í‚è‚¾‚Á‚½‚ç
-			  path_add = 70;  
+			  path_add = - (h1) *2 /3 ;//70;  
 		    }
 		    
 		    //if(first_flag == 0)S_run((h1 *(long long) path_num) + path_hosei[path_num] ,run_speed + run_fin_speed_offset,3,true); // memo : non_stop = 3 ‰Á‘¬‚Í‚ä‚Á‚­‚è@Œ¸‘¬‚Í‚·‚­‚È‚ß
@@ -7264,10 +7436,10 @@ void run_shortest_path_fin(	char naname){
 		status_log = 3;//ƒƒO‚É•ÇØ‚êŠJn‚ğ‹L˜^‚·‚é‚½‚ß
 		
 		if(queue_next(1) == -11){//Ÿ@¶
-		    S_run_kabe_naname(35,3,1);
+		    S_run_kabe_naname(30,3,1);
 			
 	        }else if(queue_next(1) == 11){//Ÿ@‰E
-		    S_run_kabe_naname(35,3,2);
+		    S_run_kabe_naname(30,3,2);
 		
 		}else if(queue_next(1) == -13){//Ÿ@¶
 		    if(queue_next(3) == -11){//Vƒ^[ƒ“
@@ -7281,7 +7453,7 @@ void run_shortest_path_fin(	char naname){
 		   
 		    	v2_flag = 6;
 		    }
-		    S_run_kabe_naname2(35,3,1,v2_flag);
+		    S_run_kabe_naname2(30,3,1,v2_flag);
 			
 	        }else if(queue_next(1) == 13){//Ÿ@‰E
 		    if(queue_next(3) == 11){//Vƒ^[ƒ“
@@ -7294,7 +7466,7 @@ void run_shortest_path_fin(	char naname){
 		   
 		    	v2_flag = 6;
 		    }
-		    S_run_kabe_naname2(35,3,2,v2_flag);
+		    S_run_kabe_naname2(30,3,2,v2_flag);
 		    
 	        }
 	    }
@@ -7486,7 +7658,7 @@ char Get_Goal_y(void){
 /* –ß  ‚è   ’lF ƒS[ƒ‹À•W									    */
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 char Get_Goal_angle(void){
-	return Goal_angle + Goal_angle_offset;
+	return (int)(Goal_angle + (Goal_angle_offset + 4))%4;
 }
 
 

@@ -486,7 +486,7 @@ void Smotor(int M,char w_flag){
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
 			ir_core = 2; // 25  //左右の差の許容範囲
 					
-			kp = 0.3; //0.3 0.5
+			kp = 0.2; //0.3 0.5
 			kd = 10.0; //1.5 15.0
 		}else{
 			ir_core = 2; // 25  //左右の差の許容範囲
@@ -864,7 +864,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		//if(ir_L_now > 999 || ir_R_now > 999){//横壁が近すぎる場合は減速
 		if(M_max_safe < M)M = M_max_safe;
 		
-	    }else if(motor_pid_mode == 1 && non_stop == 4 && 180 < get_IR(IR_F)){// 高速モード　＆＆ゴール直前の直線　＆＆　前壁が近すぎる
+	    }else if(motor_pid_mode == 1 && non_stop == 4 && 80 < get_IR(IR_F)){// 高速モード　＆＆ゴール直前の直線　＆＆　前壁が近すぎる
 		if(M_max_safe_fin < M)M = M_max_safe_fin;
 	    }
 
@@ -1071,9 +1071,16 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		
 		
 	if(motor_pid_mode == 0){//探索中
-		if((A - enc_now) < s1 && 180 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
+		if((A - enc_now) < s1 && 100 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
 		    break; //激突防止
 				
+		}
+	}else{//高速
+		if(non_stop == 4){//ゴール直前の最後の直線
+			if(60 < get_IR(IR_F)){//前壁が近い場合はストップ
+		    		break; //激突防止
+				
+			}
 		}
 	}
 	
