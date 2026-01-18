@@ -15,7 +15,7 @@
 
 #define Goal_x  0
 #define Goal_y  1
-#define Goal_angle 1 //ゴールした直後の向き スタートの向きが1
+#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
 #define Pickup_x  0	
@@ -55,12 +55,12 @@
 #define s1 (1020)		//1マス直進      タイヤ削れた時：1025
 #define s45 (775)		//45度１マス直進 タイヤ削れた時：800
 #define h1 (515)		//半マス直進 	タイヤ削れた時：525　最短用
-#define h1_2 (520)		//半マス直進 	タイヤ削れた時：525  探索の壁切れ用
+#define h1_2 (510)		//半マス直進 	タイヤ削れた時：525  探索の壁切れ用
 
-#define s45_V2 (160)	//140	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2 (170)	//140	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2_out (150)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2_out_LR (100)	//２マスVターンの距離　壁切れができない可能性が高いので実質距離で調整する　壁切れ後にカーブ
-#define s45_V2not (300)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
+#define s45_V2not (350)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2notFirst (350)	//初手斜め用　２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 
 #define rslsl90_search 		(920)	//スラローム 664 探索用
@@ -75,9 +75,9 @@
 #define rslsr90_offset  (-100)
 
 #define rslsl90_BIG (1840)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsl90_BIG_offset  (-150)	      //タイヤ削れた時：-100	
+#define rslsl90_BIG_offset  (-170)	      //タイヤ削れた時：-100	
 #define rslsr90_BIG (1840)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsr90_BIG_offset  (-150)	      //タイヤ削れた時：-100
+#define rslsr90_BIG_offset  (-170)	      //タイヤ削れた時：-100
 
 #define usll180     (2260)	//Uターン 2240
 #define usll180_fin (-10)	//Uターン 微調整
@@ -94,15 +94,15 @@
     
 
 //前壁補正のパラメータ
-#define F_max 250
-#define F_min 230
-#define F_pow 10
-#define F_cnt 2000
+#define F_max 270
+#define F_min 250
+#define F_pow 8
+#define F_cnt 1000
 #define F_max_time 500
 
 //横壁距離
-#define MAKE_KABE_tikai (135 + 80)
-#define MAKE_KABE_tooi (135 - 80)
+#define MAKE_KABE_tikai (140 + 50)
+#define MAKE_KABE_tooi (140 - 50)
 
 
 #endif
