@@ -745,7 +745,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 //    int kame_hosei;
     long long enc_kabe_L,enc_kabe_R;
 	
-    int p = 1,min_M = 10,M = 10;
+    int p = 1,min_M = 5,M = 10;
     int min_M_use = 0;
 	
     int non_stop_min_M = 15;//探索の既知区間用
@@ -885,19 +885,21 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    if(non_stop != 0){
 	    	M = 0;
 	    }else{
-		    if(A - enc_now < -10){
-			    M = max( -10 ,(A - enc_now) / 5);// * p ;  
+		    if(A - enc_now < -5){
+			    M = max( -20 ,(A - enc_now) / 5);// * p ; 
+			    M = min( -8 , M);
 		    }else{
 			    M = 0;
 		    }
 	    		
 	    }
 	}
-		
+	
+	/*
 	if(M > 0 && M_old != 0){
 		if(M_old + 5 < M)M = M_old + 5;
 		else if(M_old - 5 > M)M = M_old - 5;
-	}
+	}*/
 	
 	Smotor(M,w_flag);
 	
@@ -1069,28 +1071,25 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		
 		
 	if(motor_pid_mode == 0){//探索中
-		
+		/*
 		if((A - enc_now) < s1 && 100 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
-			/*int hoge = enc_now;
-			while(hoge - enc_now <= 0){
-				motor(-F_pow,-F_pow);
-				enc_now = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
-			}
-			*/
+			
 		    	break; //激突防止	
-		}
+		}*/
 	}else{//高速
+		/*
 		if(non_stop == 4){//ゴール直前の最後の直線
 			if(40 < get_IR(IR_F)){//前壁が近い場合はストップ
 		    		break; //激突防止
 				
 			}
 		}
+		*/
 	}
 	
 	
 	if(non_stop != 0){
-	    if(A - enc_now  < 30)break; 
+	    if(A - enc_now  < 5)break; 
 	}else{
 	    if(abs(enc_now - A) < 30){
 		cnt++;	
@@ -1222,7 +1221,7 @@ void ETmotorU(long long A, long long E, char non_stop){
     //Encoder_reset();
 
     int M_kabe = 15;
-    int M 		= 25;//20 25
+    int M 		= 30;//20 25
 	
     //壁切れ
     if(A > 0){//R
@@ -1358,7 +1357,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     //Encoder_reset();
 	
     int M_kabe = 18;
-    int M 		= 25;//25
+    int M 		= 30;//25
 
     
     ESmotor(80,M_kabe,true,true);
@@ -1805,7 +1804,7 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     PORTA.DR.BIT.B3 = 0;
 	
     //ESmotor(45,M_kabe2,true,true);//60
-    ESmotor(135,M_kabe2,true,false);//60 45
+    ESmotor(75,M_kabe2,true,false);//60 45
 	
     //motor(0,0);
     GyroSum_reset();
