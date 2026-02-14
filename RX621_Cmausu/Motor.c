@@ -813,11 +813,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 					M = min_M_use + ( (A - enc_now -100) / 10);
 				}
 			}else{
-				if((A - enc_now) < 300){
+				if((A - enc_now) < 400){
 					M = min_M_use ;
 				
 				}else{
-					M = min_M_use + ( (A - enc_now -300) / 20);
+					M = min_M_use + ( (A - enc_now -400) / 25);
 				}
 			}
 			
@@ -871,9 +871,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }else if(motor_pid_mode == 1 && non_stop == 4 && 30 < get_IR(IR_F)){// 高速モード　＆＆ゴール直前の直線　＆＆　前壁が近すぎる
 		if(M_max_safe_fin < M)M = M_max_safe_fin;
 		
-	    }/*else if(motor_pid_mode == 0 && 50 < get_IR(IR_F)){// 低速モード ＆＆　前壁が近すぎる
+	    }else if(motor_pid_mode == 0 && 50 < get_IR(IR_F)){// 低速モード ＆＆　前壁が近すぎる
 		if(M_max_safe_fin < M)M = M_max_safe_fin;
-	    }*/
+	    }
 
 	    if(non_stop == 1){
 		if(M < non_stop_min_M)M = non_stop_min_M;
@@ -2139,9 +2139,9 @@ void Tmotor_naname_in_BIG(long long A ){
 	if(0 > RM && RM > -min_M)RM = -min_M;
 	
 	if(A > 0){//R
-	    motor(LM + M ,3 + M);
+	    motor(LM + M ,2 + M);
 	}else{//L
-	    motor(3 + M ,RM + M);
+	    motor(2 + M ,RM + M);
 	}
 	
 	
@@ -2213,9 +2213,9 @@ void Tmotor_naname_out(long long A ){
 	if(0 > RM && RM > -min_M)RM = -min_M;
 	
 	if(A > 0){//R
-	    motor(LM + M ,3 + M);
+	    motor(LM + M ,2 + M);
 	}else{//L
-	    motor(3 + M ,RM + M);
+	    motor(2 + M ,RM + M);
 	}
 	
 	
