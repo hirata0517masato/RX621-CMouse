@@ -15,7 +15,7 @@
 
 #define Goal_x  0
 #define Goal_y  1
-#define Goal_angle 3 //ゴールした直後の向き スタートの向きが1
+#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
 #define Pickup_x  0	
@@ -94,9 +94,9 @@
     
 
 //前壁補正のパラメータ
-#define F_max 265
-#define F_min 245
-#define F_pow 9
+#define F_max 260
+#define F_min 240
+#define F_pow 7
 #define F_cnt 200
 #define F_max_time 500
 

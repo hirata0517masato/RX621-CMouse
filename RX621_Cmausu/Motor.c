@@ -745,7 +745,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 //    int kame_hosei;
     long long enc_kabe_L,enc_kabe_R;
 	
-    int p = 1,min_M = 5,M = 10;
+    int p = 1,min_M = 10,M = 10;
     int min_M_use = 0;
 	
     int non_stop_min_M = 15;//探索の既知区間用
@@ -805,11 +805,20 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    if((enc_now > A * 5/8)){// 進んだ距離 < 目標距離 * 3/4　= //減速区間
 		
 	    	if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
-			if((A - enc_now) < 400){
-				M = min_M_use ;// + ( (A - enc_now) / 10);
-			
+			if(A <= s1){//距離が１マス以下の場合
+				if((A - enc_now) < 100){
+					M = min_M_use ;
+				
+				}else{
+					M = min_M_use + ( (A - enc_now -100) / 10);
+				}
 			}else{
-				M = min_M_use + ( (A - enc_now -400) / 20);
+				if((A - enc_now) < 300){
+					M = min_M_use ;
+				
+				}else{
+					M = min_M_use + ( (A - enc_now -300) / 20);
+				}
 			}
 			
 		}else{
@@ -828,11 +837,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			
 	    }else{//加速区間
 		if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
-		    if(enc_now < 100){//出だしは加速しすぎないように
+		    if(enc_now < 50){//出だしは加速しすぎないように
 			M = min_M_use;// + (enc_now / 20);
 				
 		    }else{
-			M = min_M_use + ((enc_now - 100) / 10);
+			M = min_M_use + ((enc_now - 50) / 5);
 		    }
 		    
 		    if(motor_pid_mode == 1 && enc_now > s45){//半マス進んだらモード変更
@@ -862,9 +871,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }else if(motor_pid_mode == 1 && non_stop == 4 && 30 < get_IR(IR_F)){// 高速モード　＆＆ゴール直前の直線　＆＆　前壁が近すぎる
 		if(M_max_safe_fin < M)M = M_max_safe_fin;
 		
-	    }else if(motor_pid_mode == 0 && 50 < get_IR(IR_F)){// 低速モード ＆＆　前壁が近すぎる
+	    }/*else if(motor_pid_mode == 0 && 50 < get_IR(IR_F)){// 低速モード ＆＆　前壁が近すぎる
 		if(M_max_safe_fin < M)M = M_max_safe_fin;
-	    }
+	    }*/
 
 	    if(non_stop == 1){
 		if(M < non_stop_min_M)M = non_stop_min_M;
@@ -1028,7 +1037,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	}
 	
 	
-	if(A >= s1 && (A - enc_now) < s1 && non_stop == false){//１マス以上進 && 残り１マス && 探索中　で壁切れした場合は半マス進んで終了
+	if(A >= s1 && (A - enc_now) < s1 && non_stop == false && get_IR(IR_F) < 50){//１マス以上進 && 残り１マス && 探索中　&& 前壁が近くない　で壁切れした場合は半マス進んで終了
 	
 		if(ir_L_flag_1masu == 0){
 			if(get_IR(IR_L) > 20){
@@ -1036,7 +1045,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			}
 		}else if(ir_L_flag_1masu == 1){
 			if(get_IR(IR_L) < 10){
-				ESmotor(h1_2,  25 ,non_stop,w_flag);  
+				ir_L_flag_1masu = 2;
+				
+				/*ESmotor(h1_2,  25 ,non_stop,w_flag);  
 				//while(1){
 					//led()
 				//	PORTA.DR.BIT.B0 = 0;
@@ -1046,6 +1057,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				motor(0,0);
 				//}
 				return;
+				*/
+				enc_base_L += h1_2 - (A - enc_now) ;
+				enc_base_R += h1_2 - (A - enc_now) ;
 			}
 		}
 		
@@ -1055,6 +1069,8 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			}
 		}else if(ir_R_flag_1masu == 1){
 			if(get_IR(IR_R) < 10){
+				ir_R_flag_1masu = 2;
+				/*
 				ESmotor(h1_2, 25 ,non_stop,w_flag); 
 				//while(1){
 					//led()
@@ -1065,17 +1081,20 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				motor(0,0);
 				//}
 				return;
+				*/
+				enc_base_L += h1_2 - (A - enc_now) ;
+				enc_base_R += h1_2 - (A - enc_now) ;
 			}
 		}
 	}
 		
 		
 	if(motor_pid_mode == 0){//探索中
-		/*
-		if((A - enc_now) < s1 && 100 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
-			
+		
+		if((A - enc_now) < s1 && 220 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
+			motor(0,0);
 		    	break; //激突防止	
-		}*/
+		}
 	}else{//高速
 		/*
 		if(non_stop == 4){//ゴール直前の最後の直線
@@ -1096,7 +1115,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }else{
 		cnt = 0;
 	    }
-	    if(cnt > 10000)break;
+	    if(cnt > 5000)break;
 	}
 		
 		
