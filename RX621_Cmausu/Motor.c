@@ -611,18 +611,18 @@ void Smotor(int M,char w_flag){
 			    ir_sa_buf = ir_sa;
 		    }else{//高速
 		    	
-			if(motor_pid_flag_fast == 0){
+			if(motor_pid_flag_fast == 0 && abs(GyroSum_get()) < 1000){
 			    
 			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 			    
-			    ir_sa = max(min(ir_sa,500),-500);
+			    ir_sa = max(min(ir_sa,250),-250);
 						
 			    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
 						
 			    ir_sa_buf = ir_sa;
 			}
 			motor_pid_flag_fast++;
-			if(motor_pid_flag_fast > 3)motor_pid_flag_fast = 0;//壁補正の周期を調整する
+			if(motor_pid_flag_fast > 5)motor_pid_flag_fast = 0;//壁補正の周期を調整する
 			    
 		    }
 		}else{
@@ -837,11 +837,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 			
 	    }else{//加速区間
 		if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
-		    if(enc_now < 50){//出だしは加速しすぎないように
+		    if(enc_now < 100){//出だしは加速しすぎないように
 			M = min_M_use;// + (enc_now / 20);
 				
 		    }else{
-			M = min_M_use + ((enc_now - 50) / 5);
+			M = min_M_use + ((enc_now - 100) / 10);
 		    }
 		    
 		    if(motor_pid_mode == 1 && enc_now > s45){//半マス進んだらモード変更
@@ -1037,7 +1037,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	}
 	
 	
-	if(A >= s1 && (A - enc_now) < s1 && non_stop == false && get_IR(IR_F) < 50){//１マス以上進 && 残り１マス && 探索中　&& 前壁が近くない　で壁切れした場合は半マス進んで終了
+	if(A >= s1 && (A - enc_now) < s1 && non_stop == false && get_IR(IR_F) < 50){//１マス以上進 && 残り１マス && 探索中　&& 前壁が近くない　で壁切れした場合は半マス進んで終了/距離補正に変更
 	
 		if(ir_L_flag_1masu == 0){
 			if(get_IR(IR_L) > 20){
@@ -1090,11 +1090,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		
 		
 	if(motor_pid_mode == 0){//探索中
-		
+		/*
 		if((A - enc_now) < s1 && 220 < get_IR(IR_F)){//残り1マス　＆＆　前壁が近い場合はストップ
 			motor(0,0);
 		    	break; //激突防止	
-		}
+		}*/
 	}else{//高速
 		/*
 		if(non_stop == 4){//ゴール直前の最後の直線
@@ -1239,8 +1239,8 @@ void ETmotorU(long long A, long long E, char non_stop){
 //    GyroSum_reset();
     //Encoder_reset();
 
-    int M_kabe = 15;
-    int M 		= 30;//20 25
+    int M_kabe = 13;
+    int M 		= 25;//20 25
 	
     //壁切れ
     if(A > 0){//R
@@ -1376,7 +1376,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     //Encoder_reset();
 	
     int M_kabe = 18;
-    int M 		= 30;//25
+    int M 		= 25;//25
 
     
     ESmotor(80,M_kabe,true,true);
