@@ -140,6 +140,7 @@ int run_fin_speed_offset = 0;
 long long time_limit = -1;
 long long time_limit_base = 150000;//3分00秒　180000      2分30秒 150000
 long long time_limit_offset = 0;
+char time_limit_flag = 0; //0:まだ設定されていない １：設定されている
 
 int pickup_x = 1;
 int pickup_y = 1;
@@ -356,7 +357,11 @@ void main(void)
 		
 	switch(mode){
 	case 1://探索モード
-			
+	    if(time_limit_flag == 0){
+		time_limit_flag = 1;
+		time_limit = time_limit_base;
+	     }
+	    
 	    if(( maze_w[0][1] & 0x20) == 0){//迷路が初期化された直後 スタート直後のマスの壁が確定していなければ初期化直後と判定する
 		led_down();
 		led_up();
@@ -395,7 +400,11 @@ void main(void)
 	
 	case 2://探索モード　最短経路上の未確定マスをすべて探しに行く
 
-	     time_limit = time_limit_base;
+	     if(time_limit_flag == 0){
+		time_limit_flag = 1;
+		time_limit = time_limit_base;
+	     }
+		
 	    //printf2("time_limit = %d \n",time_limit);
 	    
 	    
@@ -852,6 +861,8 @@ void main(void)
 			}
 	    	}
 		time_limit_base += time_limit_offset;
+		
+		time_limit_flag = 0;
 		
 		//printf2("time_limit_base = %d  , time_limit_offset = %d \n",time_limit_base,time_limit_offset);
 		break;
