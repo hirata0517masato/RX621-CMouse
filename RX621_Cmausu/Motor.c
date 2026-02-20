@@ -211,7 +211,7 @@ void Smotor(int M,char w_flag){
 	if(w_flag == 3){
 	    if((get_encoder_L() > 30 && get_encoder_R() > 30) ){// && abs(GyroSum_get()) < 2000){
 		//if(   get_IR(IR_FL) > 35 && get_IR(IR_FR) < 30  ){//左前のみ
-		if(   get_IR(IR_FL) > 25 && abs(GyroSum_get()) < 3000){//左前のみ
+		if(   get_IR(IR_FL) > 20 && abs(GyroSum_get()) < 3000){//左前のみ
 		    cnt3++;
 		    if(cnt3 > 0){
 			cnt3 = 0;
@@ -224,24 +224,28 @@ void Smotor(int M,char w_flag){
 				    GyroSum_add(200);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FL) > 60){// || get_IR(IR_F) > 20){ // 左前がかなり近い　|| 正面にも壁があるとき
+				}else if(get_IR(IR_FL) > 50){// || get_IR(IR_F) > 20){ // 左前がかなり近い　|| 正面にも壁があるとき
 				    GyroSum_add(100);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FL) > 50  ){
+				}else if(get_IR(IR_FL) > 45  ){
 				    GyroSum_add(45);
 				    naname_flag = 1;
 				    
-				}else if(get_IR(IR_FL) > 40 ){
+				}else if(get_IR(IR_FL) > 35 ){
 				    GyroSum_add(30);
 				   naname_flag = 1;
 				
-				}else if(get_IR(IR_FL) > 35 ){
+				}else if(get_IR(IR_FL) > 30 ){
 				    GyroSum_add(15);
+				   naname_flag = 1;
+				
+				}else if(get_IR(IR_FL) > 20 ){
+				    GyroSum_add(10);
 				   naname_flag = 1;
 				  
 				}else{
-			            GyroSum_add(10);
+			            GyroSum_add(5);
 				    naname_flag = 1;
 				}
 			}else{
@@ -264,7 +268,7 @@ void Smotor(int M,char w_flag){
 		}
 				
 		//if(get_IR(IR_FL) < 30 &&  get_IR(IR_FR) > 35  ){//右前のみ
-		if(get_IR(IR_FR) > 25 && abs(GyroSum_get()) < 3000 ){//右前のみ
+		if(get_IR(IR_FR) > 20 && abs(GyroSum_get()) < 3000 ){//右前のみ
 		    cnt4++;
 		    if(cnt4 > 0){
 			cnt4 = 0;
@@ -278,24 +282,28 @@ void Smotor(int M,char w_flag){
 				    GyroSum_add(-200);
 				    naname_flag = 1;
 				    
-				}else if(get_IR(IR_FR) > 60){// || get_IR(IR_F) > 20){ // 右前がかなり近い　|| 正面にも壁があるとき
+				}else if(get_IR(IR_FR) > 50){// || get_IR(IR_F) > 20){ // 右前がかなり近い　|| 正面にも壁があるとき
 				    GyroSum_add(-100);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FR) > 50){
+				}else if(get_IR(IR_FR) > 45){
 				    GyroSum_add(-45);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FR) > 40){
+				}else if(get_IR(IR_FR) > 35){
 				    GyroSum_add(-30);
 				    naname_flag = 1;
 				
-				}else if(get_IR(IR_FR) > 35){
+				}else if(get_IR(IR_FR) > 30){
 				    GyroSum_add(-15);
+				    naname_flag = 1;
+				
+				}else if(get_IR(IR_FR) > 20){
+				    GyroSum_add(-10);
 				    naname_flag = 1;
 				  
 				}else{
-				    GyroSum_add(-10);
+				    GyroSum_add(-5);
 				    naname_flag = 1;
 				}
 			}else{
@@ -517,11 +525,11 @@ void Smotor(int M,char w_flag){
 			motor_pid_flag = 1;
 		    }
 	
-		}else if(get_IR(IR_L) > 40 && get_IR(IR_R) < 40){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
+		}else if(get_IR(IR_L) > 30 && get_IR(IR_R) < 40){// && abs(get_IR(IR_L) - ir_wall) > ir_core/2){//左だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(get_IR(IR_L) - ir_wall) > ir_core /2 ) {// 左右の差が小さきすぎない
 					
-			    ir_sa =  (get_IR(IR_L) - ir_wall) ;    
+			    ir_sa =  (get_IR(IR_L) - ir_wall) * 2 ;    
 			    
 			   // if(mae_flag == 1)ir_sa /= 4;//前壁補正が反応していたら
 			    
@@ -540,11 +548,11 @@ void Smotor(int M,char w_flag){
 			}
 		    }
 					
-		}else if(get_IR(IR_L) < 40 && get_IR(IR_R) > 40){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
+		}else if(get_IR(IR_L) < 40 && get_IR(IR_R) > 30){// && abs(ir_wall - get_IR(IR_R)) > ir_core/2 ){//右だけ壁がある
 		    if(motor_pid_mode == 0){//低速
 			if(abs(ir_wall - get_IR(IR_R)) > ir_core /2 ){//左右の差が小さきすぎない
 				
-			    ir_sa =  (ir_wall - get_IR(IR_R));
+			    ir_sa =  (ir_wall - get_IR(IR_R)) * 2;
 			
 			    
 			    
@@ -611,16 +619,16 @@ void Smotor(int M,char w_flag){
 			    ir_sa_buf = ir_sa;
 		    }else{//高速
 		    	
-			if(motor_pid_flag_fast == 0 && abs(GyroSum_get()) < 1000){
+			//if(motor_pid_flag_fast == 0 && abs(GyroSum_get()) < 2000){
 			    
 			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 			    
-			    ir_sa = max(min(ir_sa,250),-250);
+			    ir_sa = max(min(ir_sa,500),-500);
 						
 			    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
 						
 			    ir_sa_buf = ir_sa;
-			}
+			//}
 			motor_pid_flag_fast++;
 			if(motor_pid_flag_fast > 5)motor_pid_flag_fast = 0;//壁補正の周期を調整する
 			    
@@ -804,7 +812,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    //if((enc_now > A * 5/8) && (A - enc_now < s1 * 2) ){// 進んだ距離 < 目標距離 * 3/4  && 残り距離 2マス　= //減速区間
 	    if((enc_now > A * 5/8)){// 進んだ距離 < 目標距離 * 3/4　= //減速区間
 		
-	    	if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
+	    	if(motor_pid_mode == 0 || non_stop == 4){//低速 || 加速はやめ　減速しっかり
 			if(A <= s1){//距離が１マス以下の場合
 				if((A - enc_now) < 100){
 					M = min_M_use ;
@@ -838,7 +846,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }else{//加速区間
 		if(motor_pid_mode == 0 || non_stop == 3){//低速 || 加速ゆっくり　減速すくなめ
 		    if(enc_now < 100){//出だしは加速しすぎないように
-			M = min_M_use;// + (enc_now / 20);
+			M = min_M_use;
 				
 		    }else{
 			M = min_M_use + ((enc_now - 100) / 10);
@@ -891,7 +899,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    }
 			
 	}else{//行き過ぎた
-	    if(non_stop != 0){
+	    /*if(non_stop != 0){
 	    	M = 0;
 	    }else{
 		    if(A - enc_now < -5){
@@ -900,6 +908,18 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		    }else{
 			    M = 0;
 		    }
+	    		
+	    }*/
+	    
+	    if(non_stop == 0 || non_stop == 4){
+		    if(A - enc_now < -5){
+			    M = max( -20 ,(A - enc_now) / 5);// * p ; 
+			    M = min( -8 , M);
+		    }else{
+			    M = 0;
+		    }
+	    }else{
+		   M = 0; 
 	    		
 	    }
 	}
@@ -1096,17 +1116,16 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		    	break; //激突防止	
 		}*/
 	}else{//高速
-		/*
+		
 		if(non_stop == 4){//ゴール直前の最後の直線
-			if(40 < get_IR(IR_F)){//前壁が近い場合はストップ
+			if(200 < get_IR(IR_F)){//前壁が近い場合はストップ
 		    		break; //激突防止
 				
 			}
 		}
-		*/
 	}
 	
-	
+	/*
 	if(non_stop != 0){
 	    if(A - enc_now  < 5)break; 
 	}else{
@@ -1116,6 +1135,19 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 		cnt = 0;
 	    }
 	    if(cnt > 5000)break;
+	}*/
+	
+	if(non_stop == 0 || non_stop == 4){
+	    if(abs(enc_now - A) < 30){
+		cnt++;	
+	    }else{
+		cnt = 0;
+	    }
+	    if(cnt > 5000)break;
+	    
+	    
+	}else{
+	    if(A - enc_now  < 5)break; 
 	}
 		
 		

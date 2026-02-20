@@ -2440,23 +2440,34 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
     
     int cnt = 0;
     int cnt2 = 0;
+    //int Ltmp = 0,Rtmp = 0;
 	
     led(6);
     while(1){
 	if(LR == 3 || LR == 1){//—¼•û || L‚¾‚¯
 	    if(Lflag == 0){
 		if(get_IR(IR_LT) > 28){// || (get_IR(IR_LT) > 14 && get_IR(IR_R) > 140)){
-		    Lflag = 1;
-		    cnt = 0;
-		    led(8);
+			cnt++;
+			if(cnt > 2){
+		    		Lflag = 1;
+		    		cnt = 0;
+		    		led(8);
+			}
+		}else{
+			cnt = 0;
 		}
 		
 		
 		if(Lflag2 == 0){
-			if(get_IR(IR_LT) > 10){
-			    Lflag2 = 1;
-			    cnt2 = 0;
-			    led(4);
+			if(get_IR(IR_LT) > 10 && (get_IR(IR_L) < 20 || ( 50 < get_IR(IR_L) && get_IR(IR_L) < 110) )){
+				cnt2++;
+				if(cnt2 > 2){
+			    		Lflag2 = 1;
+			    		cnt2 = 0;
+			    		led(4);
+				}
+			}else{
+				cnt2 = 0;
 			}
 		}else if(Lflag2 == 1){
 			if(get_IR(IR_LT) < 2){
@@ -2496,16 +2507,26 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 	if(LR == 3 || LR == 2){//—¼•û || R‚¾‚¯
 	    if(Rflag == 0){
 		if(get_IR(IR_RT) > 28 ){// || (get_IR(IR_RT) > 15 && get_IR(IR_L) > 140)){
-		    Rflag = 1;
-		    cnt = 0;
-		    led(1);
+			cnt++;
+			if(cnt > 2){
+		    		Rflag = 1;
+		    		cnt = 0;
+		    		led(1);
+			}
+		}else{
+			cnt = 0;
 		}
 			
 		if(Rflag2 == 0){
-			if(get_IR(IR_RT) > 10){
-			    Rflag2 = 1;
-			    cnt2 = 0;
-			    led(2);
+			if(get_IR(IR_RT) > 10 && (get_IR(IR_R) < 20 || ( 50 < get_IR(IR_R) && get_IR(IR_R) < 110))){
+				cnt2++;
+				if(cnt2 > 2){
+			    		Rflag2 = 1;
+			    		cnt2 = 0;
+			    		led(2);
+				}
+			}else{
+				cnt2 = 0;
 			}
 		}else if(Rflag2 == 1){
 			if(get_IR(IR_RT) < 2){
@@ -2681,7 +2702,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 	
 	if(LR == 3 || LR == 1){//—¼•û || L‚¾‚¯
 	    if(Lflag == 0){
-		if(get_IR(IR_LT) > 40){
+		if(get_IR(IR_LT) > 60){
 	  	    cnt++;
 		    if(cnt > 2){
 		    	led(8);
@@ -2709,7 +2730,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 
 	if(LR == 3 || LR == 2){//—¼•û || R‚¾‚¯
 	    if(Rflag == 0){
-		if(get_IR(IR_RT) > 40){
+		if(get_IR(IR_RT) > 60){
 		    cnt++;
 		    if(cnt > 2){
 		    	led(1);
@@ -2793,7 +2814,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     	if(Lflag == 0 && Rflag == 0){
 		ESmotor(150,powor,true,false);
 	}else{
-    		ESmotor(220,powor,true,false);// 200
+    		ESmotor(180,powor,true,false);// 200
 	}
     }else if(v2_flag == 20){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
     
@@ -2810,16 +2831,16 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     		ESmotor(400,powor,true,false);// 200
 	}
     }else if(v2_flag == 3){//‚Qƒ}ƒXˆÈã‚ÌVƒ^[ƒ“ŠJn
-    	ESmotor(120,powor,true,false);
+    	ESmotor(160,powor,true,false);
 	
     }else if(v2_flag == 4){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚é‚Æ‚«
-    	ESmotor(350,powor,true,false);
+    	ESmotor(250,powor,true,false);
 	
     }else if(v2_flag == 5){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚½‚ ‚ÆƒJ[ƒu
-    	ESmotor(120,powor,true,false);
+    	ESmotor(170,powor,true,false);
 
     }else if(v2_flag == 6){//Î‚ß‚ÌŒã@’¼ü
-    	ESmotor(260,powor,true,false);
+    	ESmotor(300,powor,true,false);
 
     }else if(v2_flag == 7){//‚Å‚½‚ ‚ÆƒJ[ƒu
     	ESmotor(120,powor,true,false);
@@ -4520,7 +4541,11 @@ void maze_search_adachi(short target_x,short target_y){
 	shortest_path_search(target_x,target_y);
 	make_shortest_path_list(target_x,target_y);
 	run_shortest_path();
+	
 	motor(0,0);
+	GyroSum_reset();
+	motor(0,0);
+	
     }
     motor(0,0);
 }
@@ -7286,7 +7311,7 @@ void run_shortest_path_fin(	char naname){
 
 			  
     int run_speed = 95;
-    int run_speed_naname = 80;
+    int run_speed_naname = 60;
     
     /*   
 	 R_curveU(ur180,true);
@@ -7344,9 +7369,10 @@ void run_shortest_path_fin(	char naname){
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		L_curve(sl90,true);
 		
-		ESmotor(50,25,true,true);//‹——£AƒXƒs[ƒh
+		//ESmotor(15,25,true,true);//‹——£AƒXƒs[ƒh
 		
 	    }else if(comand_old == -13){//Î‚ßI‚í‚è’¼Œã‚ÌƒJ[ƒu
+	    
 		L_curve_afterNaname(sl90,true);
 		
 	    }else{
@@ -7365,8 +7391,11 @@ void run_shortest_path_fin(	char naname){
 	    break;
 	    
 	case -11://L45
-	  	
-	    L_rotate_naname(l45 * path_num,true);
+	    if(comand_old == -1){
+	    	L_rotate_naname(l45 * path_num * 1.10,true);
+	    }else{
+		L_rotate_naname(l45 * path_num,true); 
+	    }
 	    
 	    break;
 	case -14://’¼ü‚©‚ç‚ÌL45 
@@ -7384,14 +7413,14 @@ void run_shortest_path_fin(	char naname){
 		 L_rotate_naname(l45 * path_num * 0.90 ,2);
 		 
 	    }else{
-	    	L_rotate_naname(l45 * path_num  * 0.90,2);
+	    	L_rotate_naname(l45 * path_num  * 1.00,2);
 	    }
 	    break;
 	case -13://L45 o‚é‚Æ‚«
 	  	
 	    if(queue_next(1) == -11){//Vƒ^[ƒ“
 	    	if(comand_old != 10 || path_num_old <= 2){//‚Qƒ}ƒXVƒ^[ƒ“
-			L_rotate_naname(l45 * path_num * 2.00,false);//0.75
+			L_rotate_naname(l45 * path_num * 2.10,false);//0.75
 			v2_flag = 1;
 		}else{
 			L_rotate_naname(l45 * path_num * 2.00,false);//0.75
@@ -7455,7 +7484,7 @@ void run_shortest_path_fin(	char naname){
           	if(path_num > 0){
 		
 		    if(comand_old == 12 || comand_old == -12){//‘O‰ñ‚ª‘å‹È‚¾‚Á‚½‚ç
-			  path_add = 250; 
+			  path_add = 300; 
 			  
 		    }else if(comand_old == 13 || comand_old == -13){//‘O‰ñ‚ªÎ‚ßI‚í‚è‚¾‚Á‚½‚ç
 			 // path_add = - (h1) /2 ;//70;  
@@ -7472,11 +7501,22 @@ void run_shortest_path_fin(	char naname){
 		    path_add = 0;
 		    
 		    first_flag = 1;
-		}	  
+		    
+		}else if(path_num == 0){
+			//¬‹È‚°@-> ’¼ü‚O -> Î‚ßƒZƒ“ƒT[‚Ì•ÇØ‚ê@‚Ì‚Æ‚«@’¼ü‚ğ­‚µ“ü‚ê‚é
+			if((comand_old == -1 || comand_old == 1) && (queue_next(1) == -12 ||  queue_next(1) == 12 || queue_next(1) == -14  || queue_next(1) == 14) ){
+				S_run( h1 / 2 ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+			
+			//Î‚ß@->  Î‚ßƒZƒ“ƒT[‚Ì•ÇØ‚ê@‚Ì‚Æ‚«@’¼ü‚ğ­‚µ“ü‚ê‚é
+			}/*else if((comand_old == 13 || comand_old == -13) && (queue_next(1) == -12 ||  queue_next(1) == 12 || queue_next(1) == -14  || queue_next(1) == 14)){
+				S_run( h1 / 3 ,run_speed + run_fin_speed_offset,true,4);// w_flag = 4 ‹ø‚Ì•Ç•â³‚ 
+			}*/
+		}
 		
 		
 		
-		if((get_IR(IR_R) > 20 && get_IR(IR_R) < 70 ) || (get_IR(IR_L) > 20 && get_IR(IR_L) < 70 ) || get_IR(IR_L) > 230 || get_IR(IR_R) > 230){
+		//if((get_IR(IR_R) > 20 && get_IR(IR_R) < 70 ) || (get_IR(IR_L) > 20 && get_IR(IR_L) < 70 ) || get_IR(IR_L) > 250 || get_IR(IR_R) > 250 || ((comand_old == 13 || comand_old == -13) && path_num < 2)){
+    		if((get_IR(IR_R) > 20 && get_IR(IR_R) < 70 ) || (get_IR(IR_L) > 20 && get_IR(IR_L) < 70 ) || get_IR(IR_L) > 250 || get_IR(IR_R) > 250 ){
     			
 			if(queue_next(1) == -12 || queue_next(1) == 12){//Ÿ‚Í‘å‹È—\’è
     				BIG_NG_flag = 1;//‚¸‚ê‚ª‘å‚«‚¢‚Ì‚Å‘å‹È‹Ö~
@@ -7524,11 +7564,11 @@ void run_shortest_path_fin(	char naname){
 						ESmotor(200,45,true,true);//‹——£AƒXƒs[ƒh
 						
 					 }else{
-						ESmotor(80,20,true,true);//‹——£AƒXƒs[ƒh 
+						ESmotor(200,25,true,true);//‹——£AƒXƒs[ƒh 
 					 }
 					 
 				    }else{
-					 S_run_kabe_BIG(20,4,1,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è 
+					 S_run_kabe_BIG(25,4,1,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è 
 					 
 					 ESmotor(200,25,true,true);//‹——£AƒXƒs[ƒh
 				    }
@@ -7544,10 +7584,10 @@ void run_shortest_path_fin(	char naname){
 					 	first_naname_z = 1;
 						ESmotor(200,45,true,true);//‹——£AƒXƒs[ƒh 
 					 }else{
-						ESmotor(80,20,true,true);//‹——£AƒXƒs[ƒh  
+						ESmotor(200,25,true,true);//‹——£AƒXƒs[ƒh  
 					 }
 				    }else{
-					 S_run_kabe_BIG(20,4,2,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+					 S_run_kabe_BIG(25,4,2,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 					 
 					 ESmotor(200,25,true,true);//‹——£AƒXƒs[ƒh
 				    }
@@ -7558,14 +7598,14 @@ void run_shortest_path_fin(	char naname){
 				    if(path_num <= 1){
 				        S_run_kabe_BIG(30,4,1,path_num); //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 				    }else{
-					S_run_kabe_BIG(20,4,1,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+					S_run_kabe_BIG(25,4,1,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 				    }
 						
 				}else if(queue_next(1) > 0){//Ÿ@‰E
 				    if(path_num <= 1){
 				        S_run_kabe_BIG(30,4,2,path_num);  //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 				    }else{
-					S_run_kabe_BIG(20,4,2,path_num);   //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
+					S_run_kabe_BIG(25,4,2,path_num);   //w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 				    }      
 				}
 					  
@@ -7668,6 +7708,11 @@ void run_shortest_path_fin(	char naname){
 		    }	
 		    
 		    S_run_kabe_naname2(55,3,1,v2_flag);
+		    
+		    if(v2_flag == 5){//2ƒ}ƒXÎ‚ßŒã‚ÉƒJ[ƒu
+			  ESmotor(100,20,true,true);//‹——£AƒXƒs[ƒh  
+		    }
+		    
 	        }else if(queue_next(1) == 13){//Ÿ@‰E
 		
 		    if(v2_flag == 1 && queue_next(3) != 11){//2ƒ}ƒXVƒ^[ƒ“‚Ìo‚é‚Æ‚«
@@ -7686,6 +7731,10 @@ void run_shortest_path_fin(	char naname){
 		    }
 		    
 		    S_run_kabe_naname2(55,3,2,v2_flag);
+		    
+		    if(v2_flag == 5){//2ƒ}ƒXÎ‚ßŒã‚ÉƒJ[ƒu
+			  ESmotor(100,20,true,true);//‹——£AƒXƒs[ƒh  
+		    }
 	        }
 		
 		//ESmotor(100,35,true,false);//‹——£AƒXƒs[ƒh
@@ -7773,7 +7822,7 @@ void run_shortest_path_fin(	char naname){
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		R_curve(sr90,true);
 		
-		ESmotor(50,25,true,true);//‹——£AƒXƒs[ƒh
+		//ESmotor(15,25,true,true);//‹——£AƒXƒs[ƒh
 		
 	    }else if(comand_old == 13){//Î‚ßI‚í‚è’¼Œã‚ÌƒJ[ƒu
 		R_curve_afterNaname(sr90,true);
@@ -7792,8 +7841,11 @@ void run_shortest_path_fin(	char naname){
 	    break;
 	    
 	case 11://R45
-        
-	    R_rotate_naname(r45 * path_num,true);
+            if(comand_old == 1){
+	    	R_rotate_naname(r45 * path_num * 1.10,true);
+	    }else{
+		R_rotate_naname(r45 * path_num,true);
+	    }
 	    
 	    break;
 	case 14://’¼ü‚©‚ç‚ÌR45
@@ -7811,14 +7863,14 @@ void run_shortest_path_fin(	char naname){
 		R_rotate_naname(r45 * path_num * 0.90 ,2);
 		
 	    }else{
-	    	R_rotate_naname(r45 * path_num * 0.90,2);
+	    	R_rotate_naname(r45 * path_num * 1.00,2);
 	    }
 	    break;
 	case 13://R45 o‚é
         
 	    if(queue_next(1) == 11){//Vƒ^[ƒ“
 	    	if(comand_old != 10 || path_num_old <= 2){//‚Qƒ}ƒXVƒ^[ƒ“
-			R_rotate_naname(r45 * path_num * 2.00,false);//0.75
+			R_rotate_naname(r45 * path_num * 2.10,false);//0.75
 			v2_flag = 1;
 		}else{
 			R_rotate_naname(r45 * path_num * 2.00,false);//0.75
