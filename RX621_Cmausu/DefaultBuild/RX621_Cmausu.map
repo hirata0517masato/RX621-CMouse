@@ -1,4 +1,4 @@
-Renesas Optimizing Linker (W3.05.00 )             20-Feb-2026 22:10:15
+Renesas Optimizing Linker (W3.05.00 )             22-Feb-2026 13:31:25
 
 *** Options ***
 
@@ -39,11 +39,11 @@ SECTION                            START      END         SIZE   ALIGN
 B_1
                                   00000004  00000066        63   1
 R_1
-                                  00000067  00000fed       f87   1
+                                  00000067  00000fee       f88   1
 B_2
-                                  00000fee  0000b647      a65a   2
+                                  00000ff0  0000b649      a65a   2
 R_2
-                                  0000b648  0000cc69      1622   2
+                                  0000b64a  0000cc6b      1622   2
 B
                                   0000cc6c  0000ea2b      1dc0   4
 R
@@ -71,23 +71,23 @@ C$VTBL
 C$VECT
                                   fff80824  fff80c23       400   4
 D_1
-                                  fff80c24  fff81baa       f87   1
+                                  fff80c24  fff81bab       f88   1
 D_2
                                   fff81bac  fff831cd      1622   2
 D
                                   fff831d0  fff835db       40c   4
 P
-                                  fff835dc  fff97735     1415a   1
+                                  fff835dc  fff97890     142b5   1
 PIntPRG
-                                  fff97736  fff9787b       146   1
+                                  fff97891  fff979d6       146   1
 W_1
-                                  fff9787c  fff9787c         0   1
+                                  fff979d7  fff979d7         0   1
 W_2
-                                  fff9787c  fff97931        b6   2
+                                  fff979d8  fff97a8d        b6   2
 W
-                                  fff97934  fff97934         0   4
+                                  fff97a90  fff97a90         0   4
 L
-                                  fff97934  fff97ab4       181   4
+                                  fff97a90  fff97c10       181   4
 $ADDR_C_FFFFFFA0
                                   ffffffa0  ffffffaf        10   1
 FIXEDVECT

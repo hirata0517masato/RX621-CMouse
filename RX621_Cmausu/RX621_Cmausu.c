@@ -108,6 +108,7 @@ short maze_d[H][W][4] = {0};	//4•ûŒü•ª‚Ìd‚İ
 char maze_w_backup[H][W] = {0};	//ãˆÊ4bit = •Ç‚ÌŠm’èbit ‰ºˆÊ4bit = •Ç‚Ìî•ñi–¢Šm’èŠÜ‚Şj
 short maze_d_backup[H][W][4] = {0};	//4•ûŒü•ª‚Ìd‚İ
 
+char NG_maze_flag  = 0;
 
 #define backup_irq_max	(5) 		//‰ß‹‚T‰ñ•ª‚ÌƒoƒbƒNƒAƒbƒv‚ğ•Û‘¶‚·‚é
 long long backup_irq_time_ms = 5000;	//’Tõ‚Éw’èŠÔ‚²‚Æ‚É–À˜Hî•ñ‚ğƒoƒbƒNƒAƒbƒv‚·‚é
@@ -1703,7 +1704,7 @@ void maze_update(char x,char y,char angle, char type){
 	    //if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//–¢Šm’è‚Ìê‡
 				
 	    if(get_IR(IR_L) > 40){
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 )) && (NG_maze_flag == 0)){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 							
 		    //if(type == 3){
 		    maze_w[y][x] &= ~(1 << (4+ii));//Šm’èî•ñ‚ğÁ‚·
@@ -1717,7 +1718,7 @@ void maze_update(char x,char y,char angle, char type){
 		    maze_w[y][x] |= 1 << ii;
 		}
 	    }else{
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ))  && (NG_maze_flag == 0) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 							
 		    //if(type == 3){
 		    maze_w[y][x] &= ~(1 << (4+ii));//Šm’èî•ñ‚ğÁ‚·
@@ -1740,7 +1741,7 @@ void maze_update(char x,char y,char angle, char type){
 				
 				 
 	    if(get_IR(IR_F) > 40 ){
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 )) && (NG_maze_flag == 0) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 							
 		    //if(type == 3){
 		    maze_w[y][x] &= ~(1 << (4+ii));//Šm’èî•ñ‚ğÁ‚·
@@ -1762,7 +1763,7 @@ void maze_update(char x,char y,char angle, char type){
 		motor(0,0);
 		
 	    }else{
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 )) && (NG_maze_flag == 0) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 						
 		    //if(type == 3){
 		    maze_w[y][x] &= ~(1 << (4+ii));//Šm’èî•ñ‚ğÁ‚·
@@ -1786,7 +1787,7 @@ void maze_update(char x,char y,char angle, char type){
 	    //if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//–¢Šm’è‚Ìê‡
 				 
 	    if(get_IR(IR_R) > 40){
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 )) && (NG_maze_flag == 0) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 							
 		    //if(type == 3){
 		    maze_w[y][x] &= ~(1 << (4+ii));//Šm’èî•ñ‚ğÁ‚·
@@ -1800,7 +1801,7 @@ void maze_update(char x,char y,char angle, char type){
 		    maze_w[y][x] |= 1 << ii; 
 		}
 	    }else{
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ) && (NG_maze_flag == 0)){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 		    //if(type == 3){
 		    maze_w[y][x] &= ~(1 << (4+ii));//Šm’èî•ñ‚ğÁ‚·
 		    R_rotate(r90);//‰E‰ñ“]
@@ -1959,13 +1960,13 @@ void maze_update3(char x,char y,char angle, char type){
 	    //if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//–¢Šm’è‚Ìê‡
 				
 	    if(get_IR(IR_LT) > 20){
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ) && (NG_maze_flag == 0)){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 		
 		}else{
 		    maze_w[y][x] |= 1 << ii;
 		}
 	    }else{
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 )) && (NG_maze_flag == 0) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 		
 		}else{
 		    maze_w[y][x] &= ~(1 << ii); 
@@ -1980,7 +1981,7 @@ void maze_update3(char x,char y,char angle, char type){
 				
 				 
 	    if(get_IR(IR_F) > 15 ){
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ) && (NG_maze_flag == 0)){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 							
 	
 		}else{
@@ -1988,7 +1989,7 @@ void maze_update3(char x,char y,char angle, char type){
 		}
 		
 	    }else{
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 )) && (NG_maze_flag == 0) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 						
 		}else{
 		    maze_w[y][x] &= ~(1 << ii);
@@ -2001,13 +2002,13 @@ void maze_update3(char x,char y,char angle, char type){
 	    //if((maze_w[y][x] & (1 << (4+ii))) == 0 ){//–¢Šm’è‚Ìê‡
 				 
 	    if(get_IR(IR_RT) > 20){
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) == 0 )) && (NG_maze_flag == 0) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 							
 		}else{
 		    maze_w[y][x] |= 1 << ii; 
 		}
 	    }else{
-		if(((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 ) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
+		if((((maze_w[y][x] & (1 << (4+ii))) != 0) && ( (maze_w[y][x] | (1 << ii)) != 0 )) ){//Šm’è‚Ìê‡ && ‰ß‹‚Ì‹L˜^‚ª¡‰ñ‚Æ’l‚ªˆÙ‚È‚é
 		 
 		}else{
 		    maze_w[y][x] &= ~(1 << ii);
@@ -2807,14 +2808,14 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     status_log = 4;//ƒƒO‚É•ÇØ‚êŒã‚Ì‹——£•â³‚ğ‹L˜^‚·‚é‚½‚ß
     
     if(v2_flag == 1){//‚Qƒ}ƒXVƒ^[ƒ“ŠJn
-	ESmotor(160,powor,true,false);  //140
+	ESmotor(200,powor,true,false);  //160
 	
     }else if(v2_flag == 2){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
     
     	if(Lflag == 0 && Rflag == 0){
 		ESmotor(150,powor,true,false);
 	}else{
-    		ESmotor(180,powor,true,false);// 200
+    		ESmotor(210,powor,true,false);// 200
 	}
     }else if(v2_flag == 20){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
     
@@ -2832,9 +2833,12 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
 	}
     }else if(v2_flag == 3){//‚Qƒ}ƒXˆÈã‚ÌVƒ^[ƒ“ŠJn
     	ESmotor(160,powor,true,false);
+
+    }else if(v2_flag == 30){//‚Qƒ}ƒXˆÈã‚ÌVƒ^[ƒ“ŠJn
+    	ESmotor(210,powor,true,false);
 	
     }else if(v2_flag == 4){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚é‚Æ‚«
-    	ESmotor(250,powor,true,false);
+    	ESmotor(270,powor,true,false);//250
 	
     }else if(v2_flag == 5){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚½‚ ‚ÆƒJ[ƒu
     	ESmotor(170,powor,true,false);
@@ -3834,7 +3838,7 @@ void run_shortest_path(){
  			  	  0,0,0,0,0,0,0};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
 				
     int run_speed = 35;
-    int run_speed_up = 60;    //–¢’m‹æŠÔ‰Á‘¬
+    int run_speed_up = 50;    //–¢’m‹æŠÔ‰Á‘¬
     int run_speed_boost = 60; //Šù’m‹æŠÔ‰Á‘¬
     
     int run_speed_kabe = 15; //Ÿ‚ª’â~‚Ì
@@ -4354,6 +4358,7 @@ void run_shortest_path(){
 		
 	    }
 	    
+	    NG_maze_flag = 1;//NG ƒ`ƒFƒbƒN‚ğ‚µ‚È‚¢
 	    if(path_num == 1){
 	  		
 		S_run_maze_search(path_num,run_speed + run_fin_speed_offset,run_speed_up + run_fin_speed_offset,  6);//‹ø‚Ì‚ ‚èA‚È‚µ‚ÍŠÖ”“à‚Åİ’è‚·‚é
@@ -4362,6 +4367,7 @@ void run_shortest_path(){
 		S_run_maze_search(path_num,run_speed + run_fin_speed_offset,run_speed_up + run_fin_speed_offset ,  4);
 		
 	    }
+	    NG_maze_flag = 0;
 		
 	    if(get_IR(IR_R) > MAKE_KABE_tikai  || (get_IR(IR_R) > 40 && get_IR(IR_R) < MAKE_KABE_tooi)){//‰E•Ç‚Æ‚Ì‹——£‚ª‹ß‚¢ || ‰E•Ç‚Æ‚Ì‹——£‚ª‰“‚¢
 		R_rotate(r90);
@@ -7410,10 +7416,10 @@ void run_shortest_path_fin(	char naname){
 		L_rotate_naname(l45 * path_num * 1.05 ,2);
 	    
 	    }else if(comand_old == 0 && path_num_old <= 1 && comand_old2 == 13){
-		 L_rotate_naname(l45 * path_num * 0.90 ,2);
+		 L_rotate_naname(l45 * path_num * 1.05 ,2);
 		 
 	    }else{
-	    	L_rotate_naname(l45 * path_num  * 1.00,2);
+	    	L_rotate_naname(l45 * path_num  * 1.05,2);
 	    }
 	    break;
 	case -13://L45 o‚é‚Æ‚«
@@ -7623,7 +7629,7 @@ void run_shortest_path_fin(	char naname){
 					    	if(path_num <= 1){
 							S_run_kabe(25,true,1); 
 					    	}else{
-					    		S_run_kabe(15,true,1); 
+					    		S_run_kabe(20,true,1); 
 					    		//S_run_kabe(30,4,1);// w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 					    	}
 					}
@@ -7642,7 +7648,7 @@ void run_shortest_path_fin(	char naname){
 					    	if(path_num <= 1){
 							S_run_kabe(25,true,2);   
 					    	}else{
-							S_run_kabe(15,true,2); 
+							S_run_kabe(20,true,2); 
 							//S_run_kabe(30,4,2);// w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 					    	}
 					}
@@ -7767,7 +7773,11 @@ void run_shortest_path_fin(	char naname){
 		
 		}else if(queue_next(1) == -13){//Ÿ@¶
 		    if(queue_next(3) == -11){//Vƒ^[ƒ“
-			 v2_flag = 3;   
+			 v2_flag = 3; 
+			 
+			 if(queue_next(6) <= 2){
+				v2_flag = 30; 
+			 }
 		   
 		    }else if(queue_next(3) == -1){//Î‚ßŒã‚ÉƒJ[ƒu
 		   
@@ -7781,7 +7791,11 @@ void run_shortest_path_fin(	char naname){
 			
 	        }else if(queue_next(1) == 13){//Ÿ@‰E
 		    if(queue_next(3) == 11){//Vƒ^[ƒ“
-			 v2_flag = 3;   
+			 v2_flag = 3; 
+			 
+			 if(queue_next(6) <= 2){
+				v2_flag = 30; 
+			 }
 		    
 		    }else if(queue_next(3) == -1){//Î‚ßŒã‚ÉƒJ[ƒu
 		   
@@ -7860,10 +7874,10 @@ void run_shortest_path_fin(	char naname){
 		R_rotate_naname(r45 * path_num * 1.05 ,2);
 	
 	    }else if(comand_old == 0 && path_num_old <= 1 && comand_old2 == -13){
-		R_rotate_naname(r45 * path_num * 0.90 ,2);
+		R_rotate_naname(r45 * path_num * 1.05 ,2);
 		
 	    }else{
-	    	R_rotate_naname(r45 * path_num * 1.00,2);
+	    	R_rotate_naname(r45 * path_num * 1.05,2);
 	    }
 	    break;
 	case 13://R45 o‚é
