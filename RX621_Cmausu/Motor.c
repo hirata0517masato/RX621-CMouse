@@ -1078,8 +1078,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				//}
 				return;
 				*/
-				enc_base_L += h1_2 - (A - enc_now) ;
-				enc_base_R += h1_2 - (A - enc_now) ;
+				
+				//ï«êÿÇÍãóó£ï‚ê≥
+				//enc_base_L += h1_2 - (A - enc_now) ;
+				//enc_base_R += h1_2 - (A - enc_now) ;
 			}
 		}
 		
@@ -1102,8 +1104,10 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				//}
 				return;
 				*/
-				enc_base_L += h1_2 - (A - enc_now) ;
-				enc_base_R += h1_2 - (A - enc_now) ;
+				
+				//ï«êÿÇÍãóó£ï‚ê≥
+				//enc_base_L += h1_2 - (A - enc_now) ;
+				//enc_base_R += h1_2 - (A - enc_now) ;
 			}
 		}
 	}

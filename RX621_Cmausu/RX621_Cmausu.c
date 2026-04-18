@@ -2924,9 +2924,9 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 				return;
 				*/
 				
-				
-				enc_base_L += h1_2 - (A - enc_now) ;
-				enc_base_R += h1_2 - (A - enc_now) ;
+				//•ÇØ‚ê‹——£•â³
+				//enc_base_L += h1_2 - (A - enc_now) ;
+				//enc_base_R += h1_2 - (A - enc_now) ;
 				
 			}
 		}
@@ -2963,9 +2963,9 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 				return;
 				*/
 				
-				
-				enc_base_L += h1_2 - (A - enc_now) ;
-				enc_base_R += h1_2 - (A - enc_now) ;
+				//•ÇØ‚ê‹——£•â³
+				//enc_base_L += h1_2 - (A - enc_now) ;
+				//enc_base_R += h1_2 - (A - enc_now) ;
 				
 			}
 		}
@@ -3838,7 +3838,7 @@ void run_shortest_path(){
  			  	  0,0,0,0,0,0,0};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
 				
     int run_speed = 35;
-    int run_speed_up = 50;    //–¢’m‹æŠÔ‰Á‘¬
+    int run_speed_up = 45;    //–¢’m‹æŠÔ‰Á‘¬
     int run_speed_boost = 60; //Šù’m‹æŠÔ‰Á‘¬
     
     int run_speed_kabe = 15; //Ÿ‚ª’â~‚Ì
