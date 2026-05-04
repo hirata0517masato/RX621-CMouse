@@ -1,16 +1,19 @@
 品質記録情報
-2026年4月26日 16:40:46
+2026年5月4日 19:25:09
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 RX621_Cmausu.c(1856):W0520186:Pointless comparison of unsigned integer with zero
 RX621_Cmausu.c(1856):W0520186:Pointless comparison of unsigned integer with zero
 RX621_Cmausu.c(2862):W0520177:Variable "M_pwm" was declared but never referenced
+Motor.c(196):W0520177:Variable "motor_pid_flag_fast" was declared but never referenced
+Motor.c(760):W0520177:Variable "p" was declared but never referenced
+Motor.c(765):W0520550:Variable "M_old" was set but never used
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:5個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:8個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -48,8 +51,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: c83c341ac6f0ea98b2baf75db6cc88568144e49b
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: c46cab1ce331277f810fb518a6f6f2db3fe51071
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: afccf76d84210c15f8ee65818a9d65e57052a51d
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 785d716d980077b2480105e4ac59a4a8c3850116
 
 
 --- システム情報 ---
@@ -75,13 +78,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: c46cab1ce331277f810fb51
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  330 MB
+  319 MB
  *GDIオブジェクト数
-  2065
+  2084
  *USERオブジェクト数
-  976
+  985
  *開いているファイル
-  4 editors, 4 files, 275 KB
+  4 editors, 4 files, 276 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン

@@ -63,7 +63,7 @@ void pwm(float duty_L, float duty_R){
     int L_PM = 0,R_PM = 0; // 0:プラス 1:マイナス
 	
     static float duty_L_old = 0.0, duty_R_old = 0.0;
-    const float duty_a = 2.0;
+    const float duty_a = 200.0;
 	
 	
     if(duty_L >  100.0) duty_L =  100.0; // duty_Lを100以上にしない
@@ -613,10 +613,12 @@ void Smotor(int M,char w_flag){
 			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 			    
 			    ir_sa = max(min(ir_sa,1000),-1000);
+				
+			   
+			    	GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
 						
-			    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
-						
-			    ir_sa_buf = ir_sa;
+			    	ir_sa_buf = ir_sa;
+			    
 		    }else{//高速
 		    	
 			//if(motor_pid_flag_fast == 0 && abs(GyroSum_get()) < 2000){
@@ -624,17 +626,19 @@ void Smotor(int M,char w_flag){
 			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 			    
 			    ir_sa = max(min(ir_sa,500),-500);
-						
-			    GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
-						
-			    ir_sa_buf = ir_sa;
+			
+			    
+			    	GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
+				ir_sa_buf = ir_sa;
+			   		
+			   
 			//}
-			motor_pid_flag_fast++;
-			if(motor_pid_flag_fast > 5)motor_pid_flag_fast = 0;//壁補正の周期を調整する
+			//motor_pid_flag_fast++;
+			//if(motor_pid_flag_fast > 5)motor_pid_flag_fast = 0;//壁補正の周期を調整する
 			    
 		    }
 		}else{
-			motor_pid_flag_fast = 0;	
+			//motor_pid_flag_fast = 0;	
 		}
 				
 	    }
@@ -1276,7 +1280,7 @@ void ETmotorU(long long A, long long E, char non_stop){
     //Encoder_reset();
 
     int M_kabe = 13;
-    int M 		= 35;//20 25
+    int M 		= 30;//33
 	
     //壁切れ
     if(A > 0){//R
@@ -1412,7 +1416,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     //Encoder_reset();
 	
     int M_kabe = 25;//18
-    int M 		= 35;//25 28
+    int M 		= 30;//33
 
     
     ESmotor(80,M_kabe,true,true);
@@ -1536,7 +1540,7 @@ void ETmotor(long long A, long long E, char non_stop){
     //Encoder_reset();
 	
     int M_kabe = 20;
-    int M 		= 25;
+    int M 		= 23;
     int M_kabe2 = 20;
 	
     //char flag = 0;
@@ -2270,6 +2274,7 @@ void Tmotor_naname_out(long long A ){
     //motor(0,0);
 //    GyroSum_reset();
     //motor(0,0);
+
 	
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;

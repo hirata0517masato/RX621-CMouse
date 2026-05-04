@@ -2,12 +2,15 @@
 #include"Gyro.h"
 #include "rspi.h"
 #include "wait.h"	
+#include"Motor.h"
 
 
 int gyro= 0;        /* ジャイロセンサーの値  左＋　右ー   */
 long long gyro_base = 0;
 long long gyro_sum = 0;  //左＋　右ー  
-int Gyro_kp = 2,Gyro_kd = 30;
+
+int Gyro_kp_search = 2,Gyro_kd_search = 30;//探索用
+int Gyro_kp = 2,Gyro_kd = 45;//最短用
 
 
 
@@ -50,6 +53,8 @@ void Gyro_update(){
 }
 
 int gyro_powor_L(){
+  if(Get_motor_pid_mode() == 0) return ((gyro_sum * (long long)Gyro_kp_search))/100  + ((long long)(gyro *Gyro_kd_search)) / 100;
+  
   return ((gyro_sum * (long long)Gyro_kp))/100  + ((long long)(gyro *Gyro_kd)) / 100;
 }
 
