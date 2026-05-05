@@ -52,7 +52,7 @@
 
 
 //エンコーダ関連　memo : 1mm = 5.66 //壁切れ170 
-#define s1 (1020)		//1マス直進      タイヤ削れた時：1025
+#define s1 (1010)		//1マス直進      タイヤ削れた時：1025
 #define s45 (795)		//45度１マス直進 タイヤ削れた時：800
 #define h1 (525)		//半マス直進 	タイヤ削れた時：525　最短用
 #define h1_2 (490)		//半マス直進 	タイヤ削れた時：525  探索の壁切れ用
@@ -74,14 +74,14 @@
 #define rslsr90 	(900)	//スラローム 664
 #define rslsr90_offset  (-100)
 
-#define rslsl90_BIG (1600)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsl90_BIG (1580)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsl90_BIG_offset  (-180)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1600)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsr90_BIG (1580)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsr90_BIG_offset  (-180)	      //タイヤ削れた時：-100
 
-#define usll180     (2240)	//Uターン 2240
+#define usll180     (2200)	//Uターン 2240
 #define usll180_fin (-10)	//Uターン 微調整
-#define uslr180     (2240)	//Uターン 2240
+#define uslr180     (2200)	//Uターン 2240
 #define uslr180_fin (-10)	//Uターン　微調整
 
 #define r_cost 4		//迷路の重み　90度回転の場合

@@ -228,19 +228,19 @@ void Smotor(int M,char w_flag){
 				    GyroSum_add(100);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FL) > 45  ){
+				}else if(get_IR(IR_FL) > 40  ){
 				    GyroSum_add(45);
 				    naname_flag = 1;
 				    
-				}else if(get_IR(IR_FL) > 35 ){
+				}else if(get_IR(IR_FL) > 30 ){
 				    GyroSum_add(30);
 				   naname_flag = 1;
 				
-				}else if(get_IR(IR_FL) > 30 ){
+				}else if(get_IR(IR_FL) > 25 ){
 				    GyroSum_add(15);
 				   naname_flag = 1;
 				
-				}else if(get_IR(IR_FL) > 20 ){
+				}else if(get_IR(IR_FL) > 15 ){
 				    GyroSum_add(10);
 				   naname_flag = 1;
 				  
@@ -286,19 +286,19 @@ void Smotor(int M,char w_flag){
 				    GyroSum_add(-100);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FR) > 45){
+				}else if(get_IR(IR_FR) > 40){
 				    GyroSum_add(-45);
 				    naname_flag = 1;
 				     
-				}else if(get_IR(IR_FR) > 35){
+				}else if(get_IR(IR_FR) > 30){
 				    GyroSum_add(-30);
 				    naname_flag = 1;
 				
-				}else if(get_IR(IR_FR) > 30){
+				}else if(get_IR(IR_FR) > 25){
 				    GyroSum_add(-15);
 				    naname_flag = 1;
 				
-				}else if(get_IR(IR_FR) > 20){
+				}else if(get_IR(IR_FR) > 15){
 				    GyroSum_add(-10);
 				    naname_flag = 1;
 				  
@@ -1280,7 +1280,7 @@ void ETmotorU(long long A, long long E, char non_stop){
     //Encoder_reset();
 
     int M_kabe = 13;
-    int M 		= 30;//33
+    int M 		= 35;//33
 	
     //•ÇØ‚ê
     if(A > 0){//R
@@ -1416,7 +1416,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     //Encoder_reset();
 	
     int M_kabe = 25;//18
-    int M 		= 30;//33
+    int M 		= 35;//33
 
     
     ESmotor(80,M_kabe,true,true);
