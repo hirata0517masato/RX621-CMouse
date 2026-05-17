@@ -10,7 +10,7 @@ long long gyro_base = 0;
 long long gyro_sum = 0;  //左＋　右ー  
 
 int Gyro_kp_search = 2,Gyro_kd_search = 30;//探索用
-int Gyro_kp = 2,Gyro_kd = 45;//最短用
+int Gyro_kp = 2,Gyro_kd = 45;//最短用 
 
 
 
