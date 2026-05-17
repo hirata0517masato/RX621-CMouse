@@ -230,7 +230,7 @@ void main(void)
     /////////////////////////////////////////
 */
 
-  /*  
+/*   
       while(1){
       	//motor(i,i);
       	delay(50);
@@ -2337,7 +2337,7 @@ void S_run_kabe(int powor, char flag, int LR){//壁切れまで走行
 			}
 			
 		}else{//探索
-			if(min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R)  > (h1_2 + h1_2/3) ){
+			if(min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R)  > (h1_2 + h1_2/2) ){
 				led(9);
 				break; //壁切れが来なかったらブレーク
 				
