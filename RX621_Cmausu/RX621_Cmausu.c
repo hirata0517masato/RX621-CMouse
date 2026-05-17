@@ -188,14 +188,11 @@ void main(void)
 
  /*  
     ///////////////////////////////
-    //int path_hosei_test[31] = {0,
- //			      0,0, 450,500, 550,600, 650,700, 750,750, 750,750, 500,500, 500,500, 
- //			  500,500, 550,600, 600,600, 600,600, 600,600, 600,600, 600,600};//path_numごとに距離補正する
     int path_hosei_test[16] = {0,
  			 	  0,0,0,0,0,0,0,0, 
  			  	  0,0,0,0,0,0,0};//path_numごとに距離補正する
 			  
-    int path_num_test = 5;
+    int path_num_test = 2;
     
     delay(1000);
     
@@ -208,13 +205,46 @@ void main(void)
 	    }
     delay(100);
     Encoder_reset();
-    //Set_motor_pid_mode(1);//高速
-    //ESmotor((h1 *(long long) path_num_test) + path_hosei_test[path_num_test],90,0,1);
     
     Set_motor_pid_mode(0);//低速
-    //ESmotor((s1 *(long long) path_num_test) + path_hosei_test[path_num_test],65,0,1); 
+    ESmotor((s1 *(long long) path_num_test) + path_hosei_test[path_num_test],60,0,1); 
     
-    S_run_maze_search(path_num_test,65,65 ,  4);
+    //S_run_maze_search(path_num_test,65,65 ,  4);
+ 
+    ir_flag = 0;
+    motor(0,0);
+    
+    int l,r;
+    l = get_encoder_total_L();
+    r = get_encoder_total_R();
+    
+    while(get_sw() == 0);
+    printf2("%d , %d\n",l,r);
+    
+    while(1);
+    /////////////////////////////////////////
+ */
+ /*
+       ///////////////////////////////
+    int path_hosei_test[31] = {0,
+ 			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 
+ 			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0};//path_numごとに距離補正する
+  			  
+    int path_num_test = 8;
+    
+    delay(1000);
+    
+    ir_flag = 1;//赤外線ON
+    if( Gy_flag == 0){
+		led_up();
+				
+		Gyro_init();	//ジャイロ、SPIの初期化 　注意：少し時間かかります 処理中はジャイロセンサーを動かさないこと
+		Gy_flag = 1;
+	    }
+    delay(100);
+    Encoder_reset();
+    Set_motor_pid_mode(1);//高速
+    ESmotor((h1 *(long long) path_num_test) + path_hosei_test[path_num_test],80,0,1);
  
     ir_flag = 0;
     motor(0,0);
