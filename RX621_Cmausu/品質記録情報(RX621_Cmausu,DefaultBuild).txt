@@ -1,15 +1,13 @@
 品質記録情報
-2026年6月6日 16:03:47
+2026年6月6日 18:34:55
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
-RX621_Cmausu.c(1886):W0520186:Pointless comparison of unsigned integer with zero
-RX621_Cmausu.c(1886):W0520186:Pointless comparison of unsigned integer with zero
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
------- ビルド終了(エラー:0個, 警告:4個)(RX621_Cmausu, DefaultBuild) ------
+------ ビルド終了(エラー:0個, 警告:2個)(RX621_Cmausu, DefaultBuild) ------
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -47,8 +45,8 @@ DefaultBuild\RX621_Cmausu.clnk :
 
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 8569e9cb33316cc771575dbb3d7a07031fc866a2
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 576d587905c3f6fadfc56be7a1c2a7b0675c3785
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 0043e9f2f754fa60d3bfbfec7234efd8e8158a87
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 82fbed0743b718f453af5b3c791756da604a017d
 
 
 --- システム情報 ---
@@ -74,11 +72,11 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 576d587905c3f6fadfc56be
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  300 MB
+  382 MB
  *GDIオブジェクト数
-  2051
+  2053
  *USERオブジェクト数
-  967
+  960
  *開いているファイル
   3 editors, 3 files, 278 KB
 

@@ -488,12 +488,12 @@ void Smotor(int M,char w_flag){
 		}
 	    }else{//高速
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
-			ir_core = 10; // 25  //左右の差の許容範囲
+			ir_core = 5; // 25  //左右の差の許容範囲
 					
-			kp = 0.1; //0.2
-			kd = 6.0; //8.0
+			kp = 0.1; //0.1
+			kd = 6.0; //6.0
 		}else{
-			ir_core = 20; // 25  //左右の差の許容範囲
+			ir_core = 10; // 25  //左右の差の許容範囲
 					
 			kp = 0.1;//0.2
 			kd = 7.0;//8.0
@@ -635,16 +635,16 @@ void Smotor(int M,char w_flag){
 		    }else{//高速
 		    	
 			//if(motor_pid_flag_fast == 0 && abs(GyroSum_get()) < 2000){
-			    
+			  
 			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 			    
 			    ir_sa = max(min(ir_sa,500),-500);
 			
-			    
-			    	GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) );
-				ir_sa_buf = ir_sa;
-			   		
-			   
+			    //if(abs(GyroSum_get()) < 500){  
+			    	GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) ); 
+			   // }
+			    ir_sa_buf = ir_sa;
+		
 			//}
 			//motor_pid_flag_fast++;
 			//if(motor_pid_flag_fast > 5)motor_pid_flag_fast = 0;//壁補正の周期を調整する
