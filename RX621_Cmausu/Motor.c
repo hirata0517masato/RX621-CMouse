@@ -193,7 +193,7 @@ void Smotor(int M,char w_flag){
     
     static int naname_flag_old = 0;
     
-    static int motor_pid_flag_fast = 0;
+   // static int motor_pid_flag_fast = 0;
     
     int kusi_flag = 0;
     int naname_flag = 0;
@@ -490,7 +490,7 @@ void Smotor(int M,char w_flag){
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
 			ir_core = 10; // 25  //左右の差の許容範囲
 					
-			kp = 0.05; //0.2
+			kp = 0.1; //0.2
 			kd = 6.0; //8.0
 		}else{
 			ir_core = 20; // 25  //左右の差の許容範囲
@@ -764,18 +764,20 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     int ir_L_now = 0,ir_R_now = 0;
     int ir_L_flag = 0,ir_R_flag = 0;
     int ir_L_flag_1masu = 0,ir_R_flag_1masu = 0;
+    int ir_L_flag_1masu_flag = 0,ir_R_flag_1masu_flag = 0;
     int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
     int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 //    int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
 //    int kame_hosei;
     long long enc_kabe_L,enc_kabe_R;
 	
-    int p = 1,min_M = 10,M = 10;
+    //int p = 1;
+    int min_M = 10,M = 10;
     int min_M_use = 0;
 	
     int non_stop_min_M = 15;//探索の既知区間用
 
-    int M_old = 0;
+    //int M_old = 0;
     
     //Encoder_reset();
     enc_base_L = get_encoder_total_L();
@@ -949,7 +951,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	
 	Smotor(M,w_flag);
 	
-	M_old = M;
+	//M_old = M;
 		
 		
 	if(enc_now - ((long long)s1 * path_cnt ) > s1){//１マス進んだ
@@ -1077,54 +1079,62 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	if(A >= s1 && (A - enc_now) < s1 && non_stop == false && get_IR(IR_F) < 50){//１マス以上進 && 残り１マス && 探索中　&& 前壁が近くない　で壁切れした場合は半マス進んで終了/距離補正に変更
 	
 		if(ir_L_flag_1masu == 0){
-			if(get_IR(IR_L) > 20){
-				ir_L_flag_1masu = 1;
+			if(get_IR(IR_L) > 30){
+				ir_L_flag_1masu_flag++;
+				
+				if(ir_L_flag_1masu_flag > 5){
+					ir_L_flag_1masu_flag = 0;
+					ir_L_flag_1masu = 1;
+				}
+			}else{
+				ir_L_flag_1masu_flag = 0;
 			}
 		}else if(ir_L_flag_1masu == 1){
-			if(get_IR(IR_L) < 10){
-				ir_L_flag_1masu = 2;
+			if(get_IR(IR_L) < 10 && get_IR(IR_F) < 220){
+				ir_L_flag_1masu_flag++;
 				
-				/*ESmotor(h1_2,  25 ,non_stop,w_flag);  
-				//while(1){
-					//led()
-				//	PORTA.DR.BIT.B0 = 0;
-				//	PORTA.DR.BIT.B1 = 0;
-				//	PORTA.DR.BIT.B2 = 1;
-				//	PORTA.DR.BIT.B3 = 1;
-				motor(0,0);
-				//}
-				return;
-				*/
+				if(ir_L_flag_1masu_flag > 5){
+					ir_L_flag_1masu_flag = 0;
+					ir_L_flag_1masu = 2;
+					
+					
+					//壁切れ距離補正
+					enc_base_L += h1_2 - (A - enc_now) ;
+					enc_base_R += h1_2 - (A - enc_now) ;
+				}
 				
-				//壁切れ距離補正
-				//enc_base_L += h1_2 - (A - enc_now) ;
-				//enc_base_R += h1_2 - (A - enc_now) ;
+			}else{
+				ir_L_flag_1masu_flag = 0;
 			}
 		}
 		
 		if(ir_R_flag_1masu == 0){
-			if(get_IR(IR_R) > 20){
-				ir_R_flag_1masu = 1;
+			if(get_IR(IR_R) > 30){
+				ir_R_flag_1masu_flag++;
+				
+				if(ir_R_flag_1masu_flag > 5){
+					ir_R_flag_1masu_flag = 0;
+					ir_R_flag_1masu = 1;
+				}
+			}else{
+				ir_R_flag_1masu_flag = 0;
 			}
 		}else if(ir_R_flag_1masu == 1){
-			if(get_IR(IR_R) < 10){
-				ir_R_flag_1masu = 2;
-				/*
-				ESmotor(h1_2, 25 ,non_stop,w_flag); 
-				//while(1){
-					//led()
-				//	PORTA.DR.BIT.B0 = 1;
-				//	PORTA.DR.BIT.B1 = 1;
-				//	PORTA.DR.BIT.B2 = 0;
-				//	PORTA.DR.BIT.B3 = 0;
-				motor(0,0);
-				//}
-				return;
-				*/
+			if(get_IR(IR_R) < 10 && get_IR(IR_F) < 220){
+				ir_R_flag_1masu_flag++;
 				
-				//壁切れ距離補正
-				//enc_base_L += h1_2 - (A - enc_now) ;
-				//enc_base_R += h1_2 - (A - enc_now) ;
+				if(ir_R_flag_1masu_flag > 5){
+					ir_R_flag_1masu_flag = 0;
+					ir_R_flag_1masu = 2;
+					
+					
+					//壁切れ距離補正
+					enc_base_L += h1_2 - (A - enc_now) ;
+					enc_base_R += h1_2 - (A - enc_now) ;
+				}
+				
+			}else{
+				ir_R_flag_1masu_flag = 0;
 			}
 		}
 	}
@@ -1292,11 +1302,11 @@ void ETmotorU(long long A, long long E, char non_stop){
 //    GyroSum_reset();
     //Encoder_reset();
 
-    int M_kabe = 13;
+    int M_kabe = 30;//13
     int M 		= 35;//33
 	
     //壁切れ
-    if(A > 0){//R
+ /*   if(A > 0){//R
 	while(get_IR(IR_R) > 15){
 	    Smotor(M_kabe,true);
 	}
@@ -1306,7 +1316,10 @@ void ETmotorU(long long A, long long E, char non_stop){
 	    Smotor(M_kabe,true);
 	}
     }
-
+*/
+    //内側に当たらないように距離調整
+    ESmotor(230,M_kabe,true,true);
+    
     //	GyroSum_reset();
     //Encoder_reset();
 		
@@ -1428,11 +1441,11 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 //    GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 25;//18
+    int M_kabe = 20;//18
     int M 		= 35;//33
 
     
-    ESmotor(80,M_kabe,true,true);
+    ESmotor(50,M_kabe,true,true);
 //    GyroSum_reset();
     
     long long L = get_encoder_total_L();
