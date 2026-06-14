@@ -2843,9 +2843,9 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     }else if(v2_flag == 2){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
     
     	if(Lflag == 0 && Rflag == 0){
-		ESmotor(150,powor,true,false);
+		ESmotor(250,powor,true,false);//150
 	}else{
-    		ESmotor(170,powor,true,false);// 210
+    		ESmotor(260,powor,true,false);// 170
 	}
     }else if(v2_flag == 20){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢
     
@@ -2877,7 +2877,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     	ESmotor(300,powor,true,false);
 
     }else if(v2_flag == 7){//‚Å‚½‚ ‚ÆƒJ[ƒu
-    	ESmotor(180,powor,true,false);
+    	ESmotor(200,powor,true,false);//180
 	
     }else{
     	ESmotor(250,powor,true,false);
@@ -3851,9 +3851,9 @@ void run_shortest_path(){
  			 	  0,0,0,0,0,0,0,0, 
  			  	  0,0,0,0,0,0,0};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
 				
-    int run_speed = 40;
-    int run_speed_up = 50;    //–¢’m‹æŠÔ‰Á‘¬
-    int run_speed_boost = 80; //Šù’m‹æŠÔ‰Á‘¬
+    int run_speed = 30;
+    int run_speed_up = 40;    //–¢’m‹æŠÔ‰Á‘¬
+    int run_speed_boost = 60; //Šù’m‹æŠÔ‰Á‘¬
     
     int run_speed_kabe = 15; //Ÿ‚ª’â~‚Ì
     int run_speed_kabe_sr = 20; //Ÿ‚ªƒXƒ‰ƒ[ƒ€‚Ì
@@ -7507,8 +7507,11 @@ void run_shortest_path_fin(	char naname){
 	      	path_num = dequeue();
 		
 	    }else if(queue_next(1) == 0){//Î‚ßŒã@’¼ü
-		L_rotate_naname(l45 * path_num * 0.92,false);//0.95
-	
+	    	if(path_num_old <= 2){//2ƒ}ƒX@Zƒpƒ^[ƒ“
+			L_rotate_naname(l45 * path_num * 1.00,false);//0.95
+		}else{
+			L_rotate_naname(l45 * path_num * 0.92,false);//0.95
+		}
 	    }else if(queue_next(1) == -1){//Î‚ßŒã@ƒJ[ƒu
 		L_rotate_naname(l45 * path_num * 1.20,false);
 
@@ -7991,8 +7994,11 @@ void run_shortest_path_fin(	char naname){
 	      	path_num = dequeue();
 		
 	    }else if(queue_next(1) == 0){//Î‚ßŒã@’¼ü
-		R_rotate_naname(r45 * path_num * 0.92,false); //0.95
-	
+	    	if(path_num_old <= 2){//2ƒ}ƒX@Zƒpƒ^[ƒ“
+			R_rotate_naname(r45 * path_num * 1.00,false); //0.95
+		}else{
+			R_rotate_naname(r45 * path_num * 0.92,false); //0.95
+		}
 	    }else if(queue_next(1) == 1){//Î‚ßŒã@ƒJ[ƒu
 		R_rotate_naname(r45 * path_num * 1.20,false); 
 		

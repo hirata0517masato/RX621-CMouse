@@ -188,7 +188,7 @@ void Smotor(int M,char w_flag){
     static int cnt5 = 0;
 	
     static int ir_sa = 0,ir_sa_buf = 0;
-    static int ir_wall = 140,ir_core = 0,ir_wall2 = 50;
+    static int ir_wall = 140,ir_core = 0,ir_wall2 = 60;//50
     static float kp = 0,kd = 0;
     
     static int naname_flag_old = 0;
@@ -488,12 +488,12 @@ void Smotor(int M,char w_flag){
 		}
 	    }else{//高速
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
-			ir_core = 5; // 25  //左右の差の許容範囲
+			ir_core = 15; // 25  //左右の差の許容範囲
 					
 			kp = 0.1; //0.1
 			kd = 6.0; //6.0
 		}else{
-			ir_core = 10; // 25  //左右の差の許容範囲
+			ir_core = 20; // 25  //左右の差の許容範囲
 					
 			kp = 0.1;//0.2
 			kd = 7.0;//8.0
@@ -577,14 +577,14 @@ void Smotor(int M,char w_flag){
 			 }else if(get_IR(IR_LT) > 40 && get_IR(IR_RT) < 25  && get_IR(IR_F) < 50){//斜め左だけ壁がある
 			    if(abs(get_IR(IR_LT) - ir_wall2)*2 > ir_core/2) {// 左右の差が小さきすぎない
 							
-				ir_sa =  (get_IR(IR_LT) - ir_wall2) *2;
+				ir_sa =  (get_IR(IR_LT) - ir_wall2) ;//*2;
 				motor_pid_flag = 1;
 				
 			    }	
 			 }else if(get_IR(IR_LT) < 25 && get_IR(IR_RT) > 40  && get_IR(IR_F) < 50){//斜め右だけ壁がある
 			    if(abs(ir_wall2 - get_IR(IR_RT))*2 > ir_core/2 ){//左右の差が小さきすぎない
 						
-				ir_sa =  (ir_wall2 - get_IR(IR_RT)) *2;
+				ir_sa =  (ir_wall2 - get_IR(IR_RT)) ;//*2;
 				motor_pid_flag = 1;
 				
 			    }
