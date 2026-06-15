@@ -7398,7 +7398,7 @@ void run_shortest_path_fin(	char naname){
  			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
 
 			  
-    int run_speed = 100;
+    int run_speed = 95;
     int run_speed_naname = 60;
     
     /*   

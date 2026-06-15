@@ -194,6 +194,7 @@ void Smotor(int M,char w_flag){
     static int naname_flag_old = 0;
     
    // static int motor_pid_flag_fast = 0;
+   
     
     int kusi_flag = 0;
     int naname_flag = 0;
@@ -488,15 +489,15 @@ void Smotor(int M,char w_flag){
 		}
 	    }else{//高速
 	    	if(get_encoder_L() > 10 && get_encoder_R() > 10){
+			ir_core = 10; // 25  //左右の差の許容範囲
+					
+			kp = 0.05; //0.1
+			kd = 15.0; //6.0
+		}else{
 			ir_core = 15; // 25  //左右の差の許容範囲
 					
-			kp = 0.1; //0.1
-			kd = 6.0; //6.0
-		}else{
-			ir_core = 20; // 25  //左右の差の許容範囲
-					
-			kp = 0.1;//0.2
-			kd = 7.0;//8.0
+			kp = 0.05;//0.2
+			kd = 10.0;//8.0
 		}
 	    }
 			
@@ -506,7 +507,7 @@ void Smotor(int M,char w_flag){
 			
 		if(motor_pid_mode == 0){//低速
 			 
-			if(get_IR(IR_LT) > 30 && get_IR(IR_RT) > 30 && get_IR(IR_F) < 50){//斜め左右に壁がある
+			if(get_IR(IR_LT) > 20 && get_IR(IR_RT) > 20 && get_IR(IR_F) < 50){//斜め左右に壁がある
 			    if(abs(get_IR(IR_LT) - get_IR(IR_RT))*2 > ir_core){//  左右の差が小さきすぎない
 							
 				ir_sa =  (get_IR(IR_LT) - get_IR(IR_RT)) *2;
@@ -542,7 +543,7 @@ void Smotor(int M,char w_flag){
 				    motor_pid_flag = 1;
 				}
 		    	
-			}else if(get_IR(IR_LT) > 40 && get_IR(IR_RT) < 25  && get_IR(IR_F) < 50 ){//斜め左だけ壁がある
+			}else if(get_IR(IR_LT) > 20 && get_IR(IR_RT) < 15  && get_IR(IR_F) < 50 ){//斜め左だけ壁がある
 		    
 				if(abs(get_IR(IR_LT) - ir_wall2)*2 > ir_core/2) {// 左右の差が小さきすぎない
 							
@@ -552,7 +553,7 @@ void Smotor(int M,char w_flag){
 				    motor_pid_flag = 1;
 				}
 		    	
-			}else if(get_IR(IR_LT) < 25 && get_IR(IR_RT) > 40  && get_IR(IR_F) < 50){//斜め右だけ壁がある
+			}else if(get_IR(IR_LT) < 15 && get_IR(IR_RT) > 20  && get_IR(IR_F) < 50){//斜め右だけ壁がある
 		    
 				if(abs(ir_wall2 - get_IR(IR_RT))*2 > ir_core/2 ){//左右の差が小さきすぎない
 						
@@ -565,7 +566,7 @@ void Smotor(int M,char w_flag){
 		
 		}else{//高速
 		
-			 if(get_IR(IR_LT) > 30 && get_IR(IR_RT) > 30 && get_IR(IR_F) < 50){////斜め左右に壁がある 
+			 if(get_IR(IR_LT) > 15 && get_IR(IR_RT) > 15 && get_IR(IR_F) < 50){////斜め左右に壁がある 
 			    
 			    if(abs(get_IR(IR_LT) - get_IR(IR_RT))*2 > ir_core){//  左右の差が小さきすぎない
 							
@@ -574,14 +575,14 @@ void Smotor(int M,char w_flag){
 				motor_pid_flag = 1;
 			    }
 			 
-			 }else if(get_IR(IR_LT) > 40 && get_IR(IR_RT) < 25  && get_IR(IR_F) < 50){//斜め左だけ壁がある
+			 }else if(get_IR(IR_LT) > 15 && get_IR(IR_RT) < 15  && get_IR(IR_F) < 50){//斜め左だけ壁がある
 			    if(abs(get_IR(IR_LT) - ir_wall2)*2 > ir_core/2) {// 左右の差が小さきすぎない
 							
 				ir_sa =  (get_IR(IR_LT) - ir_wall2) ;//*2;
 				motor_pid_flag = 1;
 				
 			    }	
-			 }else if(get_IR(IR_LT) < 25 && get_IR(IR_RT) > 40  && get_IR(IR_F) < 50){//斜め右だけ壁がある
+			 }else if(get_IR(IR_LT) < 15 && get_IR(IR_RT) > 15  && get_IR(IR_F) < 50){//斜め右だけ壁がある
 			    if(abs(ir_wall2 - get_IR(IR_RT))*2 > ir_core/2 ){//左右の差が小さきすぎない
 						
 				ir_sa =  (ir_wall2 - get_IR(IR_RT)) ;//*2;
@@ -638,10 +639,11 @@ void Smotor(int M,char w_flag){
 			  
 			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 			    
-			    ir_sa = max(min(ir_sa,500),-500);
+			    ir_sa = max(min(ir_sa,1000),-1000);
 			
 			    //if(abs(GyroSum_get()) < 500){  
-			    	GyroSum_add(ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) ); 
+			    
+			    GyroSum_add( ir_sa * kp - ((ir_sa_buf - ir_sa) * kd) ); 
 			   // }
 			    ir_sa_buf = ir_sa;
 		
@@ -681,21 +683,21 @@ void Smotor(int M,char w_flag){
 		if( get_encoder_L() < 30 || get_encoder_R() < 30  ){//速度が遅い時はジャイロ弱める
 		
 		    if( get_encoder_L() < 5 || get_encoder_R() < 5){
-			powor = powor * 1 / 4;
-			powor_max = 5;
+			powor = powor * 2 / 4;
+			powor_max = 20;
 			
 		    }else if( get_encoder_L() < 10 || get_encoder_R() < 10){
-			powor = powor * 2 / 4;
-			powor_max = 10;
+			powor = powor * 3 / 4;
+			powor_max = 40;
 			
 		    }else{
-			powor = powor * 3 / 4;
-			powor_max = 30;
+			//powor = powor * 3 / 4;
+			powor_max = 80;
 		    }
 
 		}else{
 				
-			powor_max = 60;
+			powor_max = 100;
 		}
 	    }
 	}

@@ -6,16 +6,16 @@
 #define W	16 //X  変更すると迷路情報の保存ができなくなるバグあり
 #define H	16 //Y
 
-#define Start_x  0
-#define Start_y  0
-#define Start_angle 1 // スタートする時の向き　
+#define Start_x  0 //変更しないこと
+#define Start_y  0 //変更しないこと
+#define Start_angle 1 // スタートする時の向き　 //変更しないこと
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Goal_x  8
-#define Goal_y  7
-#define Goal_angle 1 //ゴールした直後の向き スタートの向きが1
+#define Goal_x  0
+#define Goal_y  1
+#define Goal_angle 3 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
 #define Pickup_x  0	
@@ -80,9 +80,9 @@
 #define rslsr90_BIG_offset  (-200)	      //タイヤ削れた時：-100
 
 #define usll180     (2240)	//Uターン 2240
-#define usll180_fin (-10)	//Uターン 微調整
+#define usll180_fin (-50)	//Uターン 微調整
 #define uslr180     (2240)	//Uターン 2240
-#define uslr180_fin (-10)	//Uターン　微調整
+#define uslr180_fin (-50)	//Uターン　微調整
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 
