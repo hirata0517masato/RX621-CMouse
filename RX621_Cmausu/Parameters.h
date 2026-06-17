@@ -76,14 +76,14 @@
 #define rslsr90_offset  (-40)
 
 #define rslsl90_BIG (1570)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsl90_BIG_offset  (-200)	      //タイヤ削れた時：-100	
+#define rslsl90_BIG_offset  (-180)	      //タイヤ削れた時：-100	
 #define rslsr90_BIG (1570)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsr90_BIG_offset  (-200)	      //タイヤ削れた時：-100
+#define rslsr90_BIG_offset  (-180)	      //タイヤ削れた時：-100
 
-#define usll180     (2230)	//Uターン 2240
-#define usll180_fin (-70)	//Uターン 微調整
-#define uslr180     (2230)	//Uターン 2240
-#define uslr180_fin (-70)	//Uターン　微調整
+#define usll180     (2235)	//Uターン 2240
+#define usll180_fin (-1)	//Uターン 微調整
+#define uslr180     (2235)	//Uターン 2240
+#define uslr180_fin (-1)	//Uターン　微調整
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 

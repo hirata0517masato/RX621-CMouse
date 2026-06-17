@@ -2499,7 +2499,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 		
 		
 		if(Lflag2 == 0){
-			if(get_IR(IR_LT) > 10 && (get_IR(IR_L) < 20 || ( 50 < get_IR(IR_L) && get_IR(IR_L) < 110) )){
+			if(get_IR(IR_LT) > 14 && (get_IR(IR_L) < 20 || ( 50 < get_IR(IR_L) && get_IR(IR_L) < 110) )){
 				cnt2++;
 				if(cnt2 > 3){
 			    		Lflag2 = 1;
@@ -2558,7 +2558,7 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 		}
 			
 		if(Rflag2 == 0){
-			if(get_IR(IR_RT) > 10 && (get_IR(IR_R) < 20 || ( 50 < get_IR(IR_R) && get_IR(IR_R) < 110))){
+			if(get_IR(IR_RT) > 14 && (get_IR(IR_R) < 20 || ( 50 < get_IR(IR_R) && get_IR(IR_R) < 110))){
 				cnt2++;
 				if(cnt2 > 3){
 			    		Rflag2 = 1;
@@ -7753,9 +7753,9 @@ void run_shortest_path_fin(	char naname){
 					    	}
 					}else{
 					    	if(path_num <= 1){
-							S_run_kabe(30,true,1); 
+							S_run_kabe(25,true,1); 
 					    	}else{
-					    		S_run_kabe(25,true,1); 
+					    		S_run_kabe(20,true,1); 
 					    		//S_run_kabe(30,4,1);// w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 					    	}
 					}
@@ -7775,9 +7775,9 @@ void run_shortest_path_fin(	char naname){
 					    
 					}else{
 					    	if(path_num <= 1){
-							S_run_kabe(30,true,2);   
+							S_run_kabe(25,true,2);   
 					    	}else{
-							S_run_kabe(25,true,2); 
+							S_run_kabe(20,true,2); 
 							//S_run_kabe(30,4,2);// w_flag = 4 ‹ø‚Ì•Ç•â³‚ ‚è
 					    	}
 					}

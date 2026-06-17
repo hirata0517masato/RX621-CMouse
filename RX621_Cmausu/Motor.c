@@ -578,14 +578,14 @@ void Smotor(int M,char w_flag){
 			 }else if(get_IR(IR_LT) > 15 && get_IR(IR_RT) < 15  && get_IR(IR_F) < 50){//éŒÇﬂç∂ÇæÇØï«Ç™Ç†ÇÈ
 			    if(abs(get_IR(IR_LT) - ir_wall2)*2 > ir_core/2) {// ç∂âEÇÃç∑Ç™è¨Ç≥Ç´Ç∑Ç¨Ç»Ç¢
 							
-				ir_sa =  (get_IR(IR_LT) - ir_wall2) ;//*2;
+				ir_sa =  (get_IR(IR_LT) - ir_wall2) *2;
 				motor_pid_flag = 1;
 				
 			    }	
 			 }else if(get_IR(IR_LT) < 15 && get_IR(IR_RT) > 15  && get_IR(IR_F) < 50){//éŒÇﬂâEÇæÇØï«Ç™Ç†ÇÈ
 			    if(abs(ir_wall2 - get_IR(IR_RT))*2 > ir_core/2 ){//ç∂âEÇÃç∑Ç™è¨Ç≥Ç´Ç∑Ç¨Ç»Ç¢
 						
-				ir_sa =  (ir_wall2 - get_IR(IR_RT)) ;//*2;
+				ir_sa =  (ir_wall2 - get_IR(IR_RT)) *2;
 				motor_pid_flag = 1;
 				
 			    }
@@ -1304,7 +1304,7 @@ void ETmotorU(long long A, long long E, char non_stop){
 //    GyroSum_reset();
     //Encoder_reset();
 
-    int M_kabe = 30;//13
+    int M_kabe = 20;//13
     int M 		= 35;//33
 	
     //ï«êÿÇÍ
@@ -1320,7 +1320,7 @@ void ETmotorU(long long A, long long E, char non_stop){
     }
 */
     //ì‡ë§Ç…ìñÇΩÇÁÇ»Ç¢ÇÊÇ§Ç…ãóó£í≤êÆ
-    ESmotor(230,M_kabe,true,true);
+    ESmotor(100,M_kabe,true,true);
     
     //	GyroSum_reset();
     //Encoder_reset();
