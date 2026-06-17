@@ -639,7 +639,7 @@ void Smotor(int M,char w_flag){
 			  
 			    ir_sa += (ir_sa > 0)? -ir_core : ir_core;
 			    
-			    ir_sa = max(min(ir_sa,1000),-1000);
+			    ir_sa = max(min(ir_sa,500),-500);
 			
 			    //if(abs(GyroSum_get()) < 500){  
 			    
@@ -680,24 +680,24 @@ void Smotor(int M,char w_flag){
 				
 	    }else{
 		//if( get_encoder_L() < 30 || get_encoder_R() < 30 || M < 50 ){//速度が遅い時はジャイロ弱める
-		if( get_encoder_L() < 30 || get_encoder_R() < 30  ){//速度が遅い時はジャイロ弱める
+		if( get_encoder_L() < 70 || get_encoder_R() < 70  ){//速度が遅い時はジャイロ弱める
 		
-		    if( get_encoder_L() < 5 || get_encoder_R() < 5){
+		    if( get_encoder_L() < 20 || get_encoder_R() < 20){
 			powor = powor * 2 / 4;
 			powor_max = 20;
 			
-		    }else if( get_encoder_L() < 10 || get_encoder_R() < 10){
+		    }else if( get_encoder_L() < 30 || get_encoder_R() < 30){
 			powor = powor * 3 / 4;
 			powor_max = 40;
 			
 		    }else{
-			//powor = powor * 3 / 4;
-			powor_max = 80;
+			powor = powor * 3 / 4;
+			powor_max = 50;
 		    }
 
 		}else{
 				
-			powor_max = 100;
+			powor_max = 50;
 		}
 	    }
 	}

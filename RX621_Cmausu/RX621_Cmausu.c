@@ -383,6 +383,7 @@ void main(void)
 	    //led_up();
 			
 	    GyroSum_reset();
+	    GyroSumGlobal_reset();
 	    Encoder_reset();
 	}
 		
@@ -1662,7 +1663,7 @@ void log_load(){
 
     int cnt = 0;
     
-    printf2("status\tX\tY\tA\t  S5\tS4\tS3\tS2\tS1\tS0\tS6\t   PWM_L PWM_R\tENC_L ENC_R\n\n");
+    printf2("status\tX\tY\tA\t  S5\tS4\tS3\tS2\tS1\tS0\tS6\t   PWM_L PWM_R\tENC_L ENC_R\tG_sum\tG_sum_global\n\n");
 	
     while(block_num < 16){
 	DataFlash_read(block_num,log,sizeof(log));
@@ -1692,7 +1693,15 @@ void log_load(){
 		    delay(1);//printfを高速、連続で使用すると動作が不安定
 	    }
 	    
-	    printf2(" : \t%3d\t%3d\t : \t%3d\t%3d\n",log_minus(log[i+8]),log_minus(log[i+9]),log_minus(log[i+10]) <<1,log_minus(log[i+11]) <<1  );	
+	    printf2(" : \t%3d\t%3d\t : \t%3d\t%3d",log_minus(log[i+8]),log_minus(log[i+9]),log_minus(log[i+10]) <<1,log_minus(log[i+11]) <<1  );	
+														
+	    cnt++;
+	    if(cnt > 16){
+		    cnt = 0;
+		    delay(1);//printfを高速、連続で使用すると動作が不安定
+	    }
+	    
+	     printf2(" : \t%3d\t%3d\n",log_minus(log[i+14])*2,log_minus(log[i+15])*2 );	
 														
 	    cnt++;
 	    if(cnt > 16){
@@ -8153,6 +8162,7 @@ void Excep_CMT0_CMI0(void)
     static char log_flag = 0;
     static long long backup_irq_time = 0;
     static char backup_irq_cnt_now = 0;
+    static long long g_tmp = 0;
 
     t_1ms++;
     if(t_1ms > 99999)t_1ms = 99999;
@@ -8277,7 +8287,18 @@ void Excep_CMT0_CMI0(void)
 		
 		log_buff[log_cnt++] = status_log;
 		
-		log_cnt+=2;//合計16個になるように調整する
+		g_tmp = (GyroSum_get()/g_1)%360;
+		if(180 < g_tmp) g_tmp -= 360;
+		if(g_tmp < -180) g_tmp += 360;
+		log_buff[log_cnt++] = (char)( g_tmp/2  );
+		
+		g_tmp = (GyroSumGlobal_get()/g_1)%360;
+		if(180 < g_tmp) g_tmp -= 360;
+		if(g_tmp < -180) g_tmp += 360;
+		log_buff[log_cnt++] = (char)(g_tmp/2);
+		
+		
+		//log_cnt+=1;//合計16個になるように調整する
 				
 		if(log_cnt >= LOG_BUF_MAX-2){//たまったら保存する
 		    log_save();

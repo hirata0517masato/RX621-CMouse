@@ -8,6 +8,7 @@
 int gyro= 0;        /* ジャイロセンサーの値  左＋　右ー   */
 long long gyro_base = 0;
 long long gyro_sum = 0;  //左＋　右ー  
+long long gyro_sum_global = 0;  //左＋　右ー  
 
 int Gyro_kp_search = 2,Gyro_kd_search = 30;//探索用
 int Gyro_kp = 2,Gyro_kd = 45;//最短用 
@@ -18,12 +19,20 @@ void GyroSum_reset(){
   gyro_sum = 0;
 }
 
+void GyroSumGlobal_reset(){
+  gyro_sum_global = 0;
+}
+
 void GyroSum_add(long long a){
   gyro_sum += a;
 }
 
 long long GyroSum_get(){
   return gyro_sum;
+}
+
+long long GyroSumGlobal_get(){
+  return gyro_sum_global;
 }
 
 int Gyro(){
@@ -50,6 +59,7 @@ void Gyro_update(){
 
   gyro = (Gyro_get() - gyro_base);
   gyro_sum += (long long)gyro ; 
+  gyro_sum_global += (long long)gyro ;
 }
 
 int gyro_powor_L(){

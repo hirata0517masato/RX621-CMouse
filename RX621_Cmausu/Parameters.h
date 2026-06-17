@@ -33,6 +33,7 @@
 #define W_P	(400) //エンコーダ1週のパルス数
 
 //ジャイロ関連
+#define g_1 (250)     //1度
 #define l45  (11500)	//45度 左回転 11500
 #define r45  (11500)	//45度 右回転 11500 10500
 #define l90  (20900)	//90度 左回転
@@ -79,10 +80,10 @@
 #define rslsr90_BIG (1570)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsr90_BIG_offset  (-200)	      //タイヤ削れた時：-100
 
-#define usll180     (2240)	//Uターン 2240
-#define usll180_fin (-50)	//Uターン 微調整
-#define uslr180     (2240)	//Uターン 2240
-#define uslr180_fin (-50)	//Uターン　微調整
+#define usll180     (2230)	//Uターン 2240
+#define usll180_fin (-70)	//Uターン 微調整
+#define uslr180     (2230)	//Uターン 2240
+#define uslr180_fin (-70)	//Uターン　微調整
 
 #define r_cost 4		//迷路の重み　90度回転の場合
 
