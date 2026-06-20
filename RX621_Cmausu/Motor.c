@@ -688,16 +688,16 @@ void Smotor(int M,char w_flag){
 			
 		    }else if( get_encoder_L() < 30 || get_encoder_R() < 30){
 			powor = powor * 3 / 4;
-			powor_max = 40;
+			powor_max = 50;
 			
 		    }else{
 			powor = powor * 3 / 4;
-			powor_max = 50;
+			powor_max = 80;
 		    }
 
 		}else{
 				
-			powor_max = 50;
+			powor_max = 80;
 		}
 	    }
 	}
@@ -789,9 +789,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     
     if(motor_pid_mode == 1){//‚‘¬ƒ‚[ƒh
 	if(h1 < A){//‹——£‚ª”¼ƒ}ƒXˆÈã
-	    non_stop_min_M = 50;
+	    non_stop_min_M = 30;//50
 	}else{
-	    non_stop_min_M = 30;
+	    non_stop_min_M = 20;//30
 	}
     }
 	
@@ -855,11 +855,11 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 				M = min_M_use + ( (A - enc_now) / 4);
 				
 			}else{
-				if((A - enc_now) < 200){
+				if((A - enc_now) < 300){
 					M = min_M_use;
 				
 				}else{
-					M = min_M_use + ( (A - enc_now -200) / 15);//25
+					M = min_M_use + ( (A - enc_now -300) / 20);//25 15
 				}
 			}
 		}
@@ -1443,8 +1443,8 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 //    GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 20;//18
-    int M 		= 35;//33
+    int M_kabe = 18;//18
+    int M 		= 33;//33
 
     
     ESmotor(50,M_kabe,true,true);
@@ -1567,23 +1567,23 @@ void ETmotor(long long A, long long E, char non_stop){
 //    GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 20;
-    int M 		= 23;
-    int M_kabe2 = 20;
+    int M_kabe = 15;
+    int M 		= 20;
+    int M_kabe2 = 15;
 	
     //char flag = 0;
 	
     //•ÇØ‚ê
     if(A > 0){//R 
 	//while(get_IR(IR_R) > 10){
-	while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){ //‘O•Ç•â³‚ÍŽÎ‚ß‚É‚È‚é‚Æˆ«‰e‹¿‚ª‚ ‚é
+	while((get_IR(IR_R) > 15) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){ //‘O•Ç•â³‚ÍŽÎ‚ß‚É‚È‚é‚Æˆ«‰e‹¿‚ª‚ ‚é
 	    Smotor(M_kabe,true);
 	   // flag = 1;
 	}
 	//if(flag)ESmotor(45,M_kabe,true,false);
     }else{//L
 	//while(get_IR(IR_L) > 10){
-	while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){
+	while((get_IR(IR_L) > 15) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){
 	    Smotor(M_kabe,true);
 	    //flag = 1;
 	}
@@ -2064,7 +2064,7 @@ void Tmotor_naname_in(long long A){
     if(A > 0){//R
 	    //while(get_IR(IR_R) > 15){
 	    //while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 15 && get_IR(IR_F) < 23 ) ){ //‘O•Ç•â³‚ÍŽÎ‚ß‚É‚È‚é‚Æˆ«‰e‹¿‚ª‚ ‚é
-	    while((get_IR(IR_R) > 10) ){ 
+	    while((get_IR(IR_R) > 10) || (get_IR(IR_RT) > 10) ){ 
 	  
 		Smotor(M_kabe,true);
 		//	flag = 1;
@@ -2073,7 +2073,7 @@ void Tmotor_naname_in(long long A){
     }else{//L
 	    //while(get_IR(IR_L) > 15){
 	    //while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 15 && get_IR(IR_F) < 23 ) ){ //‘O•Ç•â³‚ÍŽÎ‚ß‚É‚È‚é‚Æˆ«‰e‹¿‚ª‚ ‚é
-	    while((get_IR(IR_L) > 10) ){ 
+	    while((get_IR(IR_L) > 10) || (get_IR(IR_LT) > 10) ){ 
 		Smotor(M_kabe,true);
 		//	flag = 1;
 	    }
