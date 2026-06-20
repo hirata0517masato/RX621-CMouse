@@ -42,8 +42,8 @@
 #define sl90  (24800)	//スラローム 23000 25000
 #define sr90  (24800)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
 
-#define sl90_search  (24500)	//スラローム 探索用 24900
-#define sr90_search  (24500)	//スラローム 探索用 //左右で同じ値でないと連続時にずれていく
+#define sl90_search  (24400)	//スラローム 探索用 24900
+#define sr90_search  (24400)	//スラローム 探索用 //左右で同じ値でないと連続時にずれていく
 
 #define sl90BIG  (26200)	//スラローム 大曲
 #define sr90BIG  (26200)	//スラローム 大曲
@@ -65,9 +65,9 @@
 #define s45_V2notFirst (350)	//初手斜め用　２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 
 #define rslsl90_search 		(920)	//スラローム 探索用 890
-#define rslsl90_search_offset  (-0)	
+#define rslsl90_search_offset  (-10)	
 #define rslsr90_search 		(920)	//スラローム 探索用 890
-#define rslsr90_search_offset  (-0)
+#define rslsr90_search_offset  (-10)
 
 
 #define rslsl90 	(900)	//スラローム 664
@@ -75,10 +75,10 @@
 #define rslsr90 	(900)	//スラローム 664
 #define rslsr90_offset  (-40)
 
-#define rslsl90_BIG (1510)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsl90_BIG_offset  (-130)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1510)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsr90_BIG_offset  (-130)	      //タイヤ削れた時：-100
+#define rslsl90_BIG (1505)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsl90_BIG_offset  (-150)	      //タイヤ削れた時：-100	
+#define rslsr90_BIG (1505)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsr90_BIG_offset  (-150)	      //タイヤ削れた時：-100
 
 #define usll180     (2235)	//Uターン 2240
 #define usll180_fin (-50)	//Uターン 微調整

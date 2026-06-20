@@ -1894,44 +1894,44 @@ void maze_update2(char x,char y){
 	
 	if(0 <= x && x < 15 && 0 <= y && y < 15){//ŠO˜g‚Å‚Í‚È‚¢
 		
-		if(maze_w[y][x] & (1 << (4+1)) != 0 ){
+		if((maze_w[y][x] & (1 << (4+1))) != 0 ){
 			kakutei_flag |= 1;
 			kakutei_cnt++;
 			
-			if(maze_w[y][x] & (1 << (1)) != 0){
+			if((maze_w[y][x] & (1 << (1))) != 0){
 				kakutei_kabe_cnt++;
 			}
 		}else{
 			mi_kakutei = 0;
 		}
 		
-		if(maze_w[y][x+1] & (1 << (4+2)) != 0 ){
+		if((maze_w[y][x+1] & (1 << (4+2))) != 0 ){
 			kakutei_flag |= 2;
 			kakutei_cnt++;
 			
-			if(maze_w[y][x+1] & (1 << (2)) != 0){
+			if((maze_w[y][x+1] & (1 << (2))) != 0){
 				kakutei_kabe_cnt++;
 			}
 		}else{
 			mi_kakutei = 1;
 		}
 		
-		if(maze_w[y+1][x] & (1 << (4+1)) != 0 ){
+		if((maze_w[y+1][x] & (1 << (4+1))) != 0 ){
 			kakutei_flag |= 4;
 			kakutei_cnt++;
 			
-			if(maze_w[y+1][x] & (1 << (1)) != 0){
+			if((maze_w[y+1][x] & (1 << (1))) != 0){
 				kakutei_kabe_cnt++;
 			}
 		}else{
 			mi_kakutei = 2;
 		}
 		
-		if(maze_w[y][x] & (1 << (4+2)) != 0 ){
+		if((maze_w[y][x] & (1 << (4+2))) != 0 ){
 			kakutei_flag |= 8;
 			kakutei_cnt++;
 			
-			if(maze_w[y][x] & (1 << (2)) != 0){
+			if((maze_w[y][x] & (1 << (2))) != 0){
 				kakutei_kabe_cnt++;
 			}
 		}else{
@@ -1939,8 +1939,9 @@ void maze_update2(char x,char y){
 		}
 		
 		if(kakutei_cnt == 3){//Žc‚è‚Ì1•Ç‚àŠm’è‚É‚Å‚«‚é
+		
 			if(kakutei_kabe_cnt == 0){//‚R–‡@•Ç‚ª‚È‚¢@Žc‚è‚Í•Ç‚ª‚ ‚é
-				
+			
 				if(mi_kakutei == 0){
 					maze_w[y][x] |= 1 << (4+1);
 					maze_w[y][x] |= (1 << (1));
@@ -2877,13 +2878,13 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     	ESmotor(210,powor,true,false);
 	
     }else if(v2_flag == 4){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚é‚Æ‚«
-    	ESmotor(300,powor,true,false);//270
+    	ESmotor(350,powor,true,false);//270
 	
     }else if(v2_flag == 5){//‚Qƒ}ƒXVƒ^[ƒ“‚Å‚½‚ ‚ÆƒJ[ƒu
     	ESmotor(240,powor,true,false);//170
 
     }else if(v2_flag == 6){//ŽÎ‚ß‚ÌŒã@’¼ü
-    	ESmotor(300,powor,true,false);
+    	ESmotor(400,powor,true,false);
 
     }else if(v2_flag == 7){//‚Å‚½‚ ‚ÆƒJ[ƒu
     	ESmotor(200,powor,true,false);//180
@@ -7491,7 +7492,7 @@ void run_shortest_path_fin(	char naname){
 	
 	case -11://L45
 	    if(comand_old == -1){
-	    	L_rotate_naname(l45 * path_num * 1.00,true);
+	    	L_rotate_naname(l45 * path_num * 0.90,true);
 	    }else{
 		L_rotate_naname(l45 * path_num,true); 
 	    }
@@ -8019,7 +8020,7 @@ void run_shortest_path_fin(	char naname){
 	
 	case 11://R45
             if(comand_old == 1){
-	    	R_rotate_naname(r45 * path_num * 1.00,true);
+	    	R_rotate_naname(r45 * path_num * 0.90,true);
 	    }else{
 		R_rotate_naname(r45 * path_num,true);
 	    }
