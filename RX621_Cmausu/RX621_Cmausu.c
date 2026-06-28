@@ -1664,7 +1664,7 @@ void log_load(){
 
     int cnt = 0;
     
-    printf2("status\tX\tY\tA\t  S5\tS4\tS3\tS2\tS1\tS0\tS6\t   PWM_L PWM_R\tENC_L ENC_R\tG_sum\tG_sum_global\n\n");
+    printf2("status\tX\tY\tA\t  S5\tS4\tS3\tS2\tS1\tS0\tS6\t   PWM_L PWM_R\tENC_L ENC_C  ENC_R\tG_sum\tG_sum_global\n\n");
 	
     while(block_num < 16){
 	DataFlash_read(block_num,log,sizeof(log));
@@ -1694,7 +1694,7 @@ void log_load(){
 		    delay(1);//printfを高速、連続で使用すると動作が不安定
 	    }
 	    
-	    printf2(" : \t%3d\t%3d\t : \t%3d\t%3d",log_minus(log[i+8]),log_minus(log[i+9]),log_minus(log[i+10]) <<1,log_minus(log[i+11]) <<1  );	
+	    printf2(" : \t%3d\t%3d\t : \t%3d\t%3d\t%3d",log_minus(log[i+8]),log_minus(log[i+9]),log_minus(log[i+10]) <<1, ((log_minus(log[i+10]) <<1)+(log_minus(log[i+11]) <<1))/2,log_minus(log[i+11]) <<1  );	
 														
 	    cnt++;
 	    if(cnt > 16){

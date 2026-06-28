@@ -781,10 +781,22 @@ void Smotor(int M,char w_flag){
     if(0 < enc_limit ){//エンコーダによる速度上限設定が有効のとき
     	
     	if(enc_limit + 10 < get_encoder_C() ){//速度上限を 大幅に 超えている
+		M = -20;//減速
+		
+	}else if(enc_limit + 5 < get_encoder_C() ){//速度上限を 大幅に 超えている
 		M = -10;//減速
 		
 	}else if(enc_limit < get_encoder_C() ){//速度上限を超えている
 		M = 0;//減速
+	
+	}else if(get_encoder_C() < enc_limit -10  ){//速度設定より　遅い場合
+		M += 30;
+		
+	}else if(get_encoder_C() < enc_limit -5  ){//速度設定より　遅い場合
+		M += 20;
+		
+	}else if(get_encoder_C() < enc_limit -3  ){//速度設定より　遅い場合
+		M += 10;
 	}
     }
 	
