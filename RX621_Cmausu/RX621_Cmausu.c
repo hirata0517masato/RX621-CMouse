@@ -5905,8 +5905,15 @@ void maze_search_all(){
 		
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 			motor(0,0);
-							
-			maze_search_adachi(Start_x,Start_y);
+
+#ifdef Pickup_x
+			pickup_x = Pickup_x;
+			pickup_y = Pickup_y;
+#else
+			search_pickup(&pickup_x,&pickup_y);
+#endif
+			maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
+			//maze_search_adachi(Start_x,Start_y);
 			led_down();
 			led_up();
 			led_down();
@@ -5958,7 +5965,13 @@ void maze_search_all(){
     
     
     if(time_limit <= 0){//　制限時間内に探索できなかった　
-		
+
+#ifdef Pickup_x
+	pickup_x = Pickup_x;
+	pickup_y = Pickup_y;
+#else
+	search_pickup(&pickup_x,&pickup_y);
+#endif
 	maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
 			
 	
@@ -7480,8 +7493,9 @@ void run_shortest_path_fin(	char naname){
     int run_speed        = 95;
     int run_speed_naname = 60;
     
-    int enc_limit_kabe 	   = 60; //0の場合は制限なし
-    int enc_limit_kabe_BIG = 80; //0の場合は制限なし
+    int enc_limit_kabe 	   	= 60; //0の場合は制限なし
+    int enc_limit_kabe_BIG 	= 80; //0の場合は制限なし
+    int enc_limit_kabe_naname   = 60; //0の場合は制限なし
     
     /*   
 	 R_curveU(ur180,true);
@@ -7539,7 +7553,7 @@ void run_shortest_path_fin(	char naname){
 		
 	    }else if(queue_next(1) == 1){//Sターン
 		L_curve(sl90,true);
-		ESmotor(200,25,true,true);//距離、スピード 200,30
+		ESmotor(100,25,true,true);//距離、スピード 200,30
 		
 	    }else if(queue_next(1) == -11 || queue_next(1) == 11){
 		L_curve(sl90,true);
@@ -7684,7 +7698,7 @@ void run_shortest_path_fin(	char naname){
           	if(path_num > 0){
 		
 		    if(comand_old == 12 || comand_old == -12){//前回が大曲だったら
-			  path_add = 300; 
+			  path_add = 500; 
 			  
 		    }else if(comand_old == 13 || comand_old == -13){//前回が斜め終わりだったら
 			 // path_add = - (h1) /2 ;//70;  
@@ -7716,7 +7730,7 @@ void run_shortest_path_fin(	char naname){
 		
 		
 		//if((get_IR(IR_R) > 20 && get_IR(IR_R) < 70 ) || (get_IR(IR_L) > 20 && get_IR(IR_L) < 70 ) || get_IR(IR_L) > 250 || get_IR(IR_R) > 250 || ((comand_old == 13 || comand_old == -13) && path_num < 2)){
-    		if((get_IR(IR_R) > 20 && get_IR(IR_R) < 70 ) || (get_IR(IR_L) > 20 && get_IR(IR_L) < 70 ) || get_IR(IR_L) > 250 || get_IR(IR_R) > 250 ){
+    		if((get_IR(IR_R) > 30 && get_IR(IR_R) < 60 ) || (get_IR(IR_L) > 30 && get_IR(IR_L) < 60 ) || (get_IR(IR_L) > 270) || (get_IR(IR_R) > 270) ){
     			
 			if(queue_next(1) == -12 || queue_next(1) == 12){//次は大曲予定
     				BIG_NG_flag = 1;//ずれが大きいので大曲禁止
@@ -7870,7 +7884,7 @@ void run_shortest_path_fin(	char naname){
 						if(path_num <= 1){
 							//S_run_kabe(40,true,1); 
 							Set_enc_limit(enc_limit_kabe_BIG);
-							S_run_kabe_BIG(40,4,1,path_num); //w_flag = 4 串の壁補正あり
+							S_run_kabe_BIG(50,4,1,path_num); //w_flag = 4 串の壁補正あり
 							Set_enc_limit(0);//速度制限なし
 							
 					    	}else{
@@ -7905,7 +7919,7 @@ void run_shortest_path_fin(	char naname){
 						if(path_num <= 1){
 							//S_run_kabe(40,true,2);  
 							Set_enc_limit(enc_limit_kabe_BIG);
-							S_run_kabe_BIG(40,4,2,path_num);  //w_flag = 4 串の壁補正あり
+							S_run_kabe_BIG(50,4,2,path_num);  //w_flag = 4 串の壁補正あり
 							Set_enc_limit(0);//速度制限なし
 					    	}else{
 							//S_run_kabe(30,true,2); 
@@ -7967,10 +7981,14 @@ void run_shortest_path_fin(	char naname){
 		
 		//距離が短いので少し速度高めに設定する
 		if(queue_next(1) == -11){//次　左
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname(55,3,1);
+		    Set_enc_limit(0);//速度制限なし
 			
 	        }else if(queue_next(1) == 11){//次　右
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname(55,3,2);
+		    Set_enc_limit(0);//速度制限なし
 		
 		}else if(queue_next(1) == -13){//次　左
 		
@@ -7994,7 +8012,9 @@ void run_shortest_path_fin(	char naname){
 		    	v2_flag = 1; 	
 		    }	
 		    
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname2(55,3,1,v2_flag);
+		    Set_enc_limit(0);//速度制限なし
 		    
 		 
 		    
@@ -8020,7 +8040,9 @@ void run_shortest_path_fin(	char naname){
 		    	v2_flag = 1;
 		    }
 		    
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname2(55,3,2,v2_flag);
+		    Set_enc_limit(0);//速度制限なし
 		   
 	        }
 		
@@ -8047,10 +8069,14 @@ void run_shortest_path_fin(	char naname){
 		status_log = 3;//ログに壁切れ開始を記録するため
 		
 		if(queue_next(1) == -11){//次　左
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname(30,3,1);
+		    Set_enc_limit(0);//速度制限なし
 			
 	        }else if(queue_next(1) == 11){//次　右
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname(30,3,2);
+		    Set_enc_limit(0);//速度制限なし
 		
 		}else if(queue_next(1) == -13){//次　左
 		    if(queue_next(3) == -11){//Vターン
@@ -8068,7 +8094,10 @@ void run_shortest_path_fin(	char naname){
 		   
 		    	v2_flag = 6;
 		    }
+		    
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname2(30,3,1,v2_flag);
+		    Set_enc_limit(0);//速度制限なし
 			
 	        }else if(queue_next(1) == 13){//次　右
 		    if(queue_next(3) == 11){//Vターン
@@ -8085,7 +8114,10 @@ void run_shortest_path_fin(	char naname){
 		   
 		    	v2_flag = 6;
 		    }
+		    
+		    Set_enc_limit(enc_limit_kabe_naname);
 		    S_run_kabe_naname2(30,3,2,v2_flag);
+		    Set_enc_limit(0);//速度制限なし
 		    
 	        }
 	    }
@@ -8102,7 +8134,7 @@ void run_shortest_path_fin(	char naname){
 	case 1://R
 	    if(queue_next(1) == -1){//Sターン
 		R_curve(sr90,true);
-		ESmotor(200,25,true,true);//距離、スピード 200,30
+		ESmotor(100,25,true,true);//距離、スピード 200,30
 			
 	   /* }else if(comand_old == 0 && queue_next(1) == 1 && queue_next(3) == 0){//Uターン
 		
