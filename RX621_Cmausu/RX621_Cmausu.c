@@ -77,6 +77,7 @@ void run_shortest_path_fin(char);
 void S_run_maze_search(int ,int, int, int);
 
 char shortest_path_search(short,short);
+char shortest_path_search_kichikukan(short,short);
 void shortest_path_search_perfect_unknown(short* ,short* );
 
 void shortest_path_search_dijkstra();
@@ -309,7 +310,7 @@ void main(void)
     while(1){
 		
 	Encoder_reset();
-		
+	Set_enc_limit(0);//速度制限なし
 	ir_flag = 0;//赤外線OFF
 	
 	//モード選択
@@ -3358,7 +3359,74 @@ char shortest_path_search(short target_x,short target_y){
     
     return 0;
 }
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路探索											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： 目的地のXY座標															    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+char shortest_path_search_kichikukan(short target_x,short target_y){
+    queue_reset();
+    for(int i = 0; i < H;i++){
+	for(int j = 0;j < W; j++){
+	    for(int k = 0; k < 4; k++){
+		maze_d[i][j][k] = maze_d_max;
+	    }
+	}
+    }
+    for(int k = 0; k < 4; k++){
+	if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;
+    }
+    enqueue(target_x*100 + target_y);
+  
+    while(!queue_empty()){
+	short x = dequeue(),y;
+	y = x%100;
+	x /=100;
 
+	for(char i =0;i<4;i++){
+	    char update_flag = 0;
+	    short nx = x+dx[i],ny = y+dy[i];
+	
+	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) && ((maze_w[y][x] & (1<<(i+4))) != 0 ) ){//確定マスのみ
+
+		short num = maze_d[y][x][i];
+		for(int k = 0; k < 4; k++){
+           
+		    if(i == k){//S
+			if(maze_d[ny][nx][k] > num + 1){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num + 1;
+			}
+		    }else if((i+2+4)%4 == k){//B
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()*2){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost()*2;
+			}
+		    }else{// L or R
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost();
+			}
+		    }
+		}
+		if(update_flag)enqueue(nx*100 + ny);
+	    }
+	}
+    }
+    
+    char ng_flag = 1;
+    for(int k = 0; k < 4; k++){
+    	if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+    		ng_flag = 0;
+    	}
+    }
+    if(ng_flag == 1){
+	return 1;    
+    }
+    
+    return 0;
+}
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：最短経路探索											  			            */
 /* 関 数 詳 細：												                                   */
@@ -5783,7 +5851,7 @@ void maze_search_all(){
     //short target_x_tmp,target_y_tmp;
     char path_ng = 0;
     
-    static char phese_flag = 0;//0=大まかに探索, 　1=最短経路の未確定マスを探索
+    static char phese_flag = 0;
     
     
     //time_limit = xxxx;//60秒  別のところで設定するように変更
@@ -5793,8 +5861,7 @@ void maze_search_all(){
 	
 	maze_update(my_x,my_y,my_angle,3);
 	
-	path_ng = shortest_path_search(Get_Goal_x(),Get_Goal_y());
-	//shortest_path_search(Start_x,Start_y);
+	path_ng = shortest_path_search(Get_Goal_x(),Get_Goal_y());//重みマップの作成　未確定の壁は無いと考える
 	
 	if(path_ng == 1){//最短経路が存在しない→迷路情報を元に戻す
 		for(int i = 0; i < H;i++){
@@ -5875,7 +5942,10 @@ void maze_search_all(){
 	
 		
 	
-    	shortest_path_search(target_x,target_y);
+    	//shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
+	shortest_path_search_kichikukan(target_x,target_y);//未確定の壁は　ある　として考える　＝　未探索のマスを走行しない　＝　ほこりが少ない経路を選択する
+	
+	
 	make_shortest_path_list(target_x,target_y); //未確定マスでも連続する直線なら進む
     	//make_shortest_path_list_simple(target_x,target_y); //未確定マスでとまる
 	
@@ -5889,8 +5959,6 @@ void maze_search_all(){
     
     if(time_limit <= 0){//　制限時間内に探索できなかった　
 		
-	//maze_search_adachi(Get_Goal_x(),Get_Goal_y());
-	//maze_search_adachi(Start_x,Start_y);//スタート地点に戻る
 	maze_search_adachi(pickup_x,pickup_y);//拾いやすいところまで移動する
 			
 	
@@ -7409,8 +7477,11 @@ void run_shortest_path_fin(	char naname){
 
     int kabegire_tuika = 0;//h1 / 4;//直線　壁切れ確認の距離を補正する　０のときは半マス　＋で距離が短くなる
 			  
-    int run_speed = 95;
+    int run_speed        = 95;
     int run_speed_naname = 60;
+    
+    int enc_limit_kabe 	   = 60; //0の場合は制限なし
+    int enc_limit_kabe_BIG = 80; //0の場合は制限なし
     
     /*   
 	 R_curveU(ur180,true);
@@ -7668,20 +7739,29 @@ void run_shortest_path_fin(	char naname){
 		status_log = 3;//ログに壁切れ開始を記録するため
 		
 			if(queue_next(1) == -11 || queue_next(1) == 11){//直線後に45ターン
+				
 				if(queue_next(1) < 0){//次　左
 				    if(path_num <= 1){
+					 Set_enc_limit(enc_limit_kabe);
 					 S_run_kabe2(20,true,1); 
+					 Set_enc_limit(0);//速度制限なし
 				    }else{
+					 Set_enc_limit(enc_limit_kabe);
 					 S_run_kabe2(15,true,1);
+					 Set_enc_limit(0);//速度制限なし
 				    }
 				    
 				    //S_run_kabe2(15,4,1);// w_flag = 4 串の壁補正あり
 							
 				}else if(queue_next(1) > 0){//次　右
 				    if(path_num <= 1){
+					 Set_enc_limit(enc_limit_kabe);
 					 S_run_kabe2(20,true,2); 
+					 Set_enc_limit(0);//速度制限なし
 				    }else{
+					 Set_enc_limit(enc_limit_kabe);
 					 S_run_kabe2(15,true,2);  
+					 Set_enc_limit(0);//速度制限なし
 				    }
 				    
 				    //S_run_kabe2(15,4,2);// w_flag = 4 串の壁補正あり
@@ -7695,7 +7775,9 @@ void run_shortest_path_fin(	char naname){
 					 ESmotor(h1/2,40,true,true);//距離、スピード 
 					 status_log = 3;
 					 
+					 Set_enc_limit(enc_limit_kabe_BIG);
 					 S_run_kabe_BIG(40,4,1,path_num); //w_flag = 4 串の壁補正あり
+					 Set_enc_limit(0);//速度制限なし
 					 
 					  
 					 if(first_flag == 0){
@@ -7707,8 +7789,9 @@ void run_shortest_path_fin(	char naname){
 					 }
 					 
 				    }else{
-					
+					 Set_enc_limit(enc_limit_kabe_BIG);
 					 S_run_kabe_BIG(25,4,1,path_num);  //w_flag = 4 串の壁補正あり 
+					 Set_enc_limit(0);//速度制限なし
 					 
 					 ESmotor(200,25,true,true);//距離、スピード
 				    }
@@ -7722,7 +7805,9 @@ void run_shortest_path_fin(	char naname){
 					 ESmotor(h1/2,40,true,true);//距離、スピード 
 					 status_log = 3;
 					 
+					 Set_enc_limit(enc_limit_kabe_BIG);
 					 S_run_kabe_BIG(40,4,2,path_num);  //w_flag = 4 串の壁補正あり
+					 Set_enc_limit(0);//速度制限なし
 					 
 					 if(first_flag == 0){
 					 	first_naname_z = 1;
@@ -7731,8 +7816,9 @@ void run_shortest_path_fin(	char naname){
 						ESmotor(200,25,true,true);//距離、スピード  
 					 }
 				    }else{
-					 
+					 Set_enc_limit(enc_limit_kabe_BIG);
 					 S_run_kabe_BIG(25,4,2,path_num);  //w_flag = 4 串の壁補正あり
+					 Set_enc_limit(0);//速度制限なし
 					 
 					 ESmotor(200,25,true,true);//距離、スピード
 				    }
@@ -7740,29 +7826,38 @@ void run_shortest_path_fin(	char naname){
 				}
 			}else if(BIG_NG_flag == 0 && (queue_next(1) == 12 || queue_next(1) == -12)){//直線後に大曲
 				if(queue_next(1) < 0){//次　左
+				    
 				    if(path_num <= 1){
 					status_log = 0;
 					ESmotor(h1/2,35,true,true);//距離、スピード
 					status_log = 3;
 					
+					Set_enc_limit(enc_limit_kabe_BIG);
 				        S_run_kabe_BIG(35,4,1,path_num); //w_flag = 4 串の壁補正あり
+					Set_enc_limit(0);//速度制限なし
 					
 				    }else{
 					
+					Set_enc_limit(enc_limit_kabe_BIG);
 					S_run_kabe_BIG(25,4,1,path_num);  //w_flag = 4 串の壁補正あり
+					Set_enc_limit(0);//速度制限なし
 				    }
 						
 				}else if(queue_next(1) > 0){//次　右
+		  
 				    if(path_num <= 1){
 					status_log = 0;
 					ESmotor(h1/2,35,true,true);//距離、スピード 
 					status_log = 3;
 					
+					Set_enc_limit(enc_limit_kabe_BIG);
 				        S_run_kabe_BIG(35,4,2,path_num);  //w_flag = 4 串の壁補正あり
+					Set_enc_limit(0);//速度制限なし
 					
 				    }else{
-					
+					Set_enc_limit(enc_limit_kabe_BIG);
 					S_run_kabe_BIG(25,4,2,path_num);   //w_flag = 4 串の壁補正あり
+					Set_enc_limit(0);//速度制限なし
 				    }      
 				}
 					  
@@ -7771,24 +7866,33 @@ void run_shortest_path_fin(	char naname){
 				
 					//if( queue_next(1) == -1 && queue_next(3) == -1 && queue_next(5) == 0){//Uターン
 					if(U_NG_flag == 0 &&  queue_next(1) == -15){//Uターン
+			
 						if(path_num <= 1){
 							//S_run_kabe(40,true,1); 
+							Set_enc_limit(enc_limit_kabe_BIG);
 							S_run_kabe_BIG(40,4,1,path_num); //w_flag = 4 串の壁補正あり
+							Set_enc_limit(0);//速度制限なし
 							
 					    	}else{
 					    		//S_run_kabe(30,true,1); 
+							
+							Set_enc_limit(enc_limit_kabe_BIG);
 							S_run_kabe_BIG(30,4,1,path_num); //w_flag = 4 串の壁補正あり
+							Set_enc_limit(0);//速度制限なし
 					    	
 					    	}
 					}else{
+						
 					    	if(path_num <= 1){
+							Set_enc_limit(enc_limit_kabe);
 							S_run_kabe(25,true,1); 
-							
-					    	}else if(path_num <= 6){
+							Set_enc_limit(0);//速度制限なし
+						
+						}else {
+							Set_enc_limit(enc_limit_kabe);
 					    		S_run_kabe(20,true,1); 
 					    		//S_run_kabe(30,4,1);// w_flag = 4 串の壁補正あり
-					    	}else{
-							S_run_kabe(11,true,1);//速度１０はフェールセーフがオフになるので注意 
+							Set_enc_limit(0);//速度制限なし
 						}
 					}
 				    
@@ -7797,30 +7901,39 @@ void run_shortest_path_fin(	char naname){
 				}else if(queue_next(1) > 0){//次　右
 					//if( queue_next(1) == 1 && queue_next(3) == 1 && queue_next(5) == 0){//Uターン
 					if(U_NG_flag == 0 && queue_next(1) == 15 ){//Uターン
+
 						if(path_num <= 1){
 							//S_run_kabe(40,true,2);  
+							Set_enc_limit(enc_limit_kabe_BIG);
 							S_run_kabe_BIG(40,4,2,path_num);  //w_flag = 4 串の壁補正あり
+							Set_enc_limit(0);//速度制限なし
 					    	}else{
 							//S_run_kabe(30,true,2); 
+							Set_enc_limit(enc_limit_kabe_BIG);
 							S_run_kabe_BIG(30,4,2,path_num);  //w_flag = 4 串の壁補正あり
+							Set_enc_limit(0);//速度制限なし
 					    	}
 					    
 					}else{
+						
 					    	if(path_num <= 1){
+							Set_enc_limit(enc_limit_kabe);
 							S_run_kabe(25,true,2); 
+							Set_enc_limit(0);//速度制限なし
 							
-					    	}else if(path_num <= 6){
+						}else{
+							Set_enc_limit(enc_limit_kabe);
 							S_run_kabe(20,true,2); 
 							//S_run_kabe(30,4,2);// w_flag = 4 串の壁補正あり
-					    	}else{
-							S_run_kabe(11,true,2);//速度１０はフェールセーフがオフになるので注意 
+							Set_enc_limit(0);//速度制限なし
 						}
 					}
 				}	  
 			}
 		
-	    }
+	    } 
 
+	    
 	    //my_x = nx;
 	    //my_y = ny;
 	    break;
@@ -8294,14 +8407,16 @@ void Excep_CMT0_CMI0(void)
     }
 	
     motor_pid_flag_reset();
-	
+
+    encoder_update();//1msに1回呼び出す
+    
     switch(task) {                         			
     case 0:
     case 10:
     case 20:
     case 30:
     case 40:
-	encoder_update();
+	//encoder_update(); 10ms->1msに１回呼び出す仕様に変更したのでコメントアウト
         break;
    
     case 1:

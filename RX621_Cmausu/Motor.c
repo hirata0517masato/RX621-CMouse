@@ -19,6 +19,8 @@ char buff_pwm_L = 0,buff_pwm_R = 0;
 char motor_pid_flag = 0;
 char motor_pid_mode = 0; //0:低速 1:高速
 
+int enc_limit = 0;//この値以上のパルス数の時はモータ出力を下げる、減速させる　０のときは制限なし
+
 void motor_stop(){
     motor_stop_flag = 1;
 }
@@ -49,6 +51,10 @@ void Set_motor_pid_mode(char n){
 
 int Get_motor_pid_mode(){
     return motor_pid_mode;
+}
+
+void Set_enc_limit(int num){
+	enc_limit = num;
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -771,24 +777,36 @@ void Smotor(int M,char w_flag){
     if((0 < M &&  F_max < get_IR(IR_F))  || (kusi_flag == 1) ){ //(前進　かつ　前壁が近すぎる場合は) || 串対策が反応しているとき 
 	M /= 2; //速度を下げる
     }
+    
+    if(0 < enc_limit ){//エンコーダによる速度上限設定が有効のとき
+    	
+    	if(enc_limit + 10 < get_encoder_C() ){//速度上限を 大幅に 超えている
+		M = -10;//減速
+		
+	}else if(enc_limit < get_encoder_C() ){//速度上限を超えている
+		M = 0;//減速
+	}
+    }
 	
     LM = M + powor;
     RM = M - powor;
 
     if(motor_pid_mode == 1){//高速モード
-	if(LM != 0 || RM != 0){// 0,0でなければ //斜め時のマイナスは有効　
-	    if(0 < LM && LM < 10){
-		RM += 10 - LM;
-		LM = 10;
+    	if(0 <= M){//速度が大幅に超過してる時はマイナスは有効
+		if(LM != 0 || RM != 0){// 0,0でなければ //斜め時のマイナスは有効　
+		    if(0 < LM && LM < 10){
+			RM += 10 - LM;
+			LM = 10;
+					
+		    }
+		    if(0 < RM && RM < 10){
+			LM += 10 - RM;
+			RM = 10;
+		    }
 				
-	    }
-	    if(0 < RM && RM < 10){
-		LM += 10 - RM;
-		RM = 10;
-	    }
-			
-	    //if(LM < 10)LM = 10;	
-	    //if(RM < 10)RM = 10;
+		    //if(LM < 10)LM = 10;	
+		    //if(RM < 10)RM = 10;
+		}
 	}
 	/*
 	if(M < 50){

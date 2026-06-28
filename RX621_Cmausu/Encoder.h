@@ -6,6 +6,7 @@ void Encoder_reset(void);
 void encoder_update(void);
 int get_encoder_R(void);
 int get_encoder_L(void);
+int get_encoder_C(void);
 long long get_encoder_total_R(void);
 long long get_encoder_total_L(void);
 

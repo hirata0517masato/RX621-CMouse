@@ -16,6 +16,8 @@ volatile long long  R_enc_total = 0;
 volatile short  R_enc_base = 0;
 volatile int  R_enc = 0;
 
+volatile int  C_enc = 0;//LとRの平均値＝車体中央のエンコーダ値
+
 
 void Encoder_reset(){
 	L_enc = 0;
@@ -28,17 +30,28 @@ void Encoder_reset(){
 	R_enc_total = 0;
 }
 
-void encoder_update(){
+void encoder_update(){//1ms割り込みで呼び出す
 	long long tmp;
+	static int R_enc_buf[10] = {0};
+	static int L_enc_buf[10] = {0};
+	static int buf_i = 0;
 	
 	tmp = get_encoder_total_R();
-	R_enc =  tmp -  R_enc_total_rev;
+	R_enc -= R_enc_buf[buf_i];
+	R_enc_buf[buf_i] =  tmp -  R_enc_total_rev;
+	R_enc +=+ R_enc_buf[buf_i];
 	R_enc_total_rev =  tmp;
 
 	tmp = get_encoder_total_L();
-	L_enc =  tmp -  L_enc_total_rev;
+	L_enc -= L_enc_buf[buf_i];
+	L_enc_buf[buf_i] =  tmp -  L_enc_total_rev;
+	L_enc +=+ L_enc_buf[buf_i];
 	L_enc_total_rev =  tmp;
 	
+	C_enc = (L_enc + R_enc)/2;
+	
+	buf_i++;
+	if(10 <= buf_i)buf_i = 0;
 }
 int get_encoder_L(){
 	return L_enc;
@@ -46,6 +59,10 @@ int get_encoder_L(){
 
 int get_encoder_R(){
 	return R_enc;
+}
+
+int get_encoder_C(){
+	return C_enc;
 }
 
 long long get_encoder_total_R(){
