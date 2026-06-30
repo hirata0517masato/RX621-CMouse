@@ -1694,7 +1694,7 @@ void log_load(){
 		    delay(1);//printfを高速、連続で使用すると動作が不安定
 	    }
 	    
-	    printf2(" : \t%3d\t%3d\t : \t%3d\t%3d\t%3d",log_minus(log[i+8]),log_minus(log[i+9]),log_minus(log[i+10]) <<1, ((log_minus(log[i+10]) <<1)+(log_minus(log[i+11]) <<1))/2,log_minus(log[i+11]) <<1  );	
+	    printf2(" : \t%3d\t%3d\t : \t%3d\t%3d\t%3d \t",log_minus(log[i+8]),log_minus(log[i+9]),log_minus(log[i+10]) <<1, ((log_minus(log[i+10]) <<1)+(log_minus(log[i+11]) <<1))/2,log_minus(log[i+11]) <<1  );	
 														
 	    cnt++;
 	    if(cnt > 16){
