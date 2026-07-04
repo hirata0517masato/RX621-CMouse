@@ -3,7 +3,7 @@
 #include "rspi.h"
 #include "wait.h"	
 #include"Motor.h"
-
+#include"Parameters.h"
 
 int gyro= 0;        /* ジャイロセンサーの値  左＋　右ー   */
 long long gyro_base = 0;
@@ -31,8 +31,26 @@ long long GyroSum_get(){
   return gyro_sum;
 }
 
+long long GyroSum_dig_get(){
+	
+  long long g_tmp = (GyroSum_get()/g_1)%360;
+  if(180 < g_tmp) g_tmp -= 360;
+  if(g_tmp < -180) g_tmp += 360;
+  
+  return g_tmp;
+}
+
 long long GyroSumGlobal_get(){
   return gyro_sum_global;
+}
+
+long long GyroSumGlobal_dig_get(){
+	
+  long long g_tmp = (GyroSumGlobal_get()/g_1)%360;
+  if(180 < g_tmp) g_tmp -= 360;
+  if(g_tmp < -180) g_tmp += 360;
+  
+  return g_tmp;
 }
 
 int Gyro(){
@@ -44,6 +62,36 @@ long long Gyro_get(){
 	return (long long)get_gyro_data(2)/4;
 }
 
+void GyroSum_add_auto(){
+	/*
+	long long g_global = GyroSumGlobal_dig_get();
+	long long target = 0;
+	
+	if( 0 <= g_global && g_global < 22){//0
+		target = 0;
+	}else if(22 <= g_global && g_global < 67){//45
+		target = 45;
+	}else if(67 <= g_global && g_global < 112){//90
+		target = 90;
+	}else if(112 <= g_global && g_global < 157){//135
+		target = 135;
+	}else if(157 <= g_global){//180
+		target = 180;
+	}else if( -22 <= g_global && g_global < 0){//0
+		target = 0;
+	}else if( -67 <= g_global && g_global < -22){//-45
+		target = -45;
+	}else if(-112 <= g_global && g_global < -67){//-90
+		target = -90;
+	}else if(-157 <= g_global && g_global < -112){//-135
+		target = -135;
+	}else if(g_global < -157){//-180
+		target = -180;
+	}
+	
+	GyroSum_add((g_global - target) * g_1);
+	*/
+}
 
 void Gyro_update(){
  

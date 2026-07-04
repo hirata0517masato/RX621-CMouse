@@ -42,8 +42,8 @@
 #define sl90  (24800)	//スラローム 23000 25000
 #define sr90  (24800)	//スラローム 23000 25000//左右で同じ値でないと連続時にずれていく
 
-#define sl90_search  (24400)	//スラローム 探索用 24900
-#define sr90_search  (24400)	//スラローム 探索用 //左右で同じ値でないと連続時にずれていく
+#define sl90_search  (24600)	//スラローム 探索用 24900
+#define sr90_search  (24600)	//スラローム 探索用 //左右で同じ値でないと連続時にずれていく
 
 #define sl90BIG  (26200)	//スラローム 大曲
 #define sr90BIG  (26200)	//スラローム 大曲
@@ -75,18 +75,18 @@
 #define rslsr90 	(900)	//スラローム 664
 #define rslsr90_offset  (-40)
 
-#define rslsl90_BIG (1505)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsl90_BIG_offset  (-150)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1505)	//スラローム 大 タイヤ削れた時：1600  1700
-#define rslsr90_BIG_offset  (-150)	      //タイヤ削れた時：-100
+#define rslsl90_BIG (1500)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsl90_BIG_offset  (-170)	      //タイヤ削れた時：-100	
+#define rslsr90_BIG (1500)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsr90_BIG_offset  (-170)	      //タイヤ削れた時：-100
 
 #define usll180     (2225)	//Uターン 2240
 #define usll180_fin (-1)	//Uターン 微調整
 #define uslr180     (2225)	//Uターン 2240
 #define uslr180_fin (-1)	//Uターン　微調整
 
-#define r_cost 4		//迷路の重み　90度回転の場合
 
+#define r_cost 4		//迷路の重み　90度回転の場合
 #define r45_cost 1		//迷路の重み　45度回転の場合
 
 //ダイクストラ用

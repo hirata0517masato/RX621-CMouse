@@ -431,28 +431,28 @@ void Smotor(int M,char w_flag){
 	if(motor_pid_mode == 0){//低速
 		if(w_flag != 3 && kusi_flag == 0){ //斜め中ではない かつ　串対策が反応してない
 		
-		    if((get_encoder_L() >= 1 || get_encoder_R() >= 1) && abs(GyroSum_get()) < 1000){
+		    if((get_encoder_L() >= 1 || get_encoder_R() >= 1) && abs(GyroSum_get()) < 2000){
 	            
-			if(get_IR(IR_L) < 180 && get_IR(IR_FL) > 150 && (get_IR(IR_F) > 150) &&  get_IR(IR_FR) > 150 && get_IR(IR_R) < 180 ){//前壁あり 横壁が近くない
+			if(get_IR(IR_L) < 180 && get_IR(IR_FL) > 100 && (get_IR(IR_F) > 100) &&  get_IR(IR_FR) > 100 && get_IR(IR_R) < 180 ){//前壁あり 横壁が近くない
 					
 				
 			    long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
-			    if(abs(diff) > 5 && abs(diff) < 50){
+			    if(abs(diff) > 5 && abs(diff) < 60){
 				//if(abs(diff) > 0 && abs(diff) < 80){
 				cnt5++;
 				if(cnt5 > 0){
 				    cnt5 = 0;
 								
 				    if(get_IR(IR_F) > 250){
-					if(diff > 10)diff = 10;
-					if(diff < -10)diff = -10;
-									
-				    }else if(get_IR(IR_F) > 200){
 					if(diff > 20)diff = 20;
 					if(diff < -20)diff = -20;
-				    }else{
+									
+				    }else if(get_IR(IR_F) > 200){
 					if(diff > 30)diff = 30;
 					if(diff < -30)diff = -30;
+				    }else{
+					if(diff > 40)diff = 40;
+					if(diff < -40)diff = -40;
 				    }
 				    
 				    mae_flag = 1;
@@ -1282,6 +1282,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     }
 
     motor(0,0);
+      
     //	GyroSum_reset();
     //    Encoder_reset();
 }
@@ -1383,6 +1384,7 @@ void Tmotor(long long A){
 
     motor(0,0);
     GyroSum_reset();
+   
     //	Encoder_reset(); 有効化しないこと　壁読み間違えの再チェックが動作しなくなる
 }
 
@@ -1515,6 +1517,8 @@ void ETmotorU(long long A, long long E, char non_stop){
 		
     }
 
+    ////GyroSum_add_auto();
+     
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 	
@@ -1534,7 +1538,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     int M 		= 33;//33
 
     
-    ESmotor(50,M_kabe,true,true);
+    ESmotor(50,M_kabe,true,true);//50
 //    GyroSum_reset();
     
     long long L = get_encoder_total_L();
@@ -1643,6 +1647,8 @@ void ETmotorBIG(long long A, long long E, char non_stop){
 	
    // ESmotor(140,M,true,true);//距離、速度
     
+    ////GyroSum_add_auto();
+     
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 }
@@ -1802,7 +1808,9 @@ void ETmotor(long long A, long long E, char non_stop){
 
     //motor(0,0);
 //    GyroSum_reset();
-		
+	
+    ////GyroSum_add_auto();
+     
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 	
@@ -1825,9 +1833,9 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     GyroSum_reset();
     //Encoder_reset();
 	
-    int M_kabe = 18;
+    int M_kabe = 15;
     int M 		= 22;
-    int M_kabe2 = 18;
+    int M_kabe2 = 15;
 	
     char flag = 0;
 	
@@ -1856,7 +1864,7 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     	//ESmotor(45,M_kabe,true,true);//60
     }else{
 */    
-	ESmotor(75,M_kabe,true,true);//60 45
+	ESmotor(65,M_kabe,true,true);//60 45
 //    }
     
 //    GyroSum_reset();
@@ -1972,13 +1980,14 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     }
 
     //motor(0,0);
-    GyroSum_reset();
-		
+    
+    GyroSum_reset();	
+      
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 	
     //ESmotor(45,M_kabe2,true,true);//60
-    ESmotor(75,M_kabe2,true,false);//60 45
+    ESmotor(65,M_kabe2,true,false);//60 45
 	
     //motor(0,0);
     GyroSum_reset();
@@ -2109,7 +2118,9 @@ void ETmotor_afterNaname(long long A, long long E, char non_stop){
 
    // motor(0,0);
 //    GyroSum_reset();
-		
+
+    ////GyroSum_add_auto();
+     
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 	
@@ -2139,7 +2150,7 @@ void Tmotor_naname_in(long long A){
     int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
     int MA = 5,min_M = 15;
 	
-    int powor_max = 25;
+    int powor_max = 25;//25
     int powor;
 
     int M_kabe = 25;
@@ -2228,6 +2239,8 @@ void Tmotor_naname_in(long long A){
 //    GyroSum_reset();
     //motor(0,0);
 	
+    ////GyroSum_add_auto();
+     
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 
@@ -2244,7 +2257,7 @@ void Tmotor_naname_in_BIG(long long A ){
     int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
     int MA = 5,min_M = 15;
 	
-    int powor_max = 25;
+    int powor_max = 25;//25
     int powor;
 
     int M = 5;
@@ -2315,7 +2328,9 @@ void Tmotor_naname_in_BIG(long long A ){
     //motor(0,0);
  //   GyroSum_reset();
     //motor(0,0);
-	
+
+    ////GyroSum_add_auto();
+     
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
  
@@ -2330,7 +2345,7 @@ void Tmotor_naname_out(long long A ){
     int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
     int MA = 5,min_M = 15;
 	
-    int powor_max = 25;
+    int powor_max = 25;//25
     int powor;
 
     int M = 5;
@@ -2390,7 +2405,9 @@ void Tmotor_naname_out(long long A ){
 //    GyroSum_reset();
     //motor(0,0);
 
-	
+
+    ////GyroSum_add_auto();
+    
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
  
