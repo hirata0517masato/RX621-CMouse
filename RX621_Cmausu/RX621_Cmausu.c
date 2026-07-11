@@ -2849,7 +2849,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     status_log = 4;//ƒƒO‚É•ÇØ‚êŒã‚Ì‹——£•â³‚ğ‹L˜^‚·‚é‚½‚ß
     
     if(v2_flag == 1){//‚Qƒ}ƒXVƒ^[ƒ“ŠJn
-	ESmotor(190,powor,true,false);  //200
+	ESmotor(250,powor,true,false);  //190
 	
     }else if(v2_flag == 2){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢ Zƒpƒ^[ƒ“
     
@@ -3388,7 +3388,7 @@ char shortest_path_search_kichikukan(short target_x,short target_y){
 	    char update_flag = 0;
 	    short nx = x+dx[i],ny = y+dy[i];
 	
-	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) && ((maze_w[y][x] & (1<<(i+4))) != 0 ) ){//Šm’èƒ}ƒX‚Ì‚İ
+	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) && ((maze_w[y][x] & (1<<(i+4))) != 0  || (target_x == x && target_y == y )) ){//Šm’èƒ}ƒX‚Ì‚İ ƒ^[ƒQƒbƒgƒ}ƒX‚Ì‚Í–¢Šm’è‚Å‚àOK
 
 		short num = maze_d[y][x][i];
 		for(int k = 0; k < 4; k++){
@@ -3510,7 +3510,7 @@ void make_shortest_path_list(short target_x,short target_y){
 	
     while(x != target_x || y != target_y){
     	short num = maze_d[y][x][(angle+2)%4];
-    	short n_num = 0;
+    	short n_num = angle;//0;
     	char s_flag = 0;
     	short nx = x+dx[angle],ny = y+dy[angle];
     	if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) ){//–Ú‚Ì‘O‚ª–À˜H“à@&& •Ç‚ª‚È‚¢ 
@@ -3524,7 +3524,8 @@ void make_shortest_path_list(short target_x,short target_y){
 
     	if(s_flag == false){//‰ñ“]‚·‚é•K—v‚ª‚é
 	    for(int i = 0;i < 4;i++){
-		if(i == (angle+2)%4){
+		if(i == (angle+2)%4){//B
+			//‰Šú’l‚È‚Ì‚ÅXV‚Ì•K—v‚È‚µ
 		}else{
 		    short next = maze_d[y][x][i];
 		    if(num > next){
@@ -3715,7 +3716,7 @@ void make_shortest_path_list_pickup(short target_x,short target_y){
 	
     while(x != target_x || y != target_y){
     	short num = maze_d[y][x][(angle+2)%4];
-    	short n_num = 0;
+    	short n_num = angle;
     	char s_flag = 0;
     	short nx = x+dx[angle],ny = y+dy[angle];
     	if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) && ((maze_w[y][x] & (1<<(angle+4))) != 0 ) ){//–Ú‚Ì‘O‚ª–À˜H“à@&& •Ç‚ª‚È‚¢ && Šm’èƒ}ƒX
@@ -3729,7 +3730,8 @@ void make_shortest_path_list_pickup(short target_x,short target_y){
 
     	if(s_flag == false){//‰ñ“]‚·‚é•K—v‚ª‚é
 	    for(int i = 0;i < 4;i++){
-		if(i == (angle+2)%4){
+		if(i == (angle+2)%4){//B
+			//‰Šú’l‚È‚Ì‚ÅXV•s—v
 		}else{
 		    short next = maze_d[y][x][i];
 		    if(num > next){
@@ -4706,7 +4708,7 @@ void make_shortest_path_list_simple(short target_x,short target_y){
 	
     while(x != target_x || y != target_y){
     	short num = maze_d[y][x][(angle+2)%4];
-    	short n_num = 0;
+    	short n_num = angle;
     	char s_flag = 0;
     	short nx = x+dx[angle],ny = y+dy[angle];
     	if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) ){//–Ú‚Ì‘O‚ª–À˜H“à@&& •Ç‚ª‚È‚¢ 
@@ -4720,7 +4722,8 @@ void make_shortest_path_list_simple(short target_x,short target_y){
 
     	if(s_flag == false){//‰ñ“]‚·‚é•K—v‚ª‚é
 	    for(int i = 0;i < 4;i++){
-		if(i == (angle+2)%4){
+		if(i == (angle+2)%4){//B
+			//‰Šú’l‚È‚Ì‚ÅXV•s—v
 		}else{
 		    short next = maze_d[y][x][i];
 		    if(num > next){
@@ -4923,7 +4926,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 		    	while(my_x != Get_Goal_x() || my_y != Get_Goal_y()){
 
 				short num = maze_d[my_y][my_x][(my_angle+2)%4];
-				short n_num = 0;
+				short n_num = my_angle;
 				char s_flag = 0;
 				int nx = my_x+dx[my_angle],ny = my_y+dy[my_angle];
 			
@@ -5704,7 +5707,7 @@ void maze_search_unknown(short* target_x,short* target_y){
 	    
     while(x != Goal_x_tmp || y != Goal_y_tmp){
     	short num = maze_d[y][x][(angle+2)%4];
-    	short n_num = 0;
+    	short n_num = angle;
     	char s_flag = 0;
     	short nx = x+dx[angle],ny = y+dy[angle];
     	if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<angle)) == 0 ) ){//–Ú‚Ì‘O‚ª–À˜H“à@&& •Ç‚ª‚È‚¢ 
@@ -5718,7 +5721,8 @@ void maze_search_unknown(short* target_x,short* target_y){
 
     	if(s_flag == false){//‰ñ“]‚·‚é•K—v‚ª‚é
 	    for(int i = 0;i < 4;i++){
-		if(i == (angle+2)%4){
+		if(i == (angle+2)%4){//B
+			//‰Šú’l‚È‚Ì‚ÅXV•s—v
 		}else{
 		    short next = maze_d[y][x][i];
 		    if(num > next){
@@ -5893,6 +5897,8 @@ void maze_search_all(){
 	}
 	
 	if(phese_flag == 1){
+		//phese_flag = 2;
+		
 		shortest_path_search_perfect_unknown(&target_x,&target_y);//Î‚ß‚àl—¶‚µ‚½Å’ZŒo˜Hã‚Ì–¢Šm’èƒ}ƒX‚ÌÀ•W‚ğæ“¾
 		
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//Å’ZŒo˜Hã‚É–¢Šm’èƒ}ƒX‚ª‚È‚¯‚ê‚Î
@@ -5955,7 +5961,7 @@ void maze_search_all(){
 	
 	make_shortest_path_list(target_x,target_y); //–¢Šm’èƒ}ƒX‚Å‚à˜A‘±‚·‚é’¼ü‚È‚çi‚Ş
     	//make_shortest_path_list_simple(target_x,target_y); //–¢Šm’èƒ}ƒX‚Å‚Æ‚Ü‚é
-	
+		
 	run_shortest_path();
   	
 	motor(0,0);
@@ -7598,7 +7604,7 @@ void run_shortest_path_fin(	char naname){
 			L_rotate_naname(l45 * path_num * 2.10,false);//0.75
 			v2_flag = 1;
 		}else{
-			L_rotate_naname(l45 * path_num * 2.00,false);//0.75
+			L_rotate_naname(l45 * path_num * 2.05,false);//0.75
 			GyroSum_reset();
 		}
 		comand = dequeue();
@@ -8201,7 +8207,7 @@ void run_shortest_path_fin(	char naname){
 			R_rotate_naname(r45 * path_num * 2.10,false);//0.75
 			v2_flag = 1;
 		}else{
-			R_rotate_naname(r45 * path_num * 2.00,false);//0.75
+			R_rotate_naname(r45 * path_num * 2.05,false);//0.75
 			GyroSum_reset();
 		}
 		comand = dequeue();

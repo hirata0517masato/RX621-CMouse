@@ -431,25 +431,25 @@ void Smotor(int M,char w_flag){
 	if(motor_pid_mode == 0){//’á‘¬
 		if(w_flag != 3 && kusi_flag == 0){ //ŽÎ‚ß’†‚Å‚Í‚È‚¢ ‚©‚Â@‹ø‘Îô‚ª”½‰ž‚µ‚Ä‚È‚¢
 		
-		    if((get_encoder_L() >= 1 || get_encoder_R() >= 1) && abs(GyroSum_get()) < 2000){
+		    if((get_encoder_L() >= 1 && get_encoder_R() >= 1) && abs(GyroSum_get()) < 2000){
 	            
 			if(get_IR(IR_L) < 180 && get_IR(IR_FL) > 100 && (get_IR(IR_F) > 100) &&  get_IR(IR_FR) > 100 && get_IR(IR_R) < 180 ){//‘O•Ç‚ ‚è ‰¡•Ç‚ª‹ß‚­‚È‚¢
 					
 				
 			    long long diff = (long long)((get_IR(IR_FR)) - get_IR(IR_FL));
-			    if(abs(diff) > 5 && abs(diff) < 60){
+			    if(abs(diff) > 3 && abs(diff) < 60){
 				//if(abs(diff) > 0 && abs(diff) < 80){
 				cnt5++;
 				if(cnt5 > 0){
 				    cnt5 = 0;
 								
 				    if(get_IR(IR_F) > 250){
-					if(diff > 10)diff = 10;
-					if(diff < -10)diff = -10;
+					if(diff > 5)diff = 5;
+					if(diff < -5)diff = -5;
 									
 				    }else if(get_IR(IR_F) > 200){
-					if(diff > 15)diff = 15;
-					if(diff < -15)diff = -15;
+					if(diff > 10)diff = 10;
+					if(diff < -10)diff = -10;
 				    }else{
 					if(diff > 30)diff = 30;
 					if(diff < -30)diff = -30;
