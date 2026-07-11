@@ -3308,7 +3308,7 @@ char shortest_path_search(short target_x,short target_y){
 	}
     }
     for(int k = 0; k < 4; k++){
-	if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;
+	if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;//ゴール向きが無関係なので０すべて０を設定
     }
     enqueue(target_x*100 + target_y);
   
@@ -3375,7 +3375,7 @@ char shortest_path_search_kichikukan(short target_x,short target_y){
 	}
     }
     for(int k = 0; k < 4; k++){
-	if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;
+	if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;//ゴール向きが無関係なので０すべて０を設定
     }
     enqueue(target_x*100 + target_y);
   
@@ -3443,7 +3443,7 @@ char shortest_path_search_pickup(short target_x,short target_y){
 	}
     }
     for(int k = 0; k < 4; k++){
-	if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;
+	if((maze_w[target_y][target_x] & (1<<k)) == 0 )maze_d[target_y][target_x][k] = 0;//ゴール向きが無関係なので０すべて０を設定
     }
     enqueue(target_x*100 + target_y);
   
@@ -5949,8 +5949,8 @@ void maze_search_all(){
 	
 		
 	
-    	shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
-	//shortest_path_search_kichikukan(target_x,target_y);//未確定の壁は　ある　として考える　＝　未探索のマスを走行しない　＝　ほこりが少ない経路を選択する
+    	//shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
+	shortest_path_search_kichikukan(target_x,target_y);//未確定の壁は　ある　として考える　＝　未探索のマスを走行しない　＝　ほこりが少ない経路を選択する
 	
 	
 	make_shortest_path_list(target_x,target_y); //未確定マスでも連続する直線なら進む
@@ -7703,7 +7703,7 @@ void run_shortest_path_fin(	char naname){
           	if(path_num > 0){
 		
 		    if(comand_old == 12 || comand_old == -12){//前回が大曲だったら
-			  path_add = 100; 
+		    	  path_add = h1;// * 2/3; 
 			  
 		    }else if(comand_old == 13 || comand_old == -13){//前回が斜め終わりだったら
 			 // path_add = - (h1) /2 ;//70;  

@@ -444,15 +444,15 @@ void Smotor(int M,char w_flag){
 				    cnt5 = 0;
 								
 				    if(get_IR(IR_F) > 250){
-					if(diff > 20)diff = 20;
-					if(diff < -20)diff = -20;
+					if(diff > 10)diff = 10;
+					if(diff < -10)diff = -10;
 									
 				    }else if(get_IR(IR_F) > 200){
+					if(diff > 15)diff = 15;
+					if(diff < -15)diff = -15;
+				    }else{
 					if(diff > 30)diff = 30;
 					if(diff < -30)diff = -30;
-				    }else{
-					if(diff > 40)diff = 40;
-					if(diff < -40)diff = -40;
 				    }
 				    
 				    mae_flag = 1;
@@ -464,7 +464,7 @@ void Smotor(int M,char w_flag){
 		}
 	}
 	    
-	if(motor_pid_flag == 0 && w_flag != 3 && kusi_flag == 0){//1msの割り込み内でフラグはリセットされる && 斜めではない && 串が反応していない
+	if(motor_pid_flag == 0 && w_flag != 3 && w_flag != 2 && kusi_flag == 0){//1msの割り込み内でフラグはリセットされる && 斜めではない && 横壁キャンセルではない &&  串が反応していない
 			
 	    //ir_wall = 115;//マス中央でのセンサー値
 	    if(get_IR(IR_L) > 100 && get_IR(IR_R) > 100 &&  get_encoder_L() > 5 &&  get_encoder_R() > 5){//左右に壁がある &&  動いている
@@ -1843,14 +1843,16 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     if(A > 0){//R 
 	//while(get_IR(IR_R) > 10){
 	while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){ //前壁補正は斜めになると悪影響がある
-	    Smotor(M_kabe,true);
+	    //Smotor(M_kabe,true);
+	    Smotor(M_kabe,2);//前壁補正のみ
 	    flag = 1;
 	}
 	if(flag)ESmotor(45,M_kabe,true,false);
     }else{//L
 	//while(get_IR(IR_L) > 10){
 	while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 10 && get_IR(IR_F) < 20) ){
-	    Smotor(M_kabe,true);
+	    //Smotor(M_kabe,true);
+	    Smotor(M_kabe,2);//前壁補正のみ
 	    flag = 1;
 	}
 	if(flag)ESmotor(45,M_kabe,true,false);
@@ -1864,7 +1866,8 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     	//ESmotor(45,M_kabe,true,true);//60
     }else{
 */    
-	ESmotor(65,M_kabe,true,true);//60 45
+	//ESmotor(75,M_kabe,true,true);//60 45
+	ESmotor(75,M_kabe,true,2);//60 45 //前壁補正のみ
 //    }
     
 //    GyroSum_reset();
@@ -1986,8 +1989,8 @@ void ETmotor_search(long long A, long long E, char non_stop){//探索用
     PORTA.DR.BIT.B0 = 0;
     PORTA.DR.BIT.B3 = 0;
 	
-    //ESmotor(45,M_kabe2,true,true);//60
-    ESmotor(65,M_kabe2,true,false);//60 45
+    //ESmotor(75,M_kabe2,true,true);
+    ESmotor(75,M_kabe2,true,2);//60 45 //前壁補正のみ
 	
     //motor(0,0);
     GyroSum_reset();
