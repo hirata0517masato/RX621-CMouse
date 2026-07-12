@@ -2482,14 +2482,21 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
     
     int cnt = 0;
     int cnt2 = 0;
-    //int Ltmp = 0,Rtmp = 0;
+    int Ltmp = 0,Rtmp = 0;
+    int Ltmp2 = 0,Rtmp2 = 0;
 	
     led(6);
     while(1){
 	if(LR == 3 || LR == 1){//両方 || Lだけ
 	    if(Lflag == 0){
 		if(get_IR(IR_LT) > 28){// || (get_IR(IR_LT) > 14 && get_IR(IR_R) > 140)){ //28
-			cnt++;
+		
+			if(get_IR(IR_LT) != Ltmp){
+				cnt++;
+				Ltmp = get_IR(IR_LT);
+				
+			}
+			
 			if(cnt > 2){
 		    		Lflag = 1;
 		    		cnt = 0;
@@ -2497,12 +2504,17 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
 			}
 		}else{
 			cnt = 0;
+			Ltmp = 0;
 		}
 		
 		
 		if(Lflag2 == 0){
 			if(get_IR(IR_LT) > 14 && (get_IR(IR_L) < 20 || ( 50 < get_IR(IR_L) && get_IR(IR_L) < 110) )){
-				cnt2++;
+				if(get_IR(IR_LT) != Ltmp2){
+					cnt2++;
+					Ltmp2 = get_IR(IR_LT);
+				}
+				
 				if(cnt2 > 3){
 			    		Lflag2 = 1;
 			    		cnt2 = 0;
@@ -2510,10 +2522,16 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
 				}
 			}else{
 				cnt2 = 0;
+				Ltmp2 = 0;
 			}
 		}else if(Lflag2 == 1){
 			if(get_IR(IR_LT) < 2){
-			    cnt2++;
+			   if(get_IR(IR_LT) != Ltmp2){
+				cnt2++;
+				Ltmp2 = get_IR(IR_LT);
+				if(Ltmp2 == 0)Ltmp2 = 999;
+			   }
+			   
 			    if(cnt2 > 3){
 			    	Lflag2 = 2;
 			    	led(0);
@@ -2521,26 +2539,27 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
 			    }
 			}else{
 				cnt2 = 0;
+				Ltmp2 = 999;
 			}
 		}
 	
 	    }else if(Lflag == 1){
-		/* if(get_IR(IR_R) > 140){
-			if(get_IR(IR_LT) < 8){
-			    led(0);
-			    break;
-			} 
-		 }else{*/
-			if(get_IR(IR_LT) < 15){//15
-			    cnt++;
-			    if(cnt > 2){
-			    	led(0);
-			    	break;
-			    }
-			}else{
-				cnt = 0;
-			}
-		 //}
+		
+		if(get_IR(IR_LT) < 15){//15
+		    if(get_IR(IR_LT) != Ltmp){
+			cnt++;
+			Ltmp = get_IR(IR_LT);
+			if(Ltmp == 0)Ltmp = 999;
+		    }
+		    
+		    if(cnt > 2){
+		    	led(0);
+		    	break;
+		    }
+		}else{
+			cnt = 0;
+			Ltmp = 999;
+		} 
 	    }
 	    
 	    
@@ -2549,7 +2568,11 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
 	if(LR == 3 || LR == 2){//両方 || Rだけ
 	    if(Rflag == 0){
 		if(get_IR(IR_RT) > 28 ){// || (get_IR(IR_RT) > 15 && get_IR(IR_L) > 140)){ //28
-			cnt++;
+			if(get_IR(IR_RT) != Rtmp){
+				cnt++;
+				Rtmp = get_IR(IR_RT);
+			}
+			
 			if(cnt > 2){
 		    		Rflag = 1;
 		    		cnt = 0;
@@ -2557,11 +2580,16 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
 			}
 		}else{
 			cnt = 0;
+			Rtmp = 0;
 		}
 			
 		if(Rflag2 == 0){
 			if(get_IR(IR_RT) > 14 && (get_IR(IR_R) < 20 || ( 50 < get_IR(IR_R) && get_IR(IR_R) < 110))){
-				cnt2++;
+				if(get_IR(IR_RT) != Rtmp2){
+					cnt2++;
+					Rtmp2 = get_IR(IR_RT);
+				}
+				
 				if(cnt2 > 3){
 			    		Rflag2 = 1;
 			    		cnt2 = 0;
@@ -2569,10 +2597,16 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
 				}
 			}else{
 				cnt2 = 0;
+				Rtmp2 = 0;
 			}
 		}else if(Rflag2 == 1){
 			if(get_IR(IR_RT) < 2){
-			    cnt2++;
+			    if(get_IR(IR_RT) != Rtmp2){
+				cnt2++;
+				Rtmp2 = get_IR(IR_RT);
+				if(Rtmp2 == 0)Rtmp2 = 999;
+			    }
+			    
 			    if(cnt2 > 3){
 			    	Rflag2 = 2;
 			    	led(0);
@@ -2580,30 +2614,32 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//壁切れまで走行 
 			    }
 			}else{
 			    cnt2 = 0;
+			    Rtmp2 = 999;
 			}
 		}	
 
 	    }else if(Rflag == 1){
-		/* if(get_IR(IR_L) > 140){
-			if(get_IR(IR_RT) < 8){
-			    led(0);
-			    break;
-			} 
-		 }else{*/
-			if(get_IR(IR_RT) < 15){//15
-			    cnt++;
-			    if(cnt > 2){
-			    	led(0);
-			    	break;
-			    }
-			}else{
-				cnt = 0;
-			}
-		// }
+		if(get_IR(IR_RT) < 15){//15
+		    if(get_IR(IR_RT) != Rtmp){
+			cnt++;
+			Rtmp = get_IR(IR_RT);
+			if(Rtmp == 0)Rtmp = 999;
+		    }
+		   
+		    if(cnt > 2){
+		    	led(0);
+		    	break;
+		    }
+		}else{
+			cnt = 0;
+			Rtmp = 999;
+		}
 	    }
 	}
     
     	Smotor(powor,flag);
+	
+	
 	
 	
 	  if(Lflag == 0 && Rflag == 0){
