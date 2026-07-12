@@ -89,6 +89,9 @@
 #define r_cost 4		//迷路の重み　90度回転の場合
 #define r45_cost 1		//迷路の重み　45度回転の場合
 
+#define Search_all_s_num (3)	//全面探索　未知区間と既知区間の選択閾値　直線回数
+#define Search_all_r_num (2)    //全面探索　未知区間と既知区間の選択閾値　旋回回数
+
 //ダイクストラ用
 #define cost_centor_wall  10 //直線用の重み
 #define cost_wall_wall    12 //斜め用の重み

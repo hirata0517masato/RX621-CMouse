@@ -3366,6 +3366,8 @@ char shortest_path_search(short target_x,short target_y){
 /* 戻  り   値： なし										    									*/
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 char shortest_path_search_kichikukan(short target_x,short target_y){
+    char target_flag = 0;
+    
     queue_reset();
     for(int i = 0; i < H;i++){
 	for(int j = 0;j < W; j++){
@@ -3384,35 +3386,48 @@ char shortest_path_search_kichikukan(short target_x,short target_y){
 	y = x%100;
 	x /=100;
 
-	for(char i =0;i<4;i++){
-	    char update_flag = 0;
-	    short nx = x+dx[i],ny = y+dy[i];
-	
-	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) && ((maze_w[y][x] & (1<<(i+4))) != 0  || (target_x == x && target_y == y )) ){//確定マスのみ ターゲットマスの時は未確定でもOK
+	do{
+		for(char i =0;i<4;i++){
+		    char update_flag = 0;
+		    short nx = x+dx[i],ny = y+dy[i];
+		
+		    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 ) && ((maze_w[y][x] & (1<<(i+4))) != 0  || (target_flag == 2 && target_x == x && target_y == y )) ){//確定マスのみ ターゲットマスの時は未確定でもOK
 
-		short num = maze_d[y][x][i];
-		for(int k = 0; k < 4; k++){
-           
-		    if(i == k){//S
-			if(maze_d[ny][nx][k] > num + 1){
-			    update_flag = true;
-			    maze_d[ny][nx][k] = num + 1;
+		    	
+			short num = maze_d[y][x][i];
+			for(int k = 0; k < 4; k++){
+	           
+			    if(i == k){//S
+				if(maze_d[ny][nx][k] > num + 1){
+				    update_flag = true;
+				    maze_d[ny][nx][k] = num + 1;
+				}
+			    }else if((i+2+4)%4 == k){//B
+				if(maze_d[ny][nx][k] > num+1 + get_r_cost()*2){
+				    update_flag = true;
+				    maze_d[ny][nx][k] = num+1 + get_r_cost()*2;
+				}
+			    }else{// L or R
+				if(maze_d[ny][nx][k] > num+1 + get_r_cost()){
+				    update_flag = true;
+				    maze_d[ny][nx][k] = num+1 + get_r_cost();
+				}
+			    }
 			}
-		    }else if((i+2+4)%4 == k){//B
-			if(maze_d[ny][nx][k] > num+1 + get_r_cost()*2){
-			    update_flag = true;
-			    maze_d[ny][nx][k] = num+1 + get_r_cost()*2;
-			}
-		    }else{// L or R
-			if(maze_d[ny][nx][k] > num+1 + get_r_cost()){
-			    update_flag = true;
-			    maze_d[ny][nx][k] = num+1 + get_r_cost();
+			if(update_flag){
+				enqueue(nx*100 + ny);
+				
+				if(target_x == x && target_y == y){//目的地の隣のマスに進むことができる
+					target_flag = 1;	
+				}
 			}
 		    }
 		}
-		if(update_flag)enqueue(nx*100 + ny);
-	    }
-	}
+		
+		if(target_flag == 0 && target_x == x && target_y == y){//既知区間だけでは目的地の隣のマスに進むことができない
+			target_flag = 2;
+		}
+	}while(target_flag == 2 && target_x == x && target_y == y);//目的地の隣のみ未知区間の壁でも通過可能として再取得する
     }
     
     char ng_flag = 1;
@@ -5857,6 +5872,8 @@ void maze_search_all(){
     
     static char phese_flag = 0;
     
+    short mazed_miti,mazed_kiti,cost_tmp;
+    
     
     //time_limit = xxxx;//60秒  別のところで設定するように変更
 	
@@ -5954,11 +5971,20 @@ void maze_search_all(){
 		
 	
 		
+	//走行経路の選択のため、重みマップの作成
+    	shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
+	mazed_miti = maze_d[my_y][my_x][my_angle];
 	
-    	//shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
 	shortest_path_search_kichikukan(target_x,target_y);//未確定の壁は　ある　として考える　＝　未探索のマスを走行しない　＝　ほこりが少ない経路を選択する
+	mazed_kiti = maze_d[my_y][my_x][my_angle];
+
+	cost_tmp = (get_r_cost() * Search_all_r_num) + Search_all_s_num;
+	if((mazed_kiti == maze_d_max) || (mazed_miti <= cost_tmp && cost_tmp < mazed_kiti) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
+		shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
+	}
 	
 	
+	//走行経路作成
 	make_shortest_path_list(target_x,target_y); //未確定マスでも連続する直線なら進む
     	//make_shortest_path_list_simple(target_x,target_y); //未確定マスでとまる
 		
