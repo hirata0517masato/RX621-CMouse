@@ -140,7 +140,7 @@ int Gy_flag = 0; // 0:ƒWƒƒƒCƒOFF 1:ƒWƒƒƒCƒON
 int run_fin_speed_offset = 0;
 
 long long time_limit = -1;
-long long time_limit_base = 150000;//3•ª00•b@180000      2•ª30•b 150000
+long long time_limit_base = 150000;//3•ª00•b@180000      2•ª30•b 150000  2•ª00•b 130000 
 long long time_limit_offset = 0;
 char time_limit_flag = 0; //0:‚Ü‚¾İ’è‚³‚ê‚Ä‚¢‚È‚¢ ‚PFİ’è‚³‚ê‚Ä‚¢‚é
 
@@ -476,6 +476,14 @@ void main(void)
 	    maze_search_all();//Å’ZŒo˜Hã‚Ì–¢Šm’èƒ}ƒX‚ğ’T‚µ‚És‚­
 				
 	    log_start = 0; //ƒƒO‹L˜^I—¹
+	    
+	    ir_flag = 0;//ÔŠOüOFF
+
+	    //‘S–Ê’Tõ‚ÌŒ‹‰Ê‚ğLED‚ÅŠm”F‚µ‚½‚çƒXƒCƒbƒ`“ü—Í‚·‚é
+	    //ƒXƒCƒbƒ`“ü—Í‘Ò‚¿
+	    while(get_sw() == 0) nop();
+	    led_up();
+	    while(get_sw() == 1) nop();
 				
 	    break;
 	    
@@ -525,8 +533,8 @@ void main(void)
 #endif
 
 	    Set_motor_pid_mode(0);//’á‘¬
-	    maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
-	    //run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
+	   // maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
+	    run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
 	    
 	    Goal_angle_offset = buf_a;//ƒS[ƒ‹•ûŠp‚ğŒ³‚É–ß‚·
 	    break;
@@ -2885,7 +2893,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     status_log = 4;//ƒƒO‚É•ÇØ‚êŒã‚Ì‹——£•â³‚ğ‹L˜^‚·‚é‚½‚ß
     
     if(v2_flag == 1){//‚Qƒ}ƒXVƒ^[ƒ“ŠJn
-	ESmotor(250,powor,true,false);  //190
+	ESmotor(210,powor,true,false);  //250
 	
     }else if(v2_flag == 2){//‚Qƒ}ƒX Vƒ^[ƒ“‚Å‚Í‚È‚¢ Zƒpƒ^[ƒ“
     
@@ -2941,7 +2949,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
     long long enc_base_L = get_encoder_total_L();
     long long enc_base_R = get_encoder_total_R();
     long long enc_now = 0;
-	
+   
     int path_cnt = 0;
 //    int maza_update_flag = 0;
 	
@@ -2963,6 +2971,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
     int min_M_use = 0;
     int cnt = 0;
     ///////////
+ 
     
     GyroSum_reset();
 	
@@ -2992,8 +3001,8 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 					
 					
 					//•ÇØ‚ê‹——£•â³
-					enc_base_L += h1_2 - (A - enc_now) ;
-					enc_base_R += h1_2 - (A - enc_now) ;
+					//enc_base_L += h1_2 - (A - enc_now) ;
+					//enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
@@ -3022,8 +3031,8 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 					
 					
 					//•ÇØ‚ê‹——£•â³
-					enc_base_L += h1_2 - (A - enc_now) ;
-					enc_base_R += h1_2 - (A - enc_now) ;
+					//enc_base_L += h1_2 - (A - enc_now) ;
+					//enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
@@ -5964,21 +5973,24 @@ void maze_search_all(){
 		
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//Å’ZŒo˜Hã‚É–¢Šm’èƒ}ƒX‚ª‚È‚¯‚ê‚Î
 			motor(0,0);
-
+/*
 #ifdef Pickup_x
 			pickup_x = Pickup_x;
 			pickup_y = Pickup_y;
 #else
 			search_pickup(&pickup_x,&pickup_y);
 #endif
-			maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
-			//maze_search_adachi(Start_x,Start_y);
+			run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
+*/			
+			maze_search_adachi(Start_x,Start_y);
+			
 			led_down();
 			led_up();
 			led_down();
 			led_up();
 						
 			motor(0,0);
+			led(7);
 			return;
 		}
 	}
@@ -6033,15 +6045,17 @@ void maze_search_all(){
     
     
     if(time_limit <= 0){//@§ŒÀŠÔ“à‚É’Tõ‚Å‚«‚È‚©‚Á‚½@
-
+/*
 #ifdef Pickup_x
 	pickup_x = Pickup_x;
 	pickup_y = Pickup_y;
 #else
 	search_pickup(&pickup_x,&pickup_y);
 #endif
-	maze_search_adachi(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é
-			
+	
+	run_pickup(pickup_x,pickup_y);//E‚¢‚â‚·‚¢‚Æ‚±‚ë‚Ü‚ÅˆÚ“®‚·‚é		
+*/	
+	maze_search_adachi(Start_x,Start_y);
 	
 	//ˆÈ‰º‚ÍÅ’ZŒo˜H‚ğŠm’è‚Å‚«‚½‚©‚Ç‚¤‚©‚ÌŠm”F—p
 	shortest_path_search(Get_Goal_x(),Get_Goal_y());
@@ -6071,6 +6085,10 @@ void maze_search_all(){
 				led_down();
 				led_up();
 				
+				led(7);
+				motor(0,0);
+	    			return;
+				
 			}else{//ƒ_ƒCƒNƒXƒgƒ‰‚Í–¢Šm’èƒ}ƒX‚ª‚ ‚é
 				led(15);
 			        delay(500);
@@ -6079,7 +6097,11 @@ void maze_search_all(){
 			        led(15);
 			        delay(500);
 		    
-		        	Tmotor(l45 /2);//45“x / 2 ‰ñ“]‚µAÅŒã‚Ü‚Å’Tõ‚Å‚«‚È‚©‚Á‚½‚±‚Æ‚ğ‚í‚©‚é‚æ‚¤‚É‚·‚é
+		        	//Tmotor(l45 /2);//45“x / 2 ‰ñ“]‚µAÅŒã‚Ü‚Å’Tõ‚Å‚«‚È‚©‚Á‚½‚±‚Æ‚ğ‚í‚©‚é‚æ‚¤‚É‚·‚é
+				
+				led(3);
+			        motor(0,0);
+	    			return;
 			}
 			
 		}else{//Î‚ßl—¶‚Í–¢Šm’èƒ}ƒX‚ª‚ ‚é
@@ -6090,7 +6112,11 @@ void maze_search_all(){
 		        led(15);
 		        delay(500);
 		    
-		        Tmotor(r45 /2);//45“x / 2 ‰ñ“]‚µAÅŒã‚Ü‚Å’Tõ‚Å‚«‚È‚©‚Á‚½‚±‚Æ‚ğ‚í‚©‚é‚æ‚¤‚É‚·‚é
+		        //Tmotor(r45 /2);//45“x / 2 ‰ñ“]‚µAÅŒã‚Ü‚Å’Tõ‚Å‚«‚È‚©‚Á‚½‚±‚Æ‚ğ‚í‚©‚é‚æ‚¤‚É‚·‚é
+			
+			led(1);
+			motor(0,0);
+	    		return;
 		}
 	}else{
 	    led(15);
@@ -6100,7 +6126,11 @@ void maze_search_all(){
 	    led(15);
 	    delay(500);
 	    
-	    Tmotor(r45);//45“x‰ñ“]‚µAÅŒã‚Ü‚Å’Tõ‚Å‚«‚È‚©‚Á‚½‚±‚Æ‚ğ‚í‚©‚é‚æ‚¤‚É‚·‚é
+	    //Tmotor(r45);//45“x‰ñ“]‚µAÅŒã‚Ü‚Å’Tõ‚Å‚«‚È‚©‚Á‚½‚±‚Æ‚ğ‚í‚©‚é‚æ‚¤‚É‚·‚é
+	    
+	    led(8);
+	    motor(0,0);
+	    return;
 	}
     }
 }
@@ -7559,7 +7589,7 @@ void run_shortest_path_fin(	char naname){
     int kabegire_tuika = 0;//h1 / 4;//’¼ü@•ÇØ‚êŠm”F‚Ì‹——£‚ğ•â³‚·‚é@‚O‚Ì‚Æ‚«‚Í”¼ƒ}ƒX@{‚Å‹——£‚ª’Z‚­‚È‚é
 			  
     int run_speed        = 95;
-    int run_speed_naname = 75;//60
+    int run_speed_naname = 70;//60
     
     int enc_limit_kabe 	   	  = 60; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ¬‹È‚°‘O‚Ì•ÇØ‚ê
     int enc_limit_kabe_BIG 	  = 90; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ‘å‹È‚°‘O‚Ì•ÇØ‚ê
@@ -7663,10 +7693,10 @@ void run_shortest_path_fin(	char naname){
 	  	
 	    if(queue_next(1) == -11){//Vƒ^[ƒ“
 	    	if(comand_old != 10 || path_num_old <= 2){//‚Qƒ}ƒXVƒ^[ƒ“
-			L_rotate_naname(l45 * path_num * 2.10,false);//0.75
+			L_rotate_naname(l45 * path_num * 2.15,false);//0.75
 			v2_flag = 1;
 		}else{
-			L_rotate_naname(l45 * path_num * 2.05,false);//0.75
+			L_rotate_naname(l45 * path_num * 1.98,false);//2.05
 			GyroSum_reset();
 		}
 		comand = dequeue();
@@ -8266,10 +8296,10 @@ void run_shortest_path_fin(	char naname){
         
 	    if(queue_next(1) == 11){//Vƒ^[ƒ“
 	    	if(comand_old != 10 || path_num_old <= 2){//‚Qƒ}ƒXVƒ^[ƒ“
-			R_rotate_naname(r45 * path_num * 2.10,false);//0.75
+			R_rotate_naname(r45 * path_num * 2.15,false);//0.75
 			v2_flag = 1;
 		}else{
-			R_rotate_naname(r45 * path_num * 2.05,false);//0.75
+			R_rotate_naname(r45 * path_num * 1.98,false);//2.05
 			GyroSum_reset();
 		}
 		comand = dequeue();
