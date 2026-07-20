@@ -854,6 +854,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
     int ir_L_flag = 0,ir_R_flag = 0;
     int ir_L_flag_1masu = 0,ir_R_flag_1masu = 0;
     int ir_L_flag_1masu_flag = 0,ir_R_flag_1masu_flag = 0;
+    int Ltmp = 0,Rtmp = 0;
     int path_cnt_save_L = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
     int path_cnt_save_R = -1;//同じマスで壁切れ処理を２回以上しないように覚えておく変数
 //    int hosei_kyori_L = -1,hosei_kyori_R = -1;//壁切れ時の補正距離　左異なるタイミングで壁切れした際に利用する
@@ -1168,62 +1169,83 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	if(A >= s1 && (A - enc_now) < s1 && non_stop == false && get_IR(IR_F) < 50){//１マス以上進 && 残り１マス && 探索中　&& 前壁が近くない　で壁切れした場合は半マス進んで終了/距離補正に変更
 	
 		if(ir_L_flag_1masu == 0){
-			if(get_IR(IR_L) > 30){
-				ir_L_flag_1masu_flag++;
+			if(get_IR(IR_L) > 80){
+				if(get_IR(IR_L) != Ltmp){
+					ir_L_flag_1masu_flag++;
+					Ltmp = get_IR(IR_L);
 				
-				if(ir_L_flag_1masu_flag > 5){
+				}
+				
+				if(ir_L_flag_1masu_flag > 2){
 					ir_L_flag_1masu_flag = 0;
 					ir_L_flag_1masu = 1;
 				}
 			}else{
 				ir_L_flag_1masu_flag = 0;
+				Ltmp = 0;
 			}
 		}else if(ir_L_flag_1masu == 1){
-			if(get_IR(IR_L) < 10 && get_IR(IR_F) < 220){
-				ir_L_flag_1masu_flag++;
+			if(get_IR(IR_L) < 10 && get_IR(IR_F) < 200){
+	
+				if(get_IR(IR_L) != Ltmp){
+					ir_L_flag_1masu_flag++;
+					Ltmp = get_IR(IR_L);
+					if(Ltmp == 0)Ltmp = 999;
+		    		}
 				
-				if(ir_L_flag_1masu_flag > 5){
+				if(ir_L_flag_1masu_flag > 2){
 					ir_L_flag_1masu_flag = 0;
 					ir_L_flag_1masu = 2;
 					
 					
 					//壁切れ距離補正
-					//enc_base_L += h1_2 - (A - enc_now) ;
-					//enc_base_R += h1_2 - (A - enc_now) ;
+					enc_base_L += h1_2 - (A - enc_now) ;
+					enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
 				ir_L_flag_1masu_flag = 0;
+				Ltmp = 999;
 			}
 		}
 		
 		if(ir_R_flag_1masu == 0){
-			if(get_IR(IR_R) > 30){
-				ir_R_flag_1masu_flag++;
+			if(get_IR(IR_R) > 80){
+				if(get_IR(IR_R) != Rtmp){
+					ir_R_flag_1masu_flag++;
+					Rtmp = get_IR(IR_R);
 				
-				if(ir_R_flag_1masu_flag > 5){
+				}
+				
+				if(ir_R_flag_1masu_flag > 2){
 					ir_R_flag_1masu_flag = 0;
 					ir_R_flag_1masu = 1;
 				}
 			}else{
 				ir_R_flag_1masu_flag = 0;
+				Rtmp = 0;
 			}
 		}else if(ir_R_flag_1masu == 1){
-			if(get_IR(IR_R) < 10 && get_IR(IR_F) < 220){
-				ir_R_flag_1masu_flag++;
+			if(get_IR(IR_R) < 10 && get_IR(IR_F) < 200){
+				if(get_IR(IR_R) != Rtmp){
+					ir_R_flag_1masu_flag++;
+					Rtmp = get_IR(IR_R);
+					if(Rtmp == 0)Rtmp = 999;
+		    		}
 				
-				if(ir_R_flag_1masu_flag > 5){
+				if(ir_R_flag_1masu_flag > 2){
 					ir_R_flag_1masu_flag = 0;
 					ir_R_flag_1masu = 2;
 					
 					
 					//壁切れ距離補正
-					//enc_base_L += h1_2 - (A - enc_now) ;
-					//enc_base_R += h1_2 - (A - enc_now) ;
+					enc_base_L += h1_2 - (A - enc_now) ;
+					enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
 				ir_R_flag_1masu_flag = 0;
+				Rtmp = 999;
 			}
 		}
 	}

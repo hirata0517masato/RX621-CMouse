@@ -2967,6 +2967,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	
     int ir_L_flag_1masu = 0,ir_R_flag_1masu = 0;
     int ir_L_flag_1masu_flag = 0,ir_R_flag_1masu_flag = 0;
+    int Ltmp = 0,Rtmp = 0;
     
     ////////////
     long long A = path * s1;
@@ -2984,62 +2985,83 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	if((long long)path * s1 >= s1 && ((long long)path * s1 - enc_now) < s1){//１マス以上進 && 残り１マス && 探索中　で壁切れした場合は半マス進んで終了 -> 距離補正に変更
 	
 		if(ir_L_flag_1masu == 0){
-			if(get_IR(IR_L) > 30){
-				ir_L_flag_1masu_flag++;
+			if(get_IR(IR_L) > 80){
+				if(get_IR(IR_L) != Ltmp){
+					ir_L_flag_1masu_flag++;
+					Ltmp = get_IR(IR_L);
 				
-				if(ir_L_flag_1masu_flag > 5){
+				}
+				
+				if(ir_L_flag_1masu_flag > 2){
 					ir_L_flag_1masu_flag = 0;
 					ir_L_flag_1masu = 1;
 				}
 			}else{
 				ir_L_flag_1masu_flag = 0;
+				Ltmp = 0;
 			}
 		}else if(ir_L_flag_1masu == 1){
-			if(get_IR(IR_L) < 10 && get_IR(IR_F) < 220){
-				ir_L_flag_1masu_flag++;
+			if(get_IR(IR_L) < 10 && get_IR(IR_F) < 200){
+	
+				if(get_IR(IR_L) != Ltmp){
+					ir_L_flag_1masu_flag++;
+					Ltmp = get_IR(IR_L);
+					if(Ltmp == 0)Ltmp = 999;
+		    		}
 				
-				if(ir_L_flag_1masu_flag > 5){
+				if(ir_L_flag_1masu_flag > 2){
 					ir_L_flag_1masu_flag = 0;
 					ir_L_flag_1masu = 2;
 					
 					
 					//壁切れ距離補正
-					//enc_base_L += h1_2 - (A - enc_now) ;
-					//enc_base_R += h1_2 - (A - enc_now) ;
+					enc_base_L += h1_2 - (A - enc_now) ;
+					enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
 				ir_L_flag_1masu_flag = 0;
+				Ltmp = 999;
 			}
 		}
 		
 		if(ir_R_flag_1masu == 0){
-			if(get_IR(IR_R) > 30){
-				ir_R_flag_1masu_flag++;
+			if(get_IR(IR_R) > 80){
+				if(get_IR(IR_R) != Rtmp){
+					ir_R_flag_1masu_flag++;
+					Rtmp = get_IR(IR_R);
 				
-				if(ir_R_flag_1masu_flag > 5){
+				}
+				
+				if(ir_R_flag_1masu_flag > 2){
 					ir_R_flag_1masu_flag = 0;
 					ir_R_flag_1masu = 1;
 				}
 			}else{
 				ir_R_flag_1masu_flag = 0;
+				Rtmp = 0;
 			}
 		}else if(ir_R_flag_1masu == 1){
-			if(get_IR(IR_R) < 10 && get_IR(IR_F) < 220){
-				ir_R_flag_1masu_flag++;
+			if(get_IR(IR_R) < 10 && get_IR(IR_F) < 200){
+				if(get_IR(IR_R) != Rtmp){
+					ir_R_flag_1masu_flag++;
+					Rtmp = get_IR(IR_R);
+					if(Rtmp == 0)Rtmp = 999;
+		    		}
 				
-				if(ir_R_flag_1masu_flag > 5){
+				if(ir_R_flag_1masu_flag > 2){
 					ir_R_flag_1masu_flag = 0;
 					ir_R_flag_1masu = 2;
 					
 					
 					//壁切れ距離補正
-					//enc_base_L += h1_2 - (A - enc_now) ;
-					//enc_base_R += h1_2 - (A - enc_now) ;
+					enc_base_L += h1_2 - (A - enc_now) ;
+					enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
 				ir_R_flag_1masu_flag = 0;
+				Rtmp = 999;
 			}
 		}
 	}
