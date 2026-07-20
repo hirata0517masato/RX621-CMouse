@@ -5998,16 +5998,18 @@ void maze_search_all(){
 		
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 			motor(0,0);
-/*
+
 #ifdef Pickup_x
 			pickup_x = Pickup_x;
 			pickup_y = Pickup_y;
-#else
-			search_pickup(&pickup_x,&pickup_y);
-#endif
 			run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
-*/			
-			maze_search_adachi(Start_x,Start_y);
+#else
+			if( (Not_Pickup_y_min <= my_y  && my_y <=  Not_Pickup_y_max) && (Not_Pickup_x_min <= my_x &&  my_x <= Not_Pickup_x_max) ){//拾いにくいところにいる
+				search_pickup(&pickup_x,&pickup_y);
+				run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
+			}
+#endif			
+//			maze_search_adachi(Start_x,Start_y);//ピックアップ位置ではなくスタート位置に戻したいときに上の処理と切り替える
 			
 			led_down();
 			led_up();
@@ -6070,17 +6072,18 @@ void maze_search_all(){
     
     
     if(time_limit <= 0){//　制限時間内に探索できなかった　
-/*
+
 #ifdef Pickup_x
 	pickup_x = Pickup_x;
 	pickup_y = Pickup_y;
+	run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
 #else
-	search_pickup(&pickup_x,&pickup_y);
+	if( (Not_Pickup_y_min <= my_y  && my_y <=  Not_Pickup_y_max) && (Not_Pickup_x_min <= my_x &&  my_x <= Not_Pickup_x_max) ){//拾いにくいところにいる
+		search_pickup(&pickup_x,&pickup_y);
+		run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
+	}
 #endif
-	
-	run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する		
-*/	
-	maze_search_adachi(Start_x,Start_y);
+//	maze_search_adachi(Start_x,Start_y);//ピックアップ位置ではなくスタート位置に戻したいときに上の処理と切り替える
 	
 	//以下は最短経路を確定できたかどうかの確認用
 	shortest_path_search(Get_Goal_x(),Get_Goal_y());
@@ -8402,7 +8405,7 @@ void run_shortest_path_fin(	char naname){
 
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-/* 関 数 概 要：最短後の取り上げやすい位置を探す   		 			            */
+/* 関 数 概 要：現在位置から近い取り上げやすい位置を探す   		 			            */
 /* 関 数 詳 細：												                                   */
 /* 引       数： 取り上げやすいXY座標、								    */
 /* 戻  り   値： なし										    									*/
@@ -8413,14 +8416,16 @@ void search_pickup(int* pickuup_x,int* pickuup_y){
     int cost = maze_d_max;
 	
     //shortest_path_search(Get_Goal_x(),Get_Goal_y());
-    shortest_path_search_fin();
+   // shortest_path_search_fin();//ゴールからの距離を算出
+    shortest_path_search_kichikukan(my_x,my_y);//現在位置からの距離を算出
 	
     for(int i = 0; i < H;i++){
 	for(int j = 0;j < W; j++){
 				
-	    if( !( (Not_Pickup_y_min <= i  && i <=  Not_Pickup_y_max) && (Not_Pickup_x_min <= j &&  j <= Not_Pickup_x_max) )){
+	    if( !( (Not_Pickup_y_min <= i  && i <=  Not_Pickup_y_max) && (Not_Pickup_x_min <= j &&  j <= Not_Pickup_x_max) )){//拾いにくいところ　ではない
 				
-		if(j != Get_Goal_x() && i != Get_Goal_y()){
+		//if(j != Get_Goal_x() || i != Get_Goal_y()){//ゴール座標は対象外
+		if(j != my_x || i != my_y){//現在位置は対象外
 		    for(int k = 0; k < 4; k++){
 						
 			if(maze_d[i][j][k] < cost){

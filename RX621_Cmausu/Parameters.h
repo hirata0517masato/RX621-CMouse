@@ -22,8 +22,8 @@
 #define Pickup_y  0
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
-#define Not_Pickup_x_min  4		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
-#define Not_Pickup_y_min  4
+#define Not_Pickup_x_min  3		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
+#define Not_Pickup_y_min  3
 
 #define Not_Pickup_x_max  16
 #define Not_Pickup_y_max  16

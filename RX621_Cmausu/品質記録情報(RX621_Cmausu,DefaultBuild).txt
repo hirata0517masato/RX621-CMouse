@@ -1,8 +1,8 @@
 品質記録情報
-2026年7月20日 19:52:39
+2026年7月20日 22:52:15
 
 ------ ビルド開始(RX621_Cmausu, DefaultBuild) ------
-C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c Gyro.c Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
 RX621_Cmausu.c(1907):W0520186:Pointless comparison of unsigned integer with zero
 RX621_Cmausu.c(1907):W0520186:Pointless comparison of unsigned integer with zero
 C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
@@ -10,6 +10,13 @@ W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has ex
 W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
 Renesas Optimizing Linker Completed
 ------ ビルド終了(エラー:0個, 警告:4個)(RX621_Cmausu, DefaultBuild) ------
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\ccrx.exe RX621_Cmausu.c Gyro.c Motor.c -isa=rxv1 -fpu -lang=c99 -include=USBStack\CDC -include=USBStack -include=. -output=obj -obj_path=DefaultBuild -debug -g_line -speed -nologo
+RX621_Cmausu.c(1907):W0520186:Pointless comparison of unsigned integer with zero
+RX621_Cmausu.c(1907):W0520186:Pointless comparison of unsigned integer with zero
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V3.05.00\Bin\rlink.exe -subcommand=DefaultBuild\RX621_Cmausu.clnk
+W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
+W0561017:Paid license of CC-RX V3 is not found, and the evaluation period has expired. Please consider purchasing the product.
+Renesas Optimizing Linker Completed
 
 --- CommandFile 1 ---
 DefaultBuild\RX621_Cmausu.clnk :
@@ -45,10 +52,44 @@ DefaultBuild\RX621_Cmausu.clnk :
 -form=stype
 -exit
 
+--- CommandFile 2 ---
+DefaultBuild\RX621_Cmausu.clnk :
+-library=DefaultBuild\RX621_Cmausu.lib
+-input=DefaultBuild\dbsct.obj
+-input=DefaultBuild\intprg.obj
+-input=DefaultBuild\resetprg.obj
+-input=DefaultBuild\sbrk.obj
+-input=DefaultBuild\vecttbl.obj
+-input=DefaultBuild\RX621_Cmausu.obj
+-input=DefaultBuild\wait.obj
+-input=DefaultBuild\rspi.obj
+-input=DefaultBuild\Gyro.obj
+-input=DefaultBuild\MPU9250.obj
+-input=DefaultBuild\r_flash_api_rx.obj
+-input=DefaultBuild\DataFlash.obj
+-input=DefaultBuild\printf_lib.obj
+-input=DefaultBuild\Encoder.obj
+-input=DefaultBuild\Motor.obj
+-input=DefaultBuild\Queue.obj
+-input=DefaultBuild\IR.obj
+-input=DefaultBuild\dijkstra.obj
+-noprelink
+-output=DefaultBuild\RX621_Cmausu.abs
+-list=DefaultBuild\RX621_Cmausu.map
+-nooptimize
+-start=B_1,R_1,B_2,R_2,B,R,SU,SI/04,PResetPRG/0FFF80000,C_1,C_2,C,C$DSEC,C$BSEC,C$INIT,C$VTBL,C$VECT,D_1,D_2,D,P,PIntPRG,W_1,W_2,W,L/0FFF80100,FIXEDVECT/0FFFFFFD0
+-rom=D=R,D_1=R_1,D_2=R_2
+-nologo
+-end
+-input=DefaultBuild\RX621_Cmausu.abs
+-output=DefaultBuild\RX621_Cmausu.mot
+-form=stype
+-exit
+
 
 --- SHA1 hash value of output files ---
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 9ad14ba978ff5a8f81684bd9ee4c9854d4215e11
-C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 0e8855078e9bb7e1f3a2b715e4d57a21d787d37f
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.abs: 2ee0c78dc5369e738c43a8837a2f3139013ebe01
+C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: f5c0cc0fee90bdcafa6cfa9b0c16bf8b1d5a7972
 
 
 --- システム情報 ---
@@ -76,13 +117,13 @@ C:\WorkSpace\RX621_Cmausu\DefaultBuild\RX621_Cmausu.mot: 0e8855078e9bb7e1f3a2b71
  C:\Program Files (x86)\Renesas Electronics\CS+\CC
 *メモリ使用量
  *プライベート・ワーキング・セット
-  335 MB
+  300 MB
  *GDIオブジェクト数
-  2079
+  2080
  *USERオブジェクト数
-  978
+  975
  *開いているファイル
-  3 editors, 3 files, 293 KB
+  3 editors, 3 files, 294 KB
 
 --- ビルド・ツール・プラグイン情報 ---
 RH850ビルド・ツールCC-RH用プラグイン
