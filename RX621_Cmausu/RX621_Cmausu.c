@@ -1089,9 +1089,11 @@ void main(void)
 	    }
 	     
 	    printf2("\n");
-	    
+
 	    if(shortest_path_search_check_full() == 0){//最短経路が存在するとき
+	    	  
 		    shortest_path_search_perfect();
+		    
 		    for(int i = 0; i < H;i++){
 			for(int j = 0; j < W; j++){
 				printf2("+");
@@ -1106,7 +1108,7 @@ void main(void)
 				else if(maze_w[i][j]&0x80)printf2(" ");
 				else printf2(":");
 				
-				if(maze_d_perfect[i][j] == maze_d_max){
+				if(maze_d_perfect[i][j] >= maze_d_max){
 					printf2("    ");
 				}else{
 					printf2("%4d",maze_d_perfect[i][j] );	
@@ -1141,7 +1143,7 @@ void main(void)
 				else if(maze_w[i][j]&0x80)printf2(" ");
 				else printf2(":");
 				
-				if(maze_d_perfect[i][j] == maze_d_max){
+				if(maze_d_perfect[i][j] >= maze_d_max){
 					printf2("    ");
 				}else{
 					printf2("%4d",maze_d_perfect[i][j] );	
@@ -1175,7 +1177,7 @@ void main(void)
 				else if(maze_w[i][j]&0x80)printf2(" ");
 				else printf2(":");
 				
-				if(maze_d_dijkstra[i][j] == maze_d_max){
+				if(maze_d_dijkstra[i][j] >= maze_d_max){
 					printf2("    ");
 				}else{
 					printf2("%4d",maze_d_dijkstra[i][j] );	
@@ -1209,7 +1211,7 @@ void main(void)
 				else if(maze_w[i][j]&0x80)printf2(" ");
 				else printf2(":");
 				
-				if(maze_d_dijkstra[i][j] == maze_d_max){
+				if(maze_d_dijkstra[i][j] >= maze_d_max){
 					printf2("    ");
 				}else{
 					printf2("%4d",maze_d_dijkstra[i][j] );	
@@ -1222,8 +1224,6 @@ void main(void)
 		
 		    printf2("\n");
 	    }
-	    
-	    
 	    
 	    log_load();//リード＆出力
 	    break;
@@ -1311,7 +1311,10 @@ void ALL_init(){
     CMT_init();  // CMT0の初期化
     CMT2_init();  // CMT2の初期化
 
+    //initSCI1(SPEED_4800);
     initSCI1(SPEED_9600);
+    //initSCI1(SPEED_19200);
+    //initSCI1(SPEED_38400);
     //USB_init();  //USB CDCの初期化
 	
     led(9);
@@ -4949,7 +4952,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
    
     for(int i = 0; i < H;i++){//全マスからゴールまでの走行経路を算出する
 	for(int j = 0;j < W; j++){
-	   led(i);
+	  // led(i);
 	  // printf2("%d %d ",i,j);
 	    
 	   if(i == Get_Goal_y() && j == Get_Goal_x()){
@@ -6694,7 +6697,7 @@ void shortest_path_search_perfect(){
    
     for(int i = 0; i < H;i++){//全マスからゴールまでの走行経路を算出する
 	for(int j = 0;j < W; j++){
-	   led(i);
+	   //led(i);
 	  // printf2("%d %d ",i,j);
 	    
 	   if(i == Get_Goal_y() && j == Get_Goal_x()){
@@ -7019,7 +7022,7 @@ void shortest_path_search_perfect(){
 	enqueue(1);
     }
   
-    led_down();
+    //led_down();
   
     //現在位置をバックアップから復元
     my_x = my_x_tmp;
@@ -8384,7 +8387,7 @@ void run_shortest_path_fin(	char naname){
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 void search_pickup(int* pickuup_x,int* pickuup_y){
 	
-    int x,y;
+    int x = 0,y = 0;
     int cost = maze_d_max;
 	
     //shortest_path_search(Get_Goal_x(),Get_Goal_y());

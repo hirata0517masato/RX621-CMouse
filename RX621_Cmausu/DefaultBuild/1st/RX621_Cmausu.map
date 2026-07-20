@@ -1,0 +1,1847 @@
+Renesas Optimizing Linker (W3.05.00 )             20-Jul-2026 15:58:57
+
+*** Options ***
+
+-subcommand=DefaultBuild\1st\RX621_Cmausu.clnk
+-library=DefaultBuild\RX621_Cmausu.lib
+-input=DefaultBuild\1st\dbsct.obj
+-input=DefaultBuild\1st\intprg.obj
+-input=DefaultBuild\1st\resetprg.obj
+-input=DefaultBuild\1st\sbrk.obj
+-input=DefaultBuild\1st\vecttbl.obj
+-input=DefaultBuild\1st\RX621_Cmausu.obj
+-input=DefaultBuild\1st\wait.obj
+-input=DefaultBuild\1st\rspi.obj
+-input=DefaultBuild\1st\Gyro.obj
+-input=DefaultBuild\1st\MPU9250.obj
+-input=DefaultBuild\1st\r_flash_api_rx.obj
+-input=DefaultBuild\1st\DataFlash.obj
+-input=DefaultBuild\1st\printf_lib.obj
+-input=DefaultBuild\1st\Encoder.obj
+-input=DefaultBuild\1st\Motor.obj
+-input=DefaultBuild\1st\Queue.obj
+-input=DefaultBuild\1st\IR.obj
+-input=DefaultBuild\1st\dijkstra.obj
+-noprelink
+-nodebug
+-output=DefaultBuild\1st\RX621_Cmausu.abs
+-map=DefaultBuild\1st\RX621_Cmausu.bls
+-list=DefaultBuild\1st\RX621_Cmausu.map
+-show=symbol,total_size
+-nooptimize
+-start=B_1,R_1,B_2,R_2,B,R,SU,SI/04,PResetPRG/0FFF80000,C_1,C_2,C,C$DSEC,C$BSEC,C$INIT,C$VTBL,C$VECT,D_1,D_2,D,P,PIntPRG,W_1,W_2,W,L/0FFF80100,FIXEDVECT/0FFFFFFD0
+-rom=D=R,D_1=R_1,D_2=R_2
+-nologo
+-end
+
+*** Error information ***
+
+*** Mapping List ***
+
+SECTION                            START      END         SIZE   ALIGN
+B_1
+                                  00000004  00000066        63   1
+R_1
+                                  00000067  00000fee       f88   1
+B_2
+                                  00000ff0  0000b649      a65a   2
+R_2
+                                  0000b64a  0000cc6b      1622   2
+B
+                                  0000cc6c  0000ea2b      1dc0   4
+R
+                                  0000ea2c  0000ee9f       474   4
+SU
+                                  0000eea0  0000ef9f       100   4
+SI
+                                  0000efa0  0000f29f       300   4
+PResetPRG
+                                  fff80000  fff80030        31   1
+C_1
+                                  fff80100  fff8028b       18c   1
+C_2
+                                  fff8028c  fff8068f       404   2
+C
+                                  fff80690  fff807e7       158   4
+C$DSEC
+                                  fff807e8  fff8080b        24   4
+C$BSEC
+                                  fff8080c  fff80823        18   4
+C$INIT
+                                  fff80824  fff80824         0   1
+C$VTBL
+                                  fff80824  fff80824         0   1
+C$VECT
+                                  fff80824  fff80c23       400   4
+D_1
+                                  fff80c24  fff81bab       f88   1
+D_2
+                                  fff81bac  fff831cd      1622   2
+D
+                                  fff831d0  fff83643       474   4
+P
+                                  fff83644  fff984f5     14eb2   1
+PIntPRG
+                                  fff984f6  fff9863b       146   1
+W_1
+                                  fff9863c  fff9863c         0   1
+W_2
+                                  fff9863c  fff986a3        68   2
+W
+                                  fff986a4  fff986a4         0   4
+L
+                                  fff986a4  fff98850       1ad   4
+$ADDR_C_FFFFFFA0
+                                  ffffffa0  ffffffaf        10   1
+FIXEDVECT
+                                  ffffffd0  ffffffff        30   4
+
+*** Total Section Size ***
+
+RAMDATA SECTION:  0000f29b Byte(s)
+ROMDATA SECTION:  00003797 Byte(s)
+PROGRAM SECTION:  00015029 Byte(s)
+
+*** Symbol List ***
+
+SECTION=
+FILE=                               START        END    SIZE
+  SYMBOL                            ADDR        SIZE    INFO      COUNTS  OPT
+
+SECTION=B_1
+FILE=DefaultBuild\1st\r_flash_api_rx.obj
+                                  00000004  00000004         1
+  _g_current_mode
+                                  00000004         1   data ,l         * 
+FILE=DefaultBuild\1st\printf_lib.obj
+                                  00000005  00000066        62
+  _send_buff
+                                  00000005        40   data ,l         * 
+  _recvData
+                                  00000045         1   data ,l         * 
+  _recvError
+                                  00000046         1   data ,l         * 
+  _read_data$1
+                                  00000047        20   data ,l         * 
+
+SECTION=R_1
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  00000067  00000f92       f2c
+  _maze_w
+                                  00000067       100   data ,g         * 
+  _maze_w_backup
+                                  00000167       100   data ,g         * 
+  _NG_maze_flag
+                                  00000267         1   data ,g         * 
+  _maze_w_backup_irq
+                                  00000268       500   data ,g         * 
+  _Goal_x_offset
+                                  00000768         1   data ,g         * 
+  _Goal_y_offset
+                                  00000769         1   data ,g         * 
+  _Goal_angle_offset
+                                  0000076a         1   data ,g         * 
+  _my_x
+                                  0000076b         1   data ,g         * 
+  _my_y
+                                  0000076c         1   data ,g         * 
+  _my_angle
+                                  0000076d         1   data ,g         * 
+  _time_limit_flag
+                                  0000076e         1   data ,g         * 
+  _log
+                                  0000076f       800   data ,g         * 
+  _log_buff
+                                  00000f6f        20   data ,g         * 
+  _log_start
+                                  00000f8f         1   data ,g         * 
+  _phese_flag$1
+                                  00000f90         1   data ,l         * 
+  _log_flag$4
+                                  00000f91         1   data ,l         * 
+  _backup_irq_cnt_now$6
+                                  00000f92         1   data ,l         * 
+FILE=DefaultBuild\1st\MPU9250.obj
+                                  00000f93  00000f94         2
+  _my_low_pass_filter
+                                  00000f93         1   data ,g         * 
+  _my_low_pass_filter_acc
+                                  00000f94         1   data ,g         * 
+FILE=DefaultBuild\1st\r_flash_api_rx.obj
+                                  00000f95  00000f96         2
+  _g_fcu_transfer_complete
+                                  00000f95         1   data ,l         * 
+  _g_fcu_pclk_command
+                                  00000f96         1   data ,l         * 
+FILE=DefaultBuild\1st\Encoder.obj
+                                  00000f97  00000f98         2
+  _flag$4
+                                  00000f97         1   data ,l         * 
+  _flag$7
+                                  00000f98         1   data ,l         * 
+FILE=DefaultBuild\1st\Motor.obj
+                                  00000f99  00000f9d         5
+  _motor_stop_flag
+                                  00000f99         1   data ,g         * 
+  _buff_pwm_L
+                                  00000f9a         1   data ,g         * 
+  _buff_pwm_R
+                                  00000f9b         1   data ,g         * 
+  _motor_pid_flag
+                                  00000f9c         1   data ,g         * 
+  _motor_pid_mode
+                                  00000f9d         1   data ,g         * 
+FILE=xfiles
+                                  00000f9e  00000fed        50
+  _ebuf
+                                  00000f9e        50   data ,l         * 
+FILE=xstate
+                                  00000fee  00000fee         1
+  __Mbcurmax
+                                  00000fee         1   data ,g         * 
+
+SECTION=B_2
+FILE=DefaultBuild\1st\MPU9250.obj
+                                  00000ff0  00000ff5         6
+  _mag_data_raw
+                                  00000ff0         6   data ,g         * 
+FILE=DefaultBuild\1st\dijkstra.obj
+                                  00000ff6  0000b649      a654
+  _edges
+                                  00000ff6      6000   data ,g         * 
+  _heap
+                                  00006ff6      4000   data ,g         * 
+  _dist
+                                  0000aff6       654   data ,g         * 
+
+SECTION=R_2
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  0000b64a  0000ca61      1418
+  _motor_stop_cnt
+                                  0000b64a         2   data ,g         * 
+  _maze_d
+                                  0000b64c       800   data ,g         * 
+  _maze_d_backup
+                                  0000be4c       800   data ,g         * 
+  _maze_d_perfect
+                                  0000c64c       200   data ,g         * 
+  _maze_d_dijkstra
+                                  0000c84c       200   data ,g         * 
+  _r_cost_offset
+                                  0000ca4c         2   data ,g         * 
+  _r45_cost_offset
+                                  0000ca4e         2   data ,g         * 
+  _dx
+                                  0000ca50         8   data ,g         * 
+  _dy
+                                  0000ca58         8   data ,g         * 
+  _status_log
+                                  0000ca60         2   data ,g         * 
+FILE=DefaultBuild\1st\Encoder.obj
+                                  0000ca62  0000ca65         4
+  _L_enc_base
+                                  0000ca62         2   data ,g         * 
+  _R_enc_base
+                                  0000ca64         2   data ,g         * 
+FILE=DefaultBuild\1st\Queue.obj
+                                  0000ca66  0000cc6b       206
+  _queue
+                                  0000ca66       200   data ,g         * 
+  _queue_front
+                                  0000cc66         2   data ,g         * 
+  _queue_end
+                                  0000cc68         2   data ,g         * 
+  _queue_num
+                                  0000cc6a         2   data ,g         * 
+
+SECTION=B
+FILE=DefaultBuild\1st\sbrk.obj
+                                  0000cc6c  0000d06b       400
+  _heap_area
+                                  0000cc6c       400   data ,l         * 
+FILE=DefaultBuild\1st\MPU9250.obj
+                                  0000d06c  0000d0cb        60
+  _acc_divider
+                                  0000d06c         4   data ,g         * 
+  _gyro_divider
+                                  0000d070         4   data ,g         * 
+  _calib_data
+                                  0000d074         c   data ,g         * 
+  _Magnetometer_ASA
+                                  0000d080         c   data ,g         * 
+  _accel_data
+                                  0000d08c         c   data ,g         * 
+  _temperature
+                                  0000d098         4   data ,g         * 
+  _gyro_data
+                                  0000d09c         c   data ,g         * 
+  _mag_data
+                                  0000d0a8         c   data ,g         * 
+  _g_bias
+                                  0000d0b4         c   data ,g         * 
+  _a_bias
+                                  0000d0c0         c   data ,g         * 
+FILE=DefaultBuild\1st\r_flash_api_rx.obj
+                                  0000d0cc  0000d0cf         4
+  _g_flash_state
+                                  0000d0cc         4   data ,l         * 
+FILE=DefaultBuild\1st\printf_lib.obj
+                                  0000d0d0  0000d0d3         4
+  _recvFlag
+                                  0000d0d0         4   data ,l         * 
+FILE=DefaultBuild\1st\dijkstra.obj
+                                  0000d0d4  0000ea27      1954
+  _head
+                                  0000d0d4       ca8   data ,g         * 
+  _edge_idx
+                                  0000dd7c         4   data ,g         * 
+  _prev
+                                  0000dd80       ca8   data ,g         * 
+FILE=_errno
+                                  0000ea28  0000ea2b         4
+  __errno
+                                  0000ea28         4   data ,g         * 
+
+SECTION=R
+FILE=DefaultBuild\1st\sbrk.obj
+                                  0000ea2c  0000ea2f         4
+  _brk
+                                  0000ea2c         4   data ,l         * 
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  0000ea30  0000ea87        58
+  _backup_irq_time_ms
+                                  0000ea30         8   data ,g         * 
+  _ir_flag
+                                  0000ea38         4   data ,g         * 
+  _Gy_flag
+                                  0000ea3c         4   data ,g         * 
+  _run_fin_speed_offset
+                                  0000ea40         4   data ,g         * 
+  _time_limit
+                                  0000ea44         8   data ,g         * 
+  _time_limit_base
+                                  0000ea4c         8   data ,g         * 
+  _time_limit_offset
+                                  0000ea54         8   data ,g         * 
+  _pickup_x
+                                  0000ea5c         4   data ,g         * 
+  _pickup_y
+                                  0000ea60         4   data ,g         * 
+  _log_cnt
+                                  0000ea64         4   data ,g         * 
+  _log_save_cnt
+                                  0000ea68         4   data ,g         * 
+  _log_block_num
+                                  0000ea6c         4   data ,g         * 
+  _t_1ms
+                                  0000ea70         4   data ,g         * 
+  _mode
+                                  0000ea74         4   data ,g         * 
+  _hoge$2
+                                  0000ea78         4   data ,l         * 
+  _task$3
+                                  0000ea7c         4   data ,l         * 
+  _backup_irq_time$5
+                                  0000ea80         8   data ,l         * 
+FILE=DefaultBuild\1st\wait.obj
+                                  0000ea88  0000ea8f         8
+  _wait_cnt
+                                  0000ea88         4   data ,g         * 
+  _wait_cnt_ITP
+                                  0000ea8c         4   data ,g         * 
+FILE=DefaultBuild\1st\Gyro.obj
+                                  0000ea90  0000eabb        2c
+  _gyro
+                                  0000ea90         4   data ,g         * 
+  _gyro_base
+                                  0000ea94         8   data ,g         * 
+  _gyro_sum
+                                  0000ea9c         8   data ,g         * 
+  _gyro_sum_global
+                                  0000eaa4         8   data ,g         * 
+  _Gyro_kp_search
+                                  0000eaac         4   data ,g         * 
+  _Gyro_kd_search
+                                  0000eab0         4   data ,g         * 
+  _Gyro_kp
+                                  0000eab4         4   data ,g         * 
+  _Gyro_kd
+                                  0000eab8         4   data ,g         * 
+FILE=DefaultBuild\1st\printf_lib.obj
+                                  0000eabc  0000eac7         c
+  _send_w
+                                  0000eabc         4   data ,l         * 
+  _send_r
+                                  0000eac0         4   data ,l         * 
+  _send_count
+                                  0000eac4         4   data ,l         * 
+FILE=DefaultBuild\1st\Encoder.obj
+                                  0000eac8  0000eb47        80
+  _L_enc_total_rev
+                                  0000eac8         8   data ,g         * 
+  _L_enc_total
+                                  0000ead0         8   data ,g         * 
+  _L_enc
+                                  0000ead8         4   data ,g         * 
+  _R_enc_total_rev
+                                  0000eadc         8   data ,g         * 
+  _R_enc_total
+                                  0000eae4         8   data ,g         * 
+  _R_enc
+                                  0000eaec         4   data ,g         * 
+  _C_enc
+                                  0000eaf0         4   data ,g         * 
+  _buf_i$3
+                                  0000eaf4         4   data ,l         * 
+  _L_enc_buf$2
+                                  0000eaf8        28   data ,l         * 
+  _R_enc_buf$1
+                                  0000eb20        28   data ,l         * 
+FILE=DefaultBuild\1st\Motor.obj
+                                  0000eb48  0000ebdf        98
+  _LE
+                                  0000eb48         4   data ,g         * 
+  _RE
+                                  0000eb4c         4   data ,g         * 
+  _LM_prev
+                                  0000eb50         4   data ,g         * 
+  _RM_prev
+                                  0000eb54         4   data ,g         * 
+  _safe_cnt
+                                  0000eb58         4   data ,g         * 
+  _enc_limit
+                                  0000eb5c         4   data ,g         * 
+  _duty_L_old$1
+                                  0000eb60         4   data ,l         * 
+  _duty_R_old$2
+                                  0000eb64         4   data ,l         * 
+  _cnt3$3
+                                  0000eb68         4   data ,l         * 
+  _cnt4$4
+                                  0000eb6c         4   data ,l         * 
+  _cnt5$5
+                                  0000eb70         4   data ,l         * 
+  _ir_sa$6
+                                  0000eb74         4   data ,l         * 
+  _ir_sa_buf$7
+                                  0000eb78         4   data ,l         * 
+  _ir_wall$8
+                                  0000eb7c         4   data ,l         * 
+  _ir_core$9
+                                  0000eb80         4   data ,l         * 
+  _ir_wall2$10
+                                  0000eb84         4   data ,l         * 
+  _kp$11
+                                  0000eb88         4   data ,l         * 
+  _kd$12
+                                  0000eb8c         4   data ,l         * 
+  _naname_flag_old$13
+                                  0000eb90         4   data ,l         * 
+  _enc_base_L$14
+                                  0000eb94         8   data ,l         * 
+  _enc_base_R$15
+                                  0000eb9c         8   data ,l         * 
+  _enc_now$16
+                                  0000eba4         8   data ,l         * 
+  _L$17
+                                  0000ebac         8   data ,l         * 
+  _R$18
+                                  0000ebb4         8   data ,l         * 
+  _L_base$19
+                                  0000ebbc         8   data ,l         * 
+  _R_base$20
+                                  0000ebc4         8   data ,l         * 
+  _cnt1$21
+                                  0000ebcc         4   data ,l         * 
+  _cnt1$22
+                                  0000ebd0         4   data ,l         * 
+  _cnt1$23
+                                  0000ebd4         4   data ,l         * 
+  _cnt1$24
+                                  0000ebd8         4   data ,l         * 
+  _cnt1$25
+                                  0000ebdc         4   data ,l         * 
+FILE=DefaultBuild\1st\IR.obj
+                                  0000ebe0  0000ec53        74
+  _S
+                                  0000ebe0        1c   data ,g         * 
+  _s
+                                  0000ebfc        1c   data ,g         * 
+  _num$1
+                                  0000ec18         4   data ,l         * 
+  _S_old$3
+                                  0000ec1c        1c   data ,l         * 
+  _tmp$2
+                                  0000ec38        1c   data ,l         * 
+FILE=xprintf
+                                  0000ec54  0000ec57         4
+  _stderr
+                                  0000ec54         4   data ,g         * 
+FILE=xfiles
+                                  0000ec58  0000ed2f        d8
+  __Stdin
+                                  0000ec58        48   data ,g         * 
+  __Stdout
+                                  0000eca0        48   data ,g         * 
+  __Stderr
+                                  0000ece8        48   data ,g         * 
+FILE=xctype
+                                  0000ed30  0000ed37         8
+  __Ctype
+                                  0000ed30         4   data ,g         * 
+  __Tls_setup__Ctype
+                                  0000ed34         4   data ,g         * 
+FILE=localeco
+                                  0000ed38  0000ed8b        54
+  __Locale
+                                  0000ed38        50   data ,g         * 
+  __Tls_setup__Locale
+                                  0000ed88         4   data ,g         * 
+FILE=xstate
+                                  0000ed8c  0000edd3        48
+  __Tls_setup__Mbcurmax
+                                  0000ed8c         4   data ,g         * 
+  __Mbstate
+                                  0000ed90        40   data ,g         * 
+  __Tls_setup__Mbstate
+                                  0000edd0         4   data ,g         * 
+FILE=malloc
+                                  0000edd4  0000eddb         8
+  __Aldata
+                                  0000edd4         8   data ,g         * 
+FILE=xwcstate
+                                  0000eddc  0000ee1f        44
+  __Wcstate
+                                  0000eddc        40   data ,g         * 
+  __Tls_setup__Wcstate
+                                  0000ee1c         4   data ,g         * 
+FILE=xfvalues
+                                  0000ee20  0000ee97        78
+  __FDenorm
+                                  0000ee20        10   data ,g         * 
+  __FEps
+                                  0000ee30        10   data ,g         * 
+  __FHugeval
+                                  0000ee40        10   data ,g         * 
+  __FInf
+                                  0000ee50        10   data ,g         * 
+  __FNan
+                                  0000ee60        10   data ,g         * 
+  __FSnan
+                                  0000ee70        10   data ,g         * 
+  __FRteps
+                                  0000ee80        10   data ,g         * 
+  __FXbig
+                                  0000ee90         4   data ,g         * 
+  __FZero
+                                  0000ee94         4   data ,g         * 
+FILE=xtolotab
+                                  0000ee98  0000ee9f         8
+  __Tolotab
+                                  0000ee98         4   data ,g         * 
+  __Tls_setup__Tolotab
+                                  0000ee9c         4   data ,g         * 
+
+SECTION=SU
+FILE=DefaultBuild\1st\resetprg.obj
+                                  0000eea0  0000ef9f       100
+
+SECTION=SI
+FILE=DefaultBuild\1st\resetprg.obj
+                                  0000efa0  0000f29f       300
+
+SECTION=PResetPRG
+FILE=DefaultBuild\1st\resetprg.obj
+                                  fff80000  fff80030        31
+  _PowerON_Reset_PC
+                                  fff80000        31   entry,g         * 
+
+SECTION=C_1
+FILE=xprintf
+                                  fff80100  fff80109         a
+  _fchar$1
+                                  fff80100         a   data ,l         * 
+FILE=xscanf
+                                  fff8010a  fff8010f         6
+  _fchar$1
+                                  fff8010a         6   data ,l         * 
+FILE=xputtxt
+                                  fff80110  fff801b4        a5
+  _spaces
+                                  fff80110        21   data ,l         * 
+  _zeroes
+                                  fff80131        21   data ,l         * 
+  _asterisk
+                                  fff80152        21   data ,l         * 
+  _plus
+                                  fff80173        21   data ,l         * 
+  _minus
+                                  fff80194        21   data ,l         * 
+FILE=xgetint
+                                  fff801b5  fff801da        26
+  _digits$1
+                                  fff801b5        17   data ,l         * 
+  _flit$2
+                                  fff801cc         8   data ,l         * 
+  _barr$3
+                                  fff801d4         7   data ,l         * 
+FILE=xlitob
+                                  fff801db  fff801fc        22
+  _ldigs
+                                  fff801db        11   data ,l         * 
+  _udigs
+                                  fff801ec        11   data ,l         * 
+FILE=xgetfloa
+                                  fff801fd  fff80213        17
+  _digits$1
+                                  fff801fd        17   data ,l         * 
+FILE=localeco
+                                  fff80214  fff80214         1
+  _null
+                                  fff80214         1   data ,l         * 
+FILE=xstoull
+                                  fff80215  fff8025e        4a
+  _digits
+                                  fff80215        25   data ,l         * 
+  _ndigs
+                                  fff8023a        25   data ,l         * 
+FILE=xstoxflt
+                                  fff8025f  fff8028b        2d
+  _digits$1
+                                  fff8025f        17   data ,l         * 
+  _vals$2
+                                  fff80276        16   data ,l         * 
+
+SECTION=C_2
+FILE=xctype
+                                  fff8028c  fff8048d       202
+  _ctyp_tab
+                                  fff8028c       202   data ,l         * 
+FILE=xtolotab
+                                  fff8048e  fff8068f       202
+  _tolow_tab
+                                  fff8048e       202   data ,l         * 
+
+SECTION=C
+FILE=DefaultBuild\1st\dbsct.obj
+                                  fff80690  fff806c3        34
+  __CTBL
+                                  fff80690        34   data ,g         * 
+FILE=DefaultBuild\1st\r_flash_api_rx.obj
+                                  fff806c4  fff8079b        d8
+  _g_flash_BlockAddresses
+                                  fff806c4        d8   data ,g         * 
+FILE=xprintf
+                                  fff8079c  fff807b3        18
+  _fbit$2
+                                  fff8079c        18   data ,l         * 
+FILE=xldtob
+                                  fff807b4  fff807cb        18
+  _pows
+                                  fff807b4        18   data ,l         * 
+FILE=xfdtento
+                                  fff807cc  fff807e3        18
+  _pows
+                                  fff807cc        18   data ,l         * 
+FILE=_sbrk_si
+                                  fff807e4  fff807e7         4
+  __sbrk_size
+                                  fff807e4         4   data ,g         * 
+
+SECTION=C$DSEC
+FILE=DefaultBuild\1st\dbsct.obj
+                                  fff807e8  fff8080b        24
+  __DTBL
+                                  fff807e8        24   data ,g         * 
+
+SECTION=C$BSEC
+FILE=DefaultBuild\1st\dbsct.obj
+                                  fff8080c  fff80823        18
+  __BTBL
+                                  fff8080c        18   data ,g         * 
+
+SECTION=C$VECT
+FILE=DefaultBuild\1st\dbsct.obj
+                                  fff80824  fff80c23       400
+
+SECTION=D_1
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  fff80c24  fff81b4f       f2c
+FILE=DefaultBuild\1st\MPU9250.obj
+                                  fff81b50  fff81b51         2
+FILE=DefaultBuild\1st\r_flash_api_rx.obj
+                                  fff81b52  fff81b53         2
+FILE=DefaultBuild\1st\Encoder.obj
+                                  fff81b54  fff81b55         2
+FILE=DefaultBuild\1st\Motor.obj
+                                  fff81b56  fff81b5a         5
+FILE=xfiles
+                                  fff81b5b  fff81baa        50
+FILE=xstate
+                                  fff81bab  fff81bab         1
+
+SECTION=D_2
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  fff81bac  fff82fc3      1418
+FILE=DefaultBuild\1st\Encoder.obj
+                                  fff82fc4  fff82fc7         4
+FILE=DefaultBuild\1st\Queue.obj
+                                  fff82fc8  fff831cd       206
+
+SECTION=D
+FILE=DefaultBuild\1st\sbrk.obj
+                                  fff831d0  fff831d3         4
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  fff831d4  fff8322b        58
+FILE=DefaultBuild\1st\wait.obj
+                                  fff8322c  fff83233         8
+FILE=DefaultBuild\1st\Gyro.obj
+                                  fff83234  fff8325f        2c
+FILE=DefaultBuild\1st\printf_lib.obj
+                                  fff83260  fff8326b         c
+FILE=DefaultBuild\1st\Encoder.obj
+                                  fff8326c  fff832eb        80
+FILE=DefaultBuild\1st\Motor.obj
+                                  fff832ec  fff83383        98
+FILE=DefaultBuild\1st\IR.obj
+                                  fff83384  fff833f7        74
+FILE=xprintf
+                                  fff833f8  fff833fb         4
+FILE=xfiles
+                                  fff833fc  fff834d3        d8
+FILE=xctype
+                                  fff834d4  fff834db         8
+FILE=localeco
+                                  fff834dc  fff8352f        54
+FILE=xstate
+                                  fff83530  fff83577        48
+FILE=malloc
+                                  fff83578  fff8357f         8
+FILE=xwcstate
+                                  fff83580  fff835c3        44
+FILE=xfvalues
+                                  fff835c4  fff8363b        78
+FILE=xtolotab
+                                  fff8363c  fff83643         8
+
+SECTION=P
+FILE=DefaultBuild\1st\sbrk.obj
+                                  fff83644  fff83664        21
+  _sbrk
+                                  fff83644        21   func ,g         * 
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  fff83665  fff8f8da      c276
+  _main
+                                  fff83665      1d94   func ,g         * 
+  _ALL_init
+                                  fff853f9       1ab   func ,g         * 
+  _CLK_init
+                                  fff855a4        1a   func ,g         * 
+  _IO_init
+                                  fff855be        4d   func ,g         * 
+  _AD_init
+                                  fff8560b        1a   func ,g         * 
+  _CMT_init
+                                  fff85625        41   func ,g         * 
+  _CMT2_init
+                                  fff85666        3b   func ,g         * 
+  _MTU0_init
+                                  fff856a1       104   func ,g         * 
+  _MTU1_init
+                                  fff857a5        3e   func ,g         * 
+  _get_r_cost
+                                  fff857e3        11   func ,g         * 
+  _get_r45_cost
+                                  fff857f4        11   func ,g         * 
+  _led
+                                  fff85805        35   func ,g         * 
+  _led_up
+                                  fff8583a        45   func ,g         * 
+  _led_down
+                                  fff8587f        4a   func ,g         * 
+  _get_sw
+                                  fff858c9         f   func ,g         * 
+  _maze_save
+                                  fff858d8        3d   func ,g         * 
+  _maze_load
+                                  fff85915        41   func ,g         * 
+  _log_reset
+                                  fff85956        45   func ,g         * 
+  _log_save
+                                  fff8599b        1d   func ,g         * 
+  _log_minus
+                                  fff859b8        11   func ,g         * 
+  _log_load
+                                  fff859c9       1f8   func ,g         * 
+  _maze_update
+                                  fff85bc1       590   func ,g         * 
+  _maze_update2
+                                  fff86151        e1   func ,g         * 
+  _maze_update3
+                                  fff86232       34d   func ,g         * 
+  _mae_kabe
+                                  fff8657f        fc   func ,g         * 
+  _L_rotate
+                                  fff8667b        1d   func ,g         * 
+  _R_rotate
+                                  fff86698        13   func ,g         * 
+  _L_curve
+                                  fff866ab        29   func ,g         * 
+  _L_curve_search
+                                  fff866d4        29   func ,g         * 
+  _L_curve_afterNaname
+                                  fff866fd        29   func ,g         * 
+  _L_curveBIG
+                                  fff86726        29   func ,g         * 
+  _L_curveU
+                                  fff8674f        29   func ,g         * 
+  _R_curve
+                                  fff86778        1f   func ,g         * 
+  _R_curve_search
+                                  fff86797        1f   func ,g         * 
+  _R_curve_afterNaname
+                                  fff867b6        1f   func ,g         * 
+  _R_curveBIG
+                                  fff867d5        1f   func ,g         * 
+  _R_curveU
+                                  fff867f4        1f   func ,g         * 
+  _L_rotate_naname
+                                  fff86813        1d   func ,g         * 
+  _R_rotate_naname
+                                  fff86830        13   func ,g         * 
+  _S_run
+                                  fff86843        56   func ,g         * 
+  _S_run_kabe_rev
+                                  fff86899        fa   func ,g         * 
+  _S_run_kabe
+                                  fff86993       211   func ,g         * 
+  _S_run_kabe2
+                                  fff86ba4       151   func ,g         * 
+  _S_run_kabe_BIG
+                                  fff86cf5       355   func ,g         * 
+  _S_run_kabe_naname
+                                  fff8704a       140   func ,g         * 
+  _S_run_kabe_naname2
+                                  fff8718a       295   func ,g         * 
+  _S_run_maze_search
+                                  fff8741f       6eb   func ,g         * 
+  _shortest_path_search
+                                  fff87b0a       224   func ,g         * 
+  _shortest_path_search_kichikukan
+                                  fff87d2e       27f   func ,g         * 
+  _shortest_path_search_pickup
+                                  fff87fad       22d   func ,g         * 
+  _make_shortest_path_list
+                                  fff881da       4a9   func ,g         * 
+  _make_shortest_path_list_pickup
+                                  fff88683       4b1   func ,g         * 
+  _run_shortest_path
+                                  fff88b34       ae3   func ,g         * 
+  _maze_search_adachi
+                                  fff89617       21f   func ,g         * 
+  _run_pickup
+                                  fff89836       117   func ,g         * 
+  _make_shortest_path_list_simple
+                                  fff8994d       3a9   func ,g         * 
+  _shortest_path_search_perfect_unknown
+                                  fff89cf6       cb3   func ,g         * 
+  _get_node_num
+                                  fff8a9a9        4f   func ,g         * 
+  _shortest_path_search_dijkstra_unknown
+                                  fff8a9f8       886   func ,g         * 
+  _shortest_path_search_dijkstra
+                                  fff8b27e       840   func ,g         * 
+  _maze_search_unknown
+                                  fff8babe       32c   func ,g         * 
+  _maze_search_unknown_wall
+                                  fff8bdea        f9   func ,g         * 
+  _maze_search_all
+                                  fff8bee3       47b   func ,g         * 
+  _shortest_path_search_check
+                                  fff8c35e       260   func ,g         * 
+  _shortest_path_search_check_full
+                                  fff8c5be       302   func ,g         * 
+  _shortest_path_search_fin
+                                  fff8c8c0       665   func ,g         * 
+  _shortest_path_search_perfect
+                                  fff8cf25       cda   func ,g         * 
+  _remake_shortest_path_list_naname2
+                                  fff8dbff       211   func ,g         * 
+  _remake_shortest_path_list_naname
+                                  fff8de10       23d   func ,g         * 
+  _path_compression
+                                  fff8e04d       25f   func ,g         * 
+  _run_shortest_path_fin
+                                  fff8e2ac      10b3   func ,g         * 
+  _search_pickup
+                                  fff8f35f        d6   func ,g         * 
+  _d_to_p
+                                  fff8f435        19   func ,g         * 
+  _Get_Goal_x
+                                  fff8f44e         9   func ,g         * 
+  _Get_Goal_y
+                                  fff8f457         d   func ,g         * 
+  _Get_Goal_angle
+                                  fff8f464         d   func ,g         * 
+  _Excep_CMT0_CMI0
+                                  fff8f471       448   func ,g         * 
+  _Excep_CMT2_CMI2
+                                  fff8f8b9        22   func ,g         * 
+FILE=DefaultBuild\1st\wait.obj
+                                  fff8f8db  fff8f957        7d
+  _WAIT_init
+                                  fff8f8db        41   func ,g         * 
+  _delay
+                                  fff8f91c         f   func ,g         * 
+  _delay_ITP
+                                  fff8f92b         f   func ,g         * 
+  _Excep_CMT1_CMI1
+                                  fff8f93a        1e   func ,g         * 
+FILE=DefaultBuild\1st\rspi.obj
+                                  fff8f958  fff8f9fa        a3
+  _SPI_init
+                                  fff8f958        82   func ,g         * 
+  _rspi_transfer
+                                  fff8f9da        11   func ,g         * 
+  _rspi_select
+                                  fff8f9eb         8   func ,g         * 
+  _rspi_deselect
+                                  fff8f9f3         8   func ,g         * 
+FILE=DefaultBuild\1st\Gyro.obj
+                                  fff8f9fb  fff8fce6       2ec
+  _GyroSum_reset
+                                  fff8f9fb         d   func ,g         * 
+  _GyroSumGlobal_reset
+                                  fff8fa08         d   func ,g         * 
+  _GyroSum_add
+                                  fff8fa15        14   func ,g         * 
+  _GyroSum_get
+                                  fff8fa29         b   func ,g         * 
+  _GyroSum_dig_get
+                                  fff8fa34        72   func ,g         * 
+  _GyroSumGlobal_get
+                                  fff8faa6         b   func ,g         * 
+  _GyroSumGlobal_dig_get
+                                  fff8fab1        72   func ,g         * 
+  _Gyro
+                                  fff8fb23         9   func ,g         * 
+  _Gyro_get
+                                  fff8fb2c        23   func ,g         * 
+  _GyroSum_add_auto
+                                  fff8fb4f         1   func ,g         * 
+  _Gyro_update
+                                  fff8fb50        5f   func ,g         * 
+  _gyro_powor_L
+                                  fff8fbaf        a3   func ,g         * 
+  _Gyro_init
+                                  fff8fc52        95   func ,g         * 
+FILE=DefaultBuild\1st\MPU9250.obj
+                                  fff8fce7  fff90a74       d8e
+  _WriteReg
+                                  fff8fce7        21   func ,g         * 
+  _ReadReg
+                                  fff8fd08        23   func ,g         * 
+  _ReadRegs
+                                  fff8fd2b        2d   func ,g         * 
+  _MPU_init
+                                  fff8fd58        ae   func ,g         * 
+  _set_acc_scale
+                                  fff8fe06        a4   func ,g         * 
+  _set_gyro_scale
+                                  fff8feaa        aa   func ,g         * 
+  _whoami
+                                  fff8ff54         8   func ,g         * 
+  _read_acc
+                                  fff8ff5c        84   func ,g         * 
+  _read_gyro
+                                  fff8ffe0        55   func ,g         * 
+  _read_temp
+                                  fff90035        51   func ,g         * 
+  _calib_acc
+                                  fff90086        be   func ,g         * 
+  _AK8963_whoami
+                                  fff90144        40   func ,g         * 
+  _calib_mag
+                                  fff90184       12d   func ,g         * 
+  _read_mag
+                                  fff902b1        c2   func ,g         * 
+  _get_CNTL1
+                                  fff90373        38   func ,g         * 
+  _read_all
+                                  fff903ab       1a2   func ,g         * 
+  _calibrate
+                                  fff9054d       516   func ,g         * 
+  _select
+                                  fff90a63         4   func ,g         * 
+  _deselect
+                                  fff90a67         4   func ,g         * 
+  _get_gyro_data
+                                  fff90a6b         a   func ,g         * 
+FILE=DefaultBuild\1st\r_flash_api_rx.obj
+                                  fff90a75  fff91155       6e1
+  _R_FlashGetVersion
+                                  fff90a75         6   func ,g         * 
+  _R_FlashDataAreaBlankCheck
+                                  fff90a7b       13c   func ,g         * 
+  _R_FlashDataAreaAccess
+                                  fff90bb7        2e   func ,g         * 
+  _R_FlashGetStatus
+                                  fff90be5        11   func ,g         * 
+  _enter_pe_mode
+                                  fff90bf6       180   func ,l         * 
+  _exit_pe_mode
+                                  fff90d76        fb   func ,l         * 
+  _R_FlashErase
+                                  fff90e71        b0   func ,g         * 
+  _R_FlashWrite
+                                  fff90f21       1cd   func ,g         * 
+  _flash_reset
+                                  fff910ee        68   func ,l         * 
+FILE=DefaultBuild\1st\DataFlash.obj
+                                  fff91156  fff911fa        a5
+  _DataFlash_init
+                                  fff91156         b   func ,g         * 
+  _DataFlash_write
+                                  fff91161        22   func ,g         * 
+  _DataFlash_write2
+                                  fff91183        1b   func ,g         * 
+  _DataFlash_read
+                                  fff9119e        5d   func ,g         * 
+FILE=DefaultBuild\1st\printf_lib.obj
+                                  fff911fb  fff91540       346
+  _initSCI1
+                                  fff911fb        9a   func ,g         * 
+  _printf2
+                                  fff91295        dc   func ,g         * 
+  _scanf2
+                                  fff91371        96   func ,g         * 
+  _get_sci1
+                                  fff91407        36   func ,g         * 
+  _put_sci1
+                                  fff9143d        11   func ,g         * 
+  _setSendBuff
+                                  fff9144e        39   func ,g         * 
+  _getSendBuff
+                                  fff91487        48   func ,g         * 
+  _Excep_SCI1_ERI1
+                                  fff914cf        2c   func ,g         * 
+  _Excep_SCI1_RXI1
+                                  fff914fb        1e   func ,g         * 
+  _Excep_SCI1_TXI1
+                                  fff91519        22   func ,g         * 
+  _write
+                                  fff9153b         3   func ,g         * 
+  _read
+                                  fff9153e         3   func ,g         * 
+FILE=DefaultBuild\1st\Encoder.obj
+                                  fff91541  fff917c6       286
+  _Encoder_reset
+                                  fff91541        65   func ,g         * 
+  _encoder_update
+                                  fff915a6       108   func ,g         * 
+  _get_encoder_L
+                                  fff916ae         9   func ,g         * 
+  _get_encoder_R
+                                  fff916b7         9   func ,g         * 
+  _get_encoder_C
+                                  fff916c0         9   func ,g         * 
+  _get_encoder_total_R
+                                  fff916c9        7f   func ,g         * 
+  _get_encoder_total_L
+                                  fff91748        7f   func ,g         * 
+FILE=DefaultBuild\1st\Motor.obj
+                                  fff917c7  fff94934      316e
+  _motor_stop
+                                  fff917c7         a   func ,g         * 
+  _motor_stop_get
+                                  fff917d1         9   func ,g         * 
+  _pwm_buff
+                                  fff917da        11   func ,g         * 
+  _get_pwm_buff_L
+                                  fff917eb         9   func ,g         * 
+  _get_pwm_buff_R
+                                  fff917f4         9   func ,g         * 
+  _motor_pid_flag_reset
+                                  fff917fd         a   func ,g         * 
+  _Set_motor_pid_mode
+                                  fff91807         9   func ,g         * 
+  _Get_motor_pid_mode
+                                  fff91810         9   func ,g         * 
+  _Set_enc_limit
+                                  fff91819         9   func ,g         * 
+  _pwm
+                                  fff91822       1b6   func ,g         * 
+  _motor
+                                  fff919d8        ba   func ,g         * 
+  _Smotor
+                                  fff91a92       dbd   func ,g         * 
+  _ESmotor
+                                  fff9284f       857   func ,g         * 
+  _Tmotor
+                                  fff930a6       314   func ,g         * 
+  _ETmotorU
+                                  fff933ba       32c   func ,g         * 
+  _ETmotorBIG
+                                  fff936e6       2e8   func ,g         * 
+  _ETmotor
+                                  fff939ce       391   func ,g         * 
+  _ETmotor_search
+                                  fff93d5f       3e3   func ,g         * 
+  _ETmotor_afterNaname
+                                  fff94142       32a   func ,g         * 
+  _Tmotor_naname_in
+                                  fff9446c       1bd   func ,g         * 
+  _Tmotor_naname_in_BIG
+                                  fff94629       1a2   func ,g         * 
+  _Tmotor_naname_out
+                                  fff947cb       15b   func ,g         * 
+  _Tmotor_naname
+                                  fff94926         f   func ,g         * 
+FILE=DefaultBuild\1st\Queue.obj
+                                  fff94935  fff94a00        cc
+  _queue_empty
+                                  fff94935         e   func ,g         * 
+  _queue_reset
+                                  fff94943        1c   func ,g         * 
+  _enqueue
+                                  fff9495f        32   func ,g         * 
+  _dequeue
+                                  fff94991        33   func ,g         * 
+  _queue_next
+                                  fff949c4        3d   func ,g         * 
+FILE=DefaultBuild\1st\IR.obj
+                                  fff94a01  fff94ce8       2e8
+  _AD_update
+                                  fff94a01         c   func ,g         * 
+  _ir
+                                  fff94a0d        5c   func ,g         * 
+  _ir_update
+                                  fff94a69       264   func ,g         * 
+  _get_IR
+                                  fff94ccd         e   func ,g         * 
+  _get_IR_base
+                                  fff94cdb         e   func ,g         * 
+FILE=DefaultBuild\1st\dijkstra.obj
+                                  fff94ce9  fff94f47       25f
+  _init_dijkstra
+                                  fff94ce9        41   func ,g         * 
+  _add_edge
+                                  fff94d2a        49   func ,g         * 
+  _push
+                                  fff94d73        46   func ,g         * 
+  _pop
+                                  fff94db9        72   func ,g         * 
+  _run_dijkstra
+                                  fff94e2b        ff   func ,g         * 
+  _get_dist
+                                  fff94f2a         a   func ,g         * 
+  _print_path
+                                  fff94f34        14   func ,g         * 
+FILE=vsprintf
+                                  fff94f48  fff94f7a        33
+  _prout
+                                  fff94f48         a   func ,l         * 
+  _vsprintf
+                                  fff94f52        29   func ,g         * 
+FILE=vsscanf
+                                  fff94f7b  fff94fb5        3b
+  _scin
+                                  fff94f7b        1d   func ,l         * 
+  _vsscanf
+                                  fff94f98        1e   func ,g         * 
+FILE=abs
+                                  fff94fb6  fff94fb8         3
+  _abs
+                                  fff94fb6         3   func ,g         * 
+FILE=__COM_DIV64s
+                                  fff94fb9  fff95080        c8
+  __COM_DIV64s
+                                  fff94fb9         0   none ,g         * 
+  _PLUS1
+                                  fff94fc9         0   none ,l         * 
+  _PLUS2
+                                  fff94fd9         0   none ,l         * 
+  _Loop_Init
+                                  fff94fe6         0   none ,l         * 
+  _Loop
+                                  fff94fea         0   none ,l         * 
+  _DivStart
+                                  fff94ff6         0   none ,l         * 
+  _Success
+                                  fff95004         0   none ,l         * 
+  _DivEnd
+                                  fff95010         0   none ,l         * 
+  IXI6DIV
+                                  fff95016         0   none ,l         * 
+  IXI4DIV
+                                  fff95028         0   none ,l         * 
+  IXI2DIV
+                                  fff95038         0   none ,l         * 
+  I8I2DIV
+                                  fff95041         0   none ,l         * 
+  I4I2DIV
+                                  fff9506f         0   none ,l         * 
+  _i8div_End
+                                  fff95072         0   none ,l         * 
+  _i8div_End2
+                                  fff95080         0   none ,l         * 
+FILE=__COM_MOD64s
+                                  fff95081  fff95128        a8
+  __COM_MOD64s
+                                  fff95081         0   none ,g         * 
+  _PLUS1
+                                  fff9508e         0   none ,l         * 
+  _PLUS2
+                                  fff95099         0   none ,l         * 
+  _Loop
+                                  fff950a3         0   none ,l         * 
+  _DivStart
+                                  fff950af         0   none ,l         * 
+  _Success
+                                  fff950bd         0   none ,l         * 
+  _DivEnd
+                                  fff950c5         0   none ,l         * 
+  IXI6DIV
+                                  fff950c7         0   none ,l         * 
+  IXI4DIV
+                                  fff950d9         0   none ,l         * 
+  IXI2DIV
+                                  fff950e9         0   none ,l         * 
+  I8I2DIV
+                                  fff950f2         0   none ,l         * 
+  I4I2DIV
+                                  fff95112         0   none ,l         * 
+  _i8mod_End
+                                  fff9511d         0   none ,l         * 
+  _i8mod_End2
+                                  fff95128         0   none ,l         * 
+FILE=__COM_CONVf64
+                                  fff95129  fff951e7        bf
+  __COM_CONVf64u
+                                  fff95129         0   none ,g         * 
+  __COM_CONVf64s
+                                  fff9512c         0   none ,g         * 
+  unpack
+                                  fff9512f         0   none ,l         * 
+  set_zero
+                                  fff95154         0   none ,l         * 
+  get_mantissa
+                                  fff95159         0   none ,l         * 
+  only_low
+                                  fff9517c         0   none ,l         * 
+  check_high
+                                  fff95184         0   none ,l         * 
+  only_high
+                                  fff951a7         0   none ,l         * 
+  set_data
+                                  fff951ad         0   none ,l         * 
+  return
+                                  fff951b9         0   none ,l         * 
+  return_max_min
+                                  fff951ba         0   none ,l         * 
+  return_unsigned
+                                  fff951d5         0   none ,l         * 
+FILE=__initsct
+                                  fff951e8  fff95231        4a
+  __INITSCT
+                                  fff951e8         0   none ,g         * 
+  loop1
+                                  fff951fa         0   none ,l         * 
+  next_loop1
+                                  fff95208         0   none ,l         * 
+  loop3
+                                  fff9521a         0   none ,l         * 
+  next_loop3
+                                  fff9522b         0   none ,l         * 
+FILE=xprintf
+                                  fff95232  fff95481       250
+  __Printf
+                                  fff95232       250   func ,g         * 
+FILE=xscanf
+                                  fff95482  fff9570a       289
+  __Scanf
+                                  fff95482       289   func ,g         * 
+FILE=xgetfld
+                                  fff9570b  fff95864       15a
+  __Getfld
+                                  fff9570b       15a   func ,g         * 
+FILE=xputfld
+                                  fff95865  fff95cc7       463
+  __Putfld
+                                  fff95865       463   func ,g         * 
+FILE=xvacopy
+                                  fff95cc8  fff95cca         3
+  __Vacopy
+                                  fff95cc8         3   func ,g         * 
+FILE=xputtxt
+                                  fff95ccb  fff95f22       258
+  __Puttxt
+                                  fff95ccb       258   func ,g         * 
+FILE=strchr
+                                  fff95f23  fff95f35        13
+  _strchr
+                                  fff95f23        13   func ,g         * 
+FILE=xctype
+                                  fff95f36  fff95f4b        16
+  __Getpctype
+                                  fff95f36        16   func ,g         * 
+FILE=xldtob
+                                  fff95f4c  fff96324       3d9
+  __Ldtob
+                                  fff95f4c       3d9   func ,g         * 
+FILE=xgetint
+                                  fff96325  fff965bd       299
+  __Getint
+                                  fff96325       299   func ,g         * 
+FILE=xputstr
+                                  fff965be  fff96699        dc
+  __Putstr
+                                  fff965be        dc   func ,g         * 
+FILE=xlitob
+                                  fff9669a  fff967a5       10c
+  __Litob
+                                  fff9669a       10c   func ,g         * 
+FILE=xgetfloa
+                                  fff967a6  fff96ef1       74c
+  __Getfloat
+                                  fff967a6       74c   func ,g         * 
+FILE=xgetstr
+                                  fff96ef2  fff97218       327
+  _ranmatch
+                                  fff96ef2        42   func ,l         * 
+  __Getstr
+                                  fff96f34       2e5   func ,g         * 
+FILE=xgenld
+                                  fff97219  fff974a2       28a
+  __Genld
+                                  fff97219       28a   func ,g         * 
+FILE=xstold
+                                  fff974a3  fff9758f        ed
+  __Stoldx
+                                  fff974a3        e8   func ,g         * 
+  __Stold
+                                  fff9758b         5   func ,g         * 
+FILE=localeco
+                                  fff97590  fff97596         7
+  _localeconv
+                                  fff97590         7   func ,g         * 
+FILE=xmbtowc
+                                  fff97597  fff976f2       15c
+  __Mbtowcx
+                                  fff97597       12d   func ,g         * 
+  __Mbtowc
+                                  fff976c4        2f   func ,g         * 
+FILE=xwctomb
+                                  fff976f3  fff97838       146
+  __Wctombx
+                                  fff976f3       102   func ,g         * 
+  __Wctomb
+                                  fff977f5        44   func ,g         * 
+FILE=xstate
+                                  fff97839  fff9786a        32
+  __Getmbcurmax
+                                  fff97839        16   func ,g         * 
+  __Getpmbstate
+                                  fff9784f        1c   func ,g         * 
+FILE=xldscale
+                                  fff9786b  fff9786e         4
+  __LDscale
+                                  fff9786b         4   func ,g         * 
+FILE=xldunsca
+                                  fff9786f  fff97872         4
+  __LDunscale
+                                  fff9786f         4   func ,g         * 
+FILE=xstoull
+                                  fff97873  fff979fb       189
+  __Stoullx
+                                  fff97873       184   func ,g         * 
+  __Stoull
+                                  fff979f7         5   func ,g         * 
+FILE=xstoll
+                                  fff979fc  fff97aab        b0
+  __Stollx
+                                  fff979fc        ab   func ,g         * 
+  __Stoll
+                                  fff97aa7         5   func ,g         * 
+FILE=__COM_DIV64u
+                                  fff97aac  fff97b44        99
+  __COM_DIV64u
+                                  fff97aac         0   none ,g         * 
+  _Loop_Init
+                                  fff97ab6         0   none ,l         * 
+  _Loop
+                                  fff97abe         0   none ,l         * 
+  _DivStart
+                                  fff97aca         0   none ,l         * 
+  _Success
+                                  fff97ad8         0   none ,l         * 
+  _DivEnd
+                                  fff97ae4         0   none ,l         * 
+  IXI6DIV
+                                  fff97ae9         0   none ,l         * 
+  IXI4DIV
+                                  fff97afb         0   none ,l         * 
+  IXI2DIV
+                                  fff97b0b         0   none ,l         * 
+  I8I2DIV
+                                  fff97b13         0   none ,l         * 
+  I4I2DIV
+                                  fff97b41         0   none ,l         * 
+  _i8divU_End
+                                  fff97b44         0   none ,l         * 
+FILE=__COM_MOD64u
+                                  fff97b45  fff97bcb        87
+  __COM_MOD64u
+                                  fff97b45         0   none ,g         * 
+  _Loop_Init
+                                  fff97b4f         0   none ,l         * 
+  _Loop
+                                  fff97b53         0   none ,l         * 
+  _DivStart
+                                  fff97b5f         0   none ,l         * 
+  _Success
+                                  fff97b6d         0   none ,l         * 
+  _DivEnd
+                                  fff97b75         0   none ,l         * 
+  IXI6DIV
+                                  fff97b76         0   none ,l         * 
+  IXI4DIV
+                                  fff97b88         0   none ,l         * 
+  IXI2DIV
+                                  fff97b98         0   none ,l         * 
+  I8I2DIV
+                                  fff97ba0         0   none ,l         * 
+  I4I2DIV
+                                  fff97bc0         0   none ,l         * 
+FILE=_div
+                                  fff97bcc  fff97bd7         c
+  _ldiv
+                                  fff97bcc         0   none ,g         * 
+  _div
+                                  fff97bcc         0   none ,g         * 
+FILE=free
+                                  fff97bd8  fff97c59        82
+  _free
+                                  fff97bd8        82   func ,g         * 
+FILE=malloc
+                                  fff97c5a  fff97d34        db
+  _findmem
+                                  fff97c5a        79   func ,l         * 
+  _malloc
+                                  fff97cd3        62   func ,g         * 
+FILE=xwcstate
+                                  fff97d35  fff97d50        1c
+  __Getpwcstate
+                                  fff97d35        1c   func ,g         * 
+FILE=xfdscale
+                                  fff97d51  fff97e6c       11c
+  __FDscale
+                                  fff97d51       11c   func ,g         * 
+FILE=xfdunsca
+                                  fff97e6d  fff97ec8        5c
+  __FDunscale
+                                  fff97e6d        5c   func ,g         * 
+FILE=xtolotab
+                                  fff97ec9  fff97ede        16
+  __Getptolower
+                                  fff97ec9        16   func ,g         * 
+FILE=xfdtento
+                                  fff97edf  fff97fc9        eb
+  _dmul
+                                  fff97edf        21   func ,l         * 
+  __FDtentox
+                                  fff97f00        ca   func ,g         * 
+FILE=xstoxflt
+                                  fff97fca  fff981b6       1ed
+  __Stoxflt
+                                  fff97fca       1ed   func ,g         * 
+FILE=xstoflt
+                                  fff981b7  fff98378       1c2
+  __Stoflt
+                                  fff981b7       1c2   func ,g         * 
+FILE=xstopfx
+                                  fff98379  fff98471        f9
+  __Stopfx
+                                  fff98379        f9   func ,g         * 
+FILE=xgetmem
+                                  fff98472  fff9848c        1b
+  __Getmem
+                                  fff98472        1b   func ,g         * 
+FILE=xfdnorm
+                                  fff9848d  fff984f5        69
+  __FDnorm
+                                  fff9848d        69   func ,g         * 
+
+SECTION=PIntPRG
+FILE=DefaultBuild\1st\intprg.obj
+                                  fff984f6  fff9863b       146
+  _Excep_SuperVisorInst
+                                  fff984f6         2   func ,g         * 
+  _Excep_AccessInst
+                                  fff984f8         2   func ,g         * 
+  _Excep_UndefinedInst
+                                  fff984fa         2   func ,g         * 
+  _Excep_FloatingPoint
+                                  fff984fc         2   func ,g         * 
+  _NonMaskableInterrupt
+                                  fff984fe         2   func ,g         * 
+  _Dummy
+                                  fff98500         2   func ,g         * 
+  _Excep_BRK
+                                  fff98502         4   func ,g         * 
+  _Excep_BSC_BUSERR
+                                  fff98506         2   func ,g         * 
+  _Excep_FCU_FIFERR
+                                  fff98508         2   func ,g         * 
+  _Excep_FCU_FRDYI
+                                  fff9850a         2   func ,g         * 
+  _Excep_ICU_SWINT
+                                  fff9850c         2   func ,g         * 
+  _Excep_CMT3_CMI3
+                                  fff9850e         2   func ,g         * 
+  _Excep_ETHER_EINT
+                                  fff98510         2   func ,g         * 
+  _Excep_USB0_D0FIFO0
+                                  fff98512         2   func ,g         * 
+  _Excep_USB0_D1FIFO0
+                                  fff98514         2   func ,g         * 
+  _Excep_USB0_USBI0
+                                  fff98516         1   func ,g         * 
+  _Excep_USB1_D0FIFO1
+                                  fff98517         2   func ,g         * 
+  _Excep_USB1_D1FIFO1
+                                  fff98519         2   func ,g         * 
+  _Excep_USB1_USBI1
+                                  fff9851b         1   func ,g         * 
+  _Excep_RSPI0_SPEI0
+                                  fff9851c         2   func ,g         * 
+  _Excep_RSPI0_SPRI0
+                                  fff9851e         2   func ,g         * 
+  _Excep_RSPI0_SPTI0
+                                  fff98520         2   func ,g         * 
+  _Excep_RSPI0_SPII0
+                                  fff98522         2   func ,g         * 
+  _Excep_RSPI1_SPEI1
+                                  fff98524         2   func ,g         * 
+  _Excep_RSPI1_SPRI1
+                                  fff98526         2   func ,g         * 
+  _Excep_RSPI1_SPTI1
+                                  fff98528         2   func ,g         * 
+  _Excep_RSPI1_SPII1
+                                  fff9852a         2   func ,g         * 
+  _Excep_CAN0_ERS0
+                                  fff9852c         2   func ,g         * 
+  _Excep_CAN0_RXF0
+                                  fff9852e         2   func ,g         * 
+  _Excep_CAN0_TXF0
+                                  fff98530         2   func ,g         * 
+  _Excep_CAN0_RXM0
+                                  fff98532         2   func ,g         * 
+  _Excep_CAN0_TXM0
+                                  fff98534         2   func ,g         * 
+  _Excep_RTC_PRD
+                                  fff98536         2   func ,g         * 
+  _Excep_RTC_CUP
+                                  fff98538         2   func ,g         * 
+  _Excep_ICU_IRQ0
+                                  fff9853a         2   func ,g         * 
+  _Excep_ICU_IRQ1
+                                  fff9853c         2   func ,g         * 
+  _Excep_ICU_IRQ2
+                                  fff9853e         2   func ,g         * 
+  _Excep_ICU_IRQ3
+                                  fff98540         2   func ,g         * 
+  _Excep_ICU_IRQ4
+                                  fff98542         2   func ,g         * 
+  _Excep_ICU_IRQ5
+                                  fff98544         2   func ,g         * 
+  _Excep_ICU_IRQ6
+                                  fff98546         2   func ,g         * 
+  _Excep_ICU_IRQ7
+                                  fff98548         2   func ,g         * 
+  _Excep_ICU_IRQ8
+                                  fff9854a         2   func ,g         * 
+  _Excep_ICU_IRQ9
+                                  fff9854c         2   func ,g         * 
+  _Excep_ICU_IRQ10
+                                  fff9854e         2   func ,g         * 
+  _Excep_ICU_IRQ11
+                                  fff98550         2   func ,g         * 
+  _Excep_ICU_IRQ12
+                                  fff98552         2   func ,g         * 
+  _Excep_ICU_IRQ13
+                                  fff98554         2   func ,g         * 
+  _Excep_ICU_IRQ14
+                                  fff98556         2   func ,g         * 
+  _Excep_ICU_IRQ15
+                                  fff98558         2   func ,g         * 
+  _Excep_USB_USBR0
+                                  fff9855a         2   func ,g         * 
+  _Excep_USB_USBR1
+                                  fff9855c         2   func ,g         * 
+  _Excep_RTC_ALM
+                                  fff9855e         2   func ,g         * 
+  _Excep_WDT_WOVI
+                                  fff98560         2   func ,g         * 
+  _Excep_AD0_ADI0
+                                  fff98562         2   func ,g         * 
+  _Excep_AD1_ADI1
+                                  fff98564         2   func ,g         * 
+  _Excep_S12AD_ADI
+                                  fff98566         2   func ,g         * 
+  _Excep_MTU0_TGIA0
+                                  fff98568         2   func ,g         * 
+  _Excep_MTU0_TGIB0
+                                  fff9856a         2   func ,g         * 
+  _Excep_MTU0_TGIC0
+                                  fff9856c         2   func ,g         * 
+  _Excep_MTU0_TGID0
+                                  fff9856e         2   func ,g         * 
+  _Excep_MTU0_TCIV0
+                                  fff98570         2   func ,g         * 
+  _Excep_MTU0_TGIE0
+                                  fff98572         2   func ,g         * 
+  _Excep_MTU0_TGIF0
+                                  fff98574         2   func ,g         * 
+  _Excep_MTU1_TGIA1
+                                  fff98576         2   func ,g         * 
+  _Excep_MTU1_TGIB1
+                                  fff98578         2   func ,g         * 
+  _Excep_MTU1_TCIV1
+                                  fff9857a         2   func ,g         * 
+  _Excep_MTU1_TCIU1
+                                  fff9857c         2   func ,g         * 
+  _Excep_MTU2_TGIA2
+                                  fff9857e         2   func ,g         * 
+  _Excep_MTU2_TGIB2
+                                  fff98580         2   func ,g         * 
+  _Excep_MTU2_TCIV2
+                                  fff98582         2   func ,g         * 
+  _Excep_MTU2_TCIU2
+                                  fff98584         2   func ,g         * 
+  _Excep_MTU3_TGIA3
+                                  fff98586         2   func ,g         * 
+  _Excep_MTU3_TGIB3
+                                  fff98588         2   func ,g         * 
+  _Excep_MTU3_TGIC3
+                                  fff9858a         2   func ,g         * 
+  _Excep_MTU3_TGID3
+                                  fff9858c         2   func ,g         * 
+  _Excep_MTU3_TCIV3
+                                  fff9858e         2   func ,g         * 
+  _Excep_MTU4_TGIA4
+                                  fff98590         2   func ,g         * 
+  _Excep_MTU4_TGIB4
+                                  fff98592         2   func ,g         * 
+  _Excep_MTU4_TGIC4
+                                  fff98594         2   func ,g         * 
+  _Excep_MTU4_TGID4
+                                  fff98596         2   func ,g         * 
+  _Excep_MTU4_TCIV4
+                                  fff98598         2   func ,g         * 
+  _Excep_MTU5_TGIU5
+                                  fff9859a         2   func ,g         * 
+  _Excep_MTU5_TGIV5
+                                  fff9859c         2   func ,g         * 
+  _Excep_MTU5_TGIW5
+                                  fff9859e         2   func ,g         * 
+  _Excep_MTU6_TGIA6
+                                  fff985a0         2   func ,g         * 
+  _Excep_MTU6_TGIB6
+                                  fff985a2         2   func ,g         * 
+  _Excep_MTU6_TGIC6
+                                  fff985a4         2   func ,g         * 
+  _Excep_MTU6_TGID6
+                                  fff985a6         2   func ,g         * 
+  _Excep_MTU6_TCIV6
+                                  fff985a8         2   func ,g         * 
+  _Excep_MTU6_TGIE6
+                                  fff985aa         2   func ,g         * 
+  _Excep_MTU6_TGIF6
+                                  fff985ac         2   func ,g         * 
+  _Excep_MTU7_TGIA7
+                                  fff985ae         2   func ,g         * 
+  _Excep_MTU7_TGIB7
+                                  fff985b0         2   func ,g         * 
+  _Excep_MTU7_TCIV7
+                                  fff985b2         2   func ,g         * 
+  _Excep_MTU7_TCIU7
+                                  fff985b4         2   func ,g         * 
+  _Excep_MTU8_TGIA8
+                                  fff985b6         2   func ,g         * 
+  _Excep_MTU8_TGIB8
+                                  fff985b8         2   func ,g         * 
+  _Excep_MTU8_TCIV8
+                                  fff985ba         2   func ,g         * 
+  _Excep_MTU8_TCIU8
+                                  fff985bc         2   func ,g         * 
+  _Excep_MTU9_TGIA9
+                                  fff985be         2   func ,g         * 
+  _Excep_MTU9_TGIB9
+                                  fff985c0         2   func ,g         * 
+  _Excep_MTU9_TGIC9
+                                  fff985c2         2   func ,g         * 
+  _Excep_MTU9_TGID9
+                                  fff985c4         2   func ,g         * 
+  _Excep_MTU9_TCIV9
+                                  fff985c6         2   func ,g         * 
+  _Excep_MTU10_TGIA10
+                                  fff985c8         2   func ,g         * 
+  _Excep_MTU10_TGIB10
+                                  fff985ca         2   func ,g         * 
+  _Excep_MTU10_TGIC10
+                                  fff985cc         2   func ,g         * 
+  _Excep_MTU10_TGID10
+                                  fff985ce         2   func ,g         * 
+  _Excep_MTU10_TCIV10
+                                  fff985d0         2   func ,g         * 
+  _Excep_MTU11_TGIU11
+                                  fff985d2         2   func ,g         * 
+  _Excep_MTU11_TGIV11
+                                  fff985d4         2   func ,g         * 
+  _Excep_MTU11_TGIW11
+                                  fff985d6         2   func ,g         * 
+  _Excep_POE_OEI1
+                                  fff985d8         2   func ,g         * 
+  _Excep_POE_OEI2
+                                  fff985da         2   func ,g         * 
+  _Excep_POE_OEI3
+                                  fff985dc         2   func ,g         * 
+  _Excep_POE_OEI4
+                                  fff985de         2   func ,g         * 
+  _Excep_TMR0_CMIA0
+                                  fff985e0         2   func ,g         * 
+  _Excep_TMR0_CMIB0
+                                  fff985e2         2   func ,g         * 
+  _Excep_TMR0_OVI0
+                                  fff985e4         2   func ,g         * 
+  _Excep_TMR1_CMIA1
+                                  fff985e6         2   func ,g         * 
+  _Excep_TMR1_CMIB1
+                                  fff985e8         2   func ,g         * 
+  _Excep_TMR1_OVI1
+                                  fff985ea         2   func ,g         * 
+  _Excep_TMR2_CMIA2
+                                  fff985ec         2   func ,g         * 
+  _Excep_TMR2_CMIB2
+                                  fff985ee         2   func ,g         * 
+  _Excep_TMR2_OVI2
+                                  fff985f0         2   func ,g         * 
+  _Excep_TMR3_CMIA3
+                                  fff985f2         2   func ,g         * 
+  _Excep_TMR3_CMIB3
+                                  fff985f4         2   func ,g         * 
+  _Excep_TMR3_OVI3
+                                  fff985f6         2   func ,g         * 
+  _Excep_DMAC_DMAC0I
+                                  fff985f8         2   func ,g         * 
+  _Excep_DMAC_DMAC1I
+                                  fff985fa         2   func ,g         * 
+  _Excep_DMAC_DMAC2I
+                                  fff985fc         2   func ,g         * 
+  _Excep_DMAC_DMAC3I
+                                  fff985fe         2   func ,g         * 
+  _Excep_EXDMAC_EXDMAC0I
+                                  fff98600         2   func ,g         * 
+  _Excep_EXDMAC_EXDMAC1I
+                                  fff98602         2   func ,g         * 
+  _Excep_SCI0_ERI0
+                                  fff98604         2   func ,g         * 
+  _Excep_SCI0_RXI0
+                                  fff98606         2   func ,g         * 
+  _Excep_SCI0_TXI0
+                                  fff98608         2   func ,g         * 
+  _Excep_SCI0_TEI0
+                                  fff9860a         2   func ,g         * 
+  _Excep_SCI2_ERI2
+                                  fff9860c         2   func ,g         * 
+  _Excep_SCI2_RXI2
+                                  fff9860e         2   func ,g         * 
+  _Excep_SCI2_TXI2
+                                  fff98610         2   func ,g         * 
+  _Excep_SCI2_TEI2
+                                  fff98612         2   func ,g         * 
+  _Excep_SCI3_ERI3
+                                  fff98614         2   func ,g         * 
+  _Excep_SCI3_RXI3
+                                  fff98616         2   func ,g         * 
+  _Excep_SCI3_TXI3
+                                  fff98618         2   func ,g         * 
+  _Excep_SCI3_TEI3
+                                  fff9861a         2   func ,g         * 
+  _Excep_SCI5_ERI5
+                                  fff9861c         2   func ,g         * 
+  _Excep_SCI5_RXI5
+                                  fff9861e         2   func ,g         * 
+  _Excep_SCI5_TXI5
+                                  fff98620         2   func ,g         * 
+  _Excep_SCI5_TEI5
+                                  fff98622         2   func ,g         * 
+  _Excep_SCI6_ERI6
+                                  fff98624         2   func ,g         * 
+  _Excep_SCI6_RXI6
+                                  fff98626         2   func ,g         * 
+  _Excep_SCI6_TXI6
+                                  fff98628         2   func ,g         * 
+  _Excep_SCI6_TEI6
+                                  fff9862a         2   func ,g         * 
+  _Excep_RIIC0_ICEEI0
+                                  fff9862c         2   func ,g         * 
+  _Excep_RIIC0_ICRXI0
+                                  fff9862e         2   func ,g         * 
+  _Excep_RIIC0_ICTXI0
+                                  fff98630         2   func ,g         * 
+  _Excep_RIIC0_ICTEI0
+                                  fff98632         2   func ,g         * 
+  _Excep_RIIC1_ICEEI1
+                                  fff98634         2   func ,g         * 
+  _Excep_RIIC1_ICRXI1
+                                  fff98636         2   func ,g         * 
+  _Excep_RIIC1_ICTXI1
+                                  fff98638         2   func ,g         * 
+  _Excep_RIIC1_ICTEI1
+                                  fff9863a         2   func ,g         * 
+
+SECTION=W_2
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  fff9863c  fff98697        5c
+FILE=DefaultBuild\1st\IR.obj
+                                  fff98698  fff986a3         c
+
+SECTION=L
+FILE=DefaultBuild\1st\RX621_Cmausu.obj
+                                  fff986a4  fff987d7       134
+FILE=DefaultBuild\1st\MPU9250.obj
+                                  fff987d8  fff987f9        22
+FILE=DefaultBuild\1st\printf_lib.obj
+                                  fff987fc  fff98806         b
+FILE=xprintf
+                                  fff98808  fff9880e         7
+FILE=xscanf
+                                  fff98810  fff9881b         c
+FILE=xldtob
+                                  fff9881c  fff9883d        22
+FILE=xgenld
+                                  fff98840  fff98841         2
+FILE=localeco
+                                  fff98844  fff98850         d
+
+SECTION=$ADDR_C_FFFFFFA0
+FILE=DefaultBuild\1st\vecttbl.obj
+                                  ffffffa0  ffffffaf        10
+  _id_code
+                                  ffffffa0        10   data ,g         * 
+
+SECTION=FIXEDVECT
+FILE=DefaultBuild\1st\vecttbl.obj
+                                  ffffffd0  ffffffff        30
+  _Fixed_Vectors
+                                  ffffffd0        30   data ,g         * 
+
+*** Unfilled Areas ***
+
+AREA                                START    END
+
+*** Delete Symbols ***
+
+SYMBOL                                SIZE    INFO
