@@ -448,16 +448,20 @@ void Smotor(int M,char w_flag){
 				    if(get_IR(IR_F) > 250){
 					if(diff > 1)diff = 1;
 					if(diff < -1)diff = -1;
+					
+					 mae_flag = 1;
 									
 				    }else if(get_IR(IR_F) > 200){
 					if(diff > 5)diff = 5;
 					if(diff < -5)diff = -5;
+					
+					 mae_flag = 1;
 				    }else{
 					if(diff > 10)diff = 10;
 					if(diff < -10)diff = -10;
 				    }
 				    
-				    mae_flag = 1;
+				 
 				    GyroSum_add(diff);
 				}
 			    }else cnt5 = 0;	
