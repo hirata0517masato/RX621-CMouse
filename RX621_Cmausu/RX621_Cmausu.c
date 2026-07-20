@@ -2920,7 +2920,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     		ESmotor(300,powor,true,false);// 200
 	}
     }else if(v2_flag == 3){//‚Qƒ}ƒXˆÈã‚ÌVƒ^[ƒ“ŠJn
-    	ESmotor(160,powor,true,false);
+    	ESmotor(220,powor,true,false);//160
 
     }else if(v2_flag == 30){//‚Qƒ}ƒXˆÈã‚ÌVƒ^[ƒ“ŠJn
     	ESmotor(210,powor,true,false);
@@ -7614,7 +7614,7 @@ void run_shortest_path_fin(	char naname){
     int kabegire_tuika = 0;//h1 / 4;//’¼ü@•ÇØ‚êŠm”F‚Ì‹——£‚ğ•â³‚·‚é@‚O‚Ì‚Æ‚«‚Í”¼ƒ}ƒX@{‚Å‹——£‚ª’Z‚­‚È‚é
 			  
     int run_speed        = 95;
-    int run_speed_naname = 70;//60
+    int run_speed_naname = 60;//60
     
     int enc_limit_kabe 	   	  = 60; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ¬‹È‚°‘O‚Ì•ÇØ‚ê
     int enc_limit_kabe_BIG 	  = 90; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ‘å‹È‚°‘O‚Ì•ÇØ‚ê
@@ -8187,7 +8187,7 @@ void run_shortest_path_fin(	char naname){
 		
 		//ESmotor(100,35,true,false);//‹——£AƒXƒs[ƒh
 		
-	    }else{
+	    }else{//2ƒ}ƒXˆÈã‚ÌÎ‚ß
 		 /*   
 		if(run_fin_speed_offset > 0){//‘¬“xƒIƒtƒZƒbƒg‚ªƒvƒ‰ƒX‚Ì‚Í–³Œø‰»
 			S_run(s45 ,run_speed_naname,true,0); //•Ç•â³‚È‚µ 
