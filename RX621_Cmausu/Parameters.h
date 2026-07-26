@@ -13,13 +13,13 @@
 //↑変更しないこと
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Goal_x  0
+#define Goal_x  7
 #define Goal_y  7
-#define Goal_angle 3 //ゴールした直後の向き スタートの向きが1
+#define Goal_angle 0 //ゴールした直後の向き スタートの向きが1
 
 //最短走行後、取り上げやすい位置に移動　固定値版 //コメントアウトすると範囲指定版に切り替わる
-#define Pickup_x  0	
-#define Pickup_y  0
+//#define Pickup_x  0	
+//#define Pickup_y  0
 
 //最短走行後、取り上げやすい位置に移動　範囲指定版
 #define Not_Pickup_x_min  3		//0～15 の範囲で設定　　( j < Not_Pickup_x_min ||  Not_Pickup_x_max < j)が対象範囲
@@ -64,10 +64,10 @@
 #define s45_V2not (350)		//２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 #define s45_V2notFirst (350)	//初手斜め用　２マス斜め（Vターンではない）の距離　壁切れができない可能性が高いので実質距離で調整する
 
-#define rslsl90_search 		(910)	//スラローム 探索用 890 920
-#define rslsl90_search_offset  (5)	
-#define rslsr90_search 		(910)	//スラローム 探索用 890 920
-#define rslsr90_search_offset  (5)
+#define rslsl90_search 		(910)	//スラローム 探索用 890 910
+#define rslsl90_search_offset  (10)	
+#define rslsr90_search 		(910)	//スラローム 探索用 890 910
+#define rslsr90_search_offset  (10)
 
 
 #define rslsl90 	(900)	//スラローム 664

@@ -3015,8 +3015,8 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 					
 					
 					//壁切れ距離補正
-					enc_base_L += h1_2 - (A - enc_now) ;
-					enc_base_R += h1_2 - (A - enc_now) ;
+					//enc_base_L += h1_2 - (A - enc_now) ;
+					//enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
@@ -3055,8 +3055,8 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 					
 					
 					//壁切れ距離補正
-					enc_base_L += h1_2 - (A - enc_now) ;
-					enc_base_R += h1_2 - (A - enc_now) ;
+					//enc_base_L += h1_2 - (A - enc_now) ;
+					//enc_base_R += h1_2 - (A - enc_now) ;
 				}
 				
 			}else{
@@ -4016,9 +4016,9 @@ void run_shortest_path(){
  			 	  0,0,0,0,0,0,0,0, 
  			  	  0,0,0,0,0,0,0};//path_numごとに距離補正する
 				
-    int run_speed = 30;
-    int run_speed_up = 40;    //未知区間加速
-    int run_speed_boost = 60; //既知区間加速
+    int run_speed = 40; //30
+    int run_speed_up = 40;    //未知区間加速 40
+    int run_speed_boost = 60; //既知区間加速 60
     
     int run_speed_kabe = 15; //次が停止の時
     int run_speed_kabe_sr = 20; //次がスラロームの時
@@ -7611,13 +7611,13 @@ void run_shortest_path_fin(	char naname){
  			  350,350, 350,350, 350,350, 350,350, 350,350, 350,350, 350,350};//path_numごとに距離補正する
 */
     int path_hosei[31] = {0,
- 			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 
- 			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0};//path_numごとに距離補正する
+ 			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,100, 
+ 			      100,100, 100,100, 100,100, 100,100, 100,100, 100,100, 100,100};//path_numごとに距離補正する
 
     int kabegire_tuika = 0;//h1 / 4;//直線　壁切れ確認の距離を補正する　０のときは半マス　＋で距離が短くなる
 			  
     int run_speed        = 95;
-    int run_speed_naname = 60;//60
+    int run_speed_naname = 70;//60
     
     int enc_limit_kabe 	   	  = 60; //0の場合は制限なし 小曲げ前の壁切れ
     int enc_limit_kabe_BIG 	  = 90; //0の場合は制限なし 大曲げ前の壁切れ
