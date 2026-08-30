@@ -1312,9 +1312,9 @@ void ALL_init(){
     CMT2_init();  // CMT2‚Ì‰Šú‰»
 
     //initSCI1(SPEED_4800);
-    initSCI1(SPEED_9600);
+    //initSCI1(SPEED_9600);
     //initSCI1(SPEED_19200);
-    //initSCI1(SPEED_38400);
+    initSCI1(SPEED_38400);
     //USB_init();  //USB CDC‚Ì‰Šú‰»
 	
     led(9);
