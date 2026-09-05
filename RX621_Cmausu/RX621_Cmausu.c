@@ -494,7 +494,7 @@ void main(void)
 	    buf_a = Goal_angle_offset;
 	    for(int i = 0; i < 4; i++){
 		    Goal_angle_offset = i;
-		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//目の前が確定の壁の場合
+		    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle()))) != 0) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle()))) != 0) ){//目の前が確定の壁の場合
 			
 		    	shortest_path_search_fin();
 			
@@ -578,8 +578,8 @@ void main(void)
 	    buf_a = Goal_angle_offset;
 	    for(int i = 0; i < 4; i++){
 		    Goal_angle_offset = i;
-		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//目の前が確定の壁の場合
-			
+		    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle()))) != 0) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle()))) != 0) ){//目の前が確定の壁の場合
+				
 		    	shortest_path_search_fin();
 			
 			if(tmp_d > maze_d[Start_y][Start_x][Start_angle]){
@@ -631,8 +631,8 @@ void main(void)
 	    buf_a = Goal_angle_offset;
 	    for(int i = 0; i < 4; i++){
 		    Goal_angle_offset = i;
-		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//目の前が確定の壁の場合
-			
+		    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle()))) != 0) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle()))) != 0) ){//目の前が確定の壁の場合
+				
 		    	shortest_path_search_fin();
 			
 			if(tmp_d > maze_d[Start_y][Start_x][Start_angle]){
@@ -684,8 +684,8 @@ void main(void)
 	    buf_a = Goal_angle_offset;
 	    for(int i = 0; i < 4; i++){
 		    Goal_angle_offset = i;
-		    if((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle())) != 0) && (maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle())) != 0) ){//目の前が確定の壁の場合
-		    	/*
+		    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4 + Get_Goal_angle()))) != 0) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(Get_Goal_angle()))) != 0) ){//目の前が確定の壁の場合
+				/*
 			//なぜかバグる　保留
 		    	shortest_path_search_perfect();
 			
