@@ -79,6 +79,8 @@ void print_maze(void);
 
 char maze_w_input[H][W] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
 int loop_cnt = 0;
+int total_path = 0;  // Total number of traversed cells
+int total_cost = 0;  // Straight-path and turn cost total
 
 #define PRINT_WAIT 50
 
@@ -123,7 +125,7 @@ void maze_input(){
 
 void print_maze(){
     printf("\033[H");
-    printf("loop_cnt=%d                                                                               \n",loop_cnt);
+    printf("loop_cnt=%d  total_path=%d  total_cost=%d                                  \n", loop_cnt, total_path, total_cost);
     printf("X=%2d Y=%2d A=%d                                                                               \n",my_x,my_y,my_angle);
     for(int i = 0; i < H;i++){
 		for(int j = 0; j < W; j++){
@@ -339,6 +341,8 @@ void run_shortest_path(){
 	
 	    switch(comand){
         case -1://L
+            total_cost += get_r_cost();
+
             maze_update(my_x,my_y,my_angle,3);
 
             my_angle = (4+my_angle-1)%4;
@@ -362,6 +366,9 @@ void run_shortest_path(){
                 break;
             }
 
+            total_path += path_num;
+            total_cost += path_num;
+
 	        break;
 		
         case 10://S 未確定の直線
@@ -384,6 +391,8 @@ void run_shortest_path(){
                         my_x -= 1;
                         break;
                     }
+                    total_path++;
+                    total_cost++;
                     maze_update(my_x,my_y,my_angle,3);
                     print_maze();
                 }
@@ -391,6 +400,8 @@ void run_shortest_path(){
             break;
 
         case 1://R
+            total_cost += get_r_cost();
+
             maze_update(my_x,my_y,my_angle,3);
 
             my_angle = (4+my_angle+1)%4;
@@ -399,6 +410,8 @@ void run_shortest_path(){
             break;
 
         case 2://B
+            total_cost += get_r_cost() * 2;
+
             maze_update(my_x,my_y,my_angle,3);
 
             my_angle = (4+my_angle+2)%4;
@@ -602,6 +615,7 @@ void make_shortest_path_list_pickup(short target_x,short target_y){
 	
     	switch(ni){
         case -1://L
+
             if(s_path > 0){
                 if(unknown_flag == 1 && s_path == 1){//1マスだけなら確定の直線
                     enqueue(0);
@@ -661,6 +675,7 @@ void make_shortest_path_list_pickup(short target_x,short target_y){
             break;
                     
         case 1://R
+
             if(s_path > 0){
                 if(unknown_flag == 1 && s_path == 1){//1マスだけなら確定の直線
                     enqueue(0);
@@ -690,6 +705,7 @@ void make_shortest_path_list_pickup(short target_x,short target_y){
             last = 1;
             break;
         case 2://B
+
             if(s_path > 0){
                 if(unknown_flag == 1 && s_path == 1){//1マスだけなら確定の直線
                     enqueue(0);
@@ -1088,6 +1104,7 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
 
         switch(ni){
         case -1://L
+
             if(h_path > 0){
                 if(queue_empty())h_path--;
                 enqueue(0);
@@ -1113,6 +1130,7 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
             //last = 0;
             break;
         case 1://R
+
             if(h_path > 0){
                 if(queue_empty())h_path--;
                 enqueue(0);
@@ -1132,6 +1150,7 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
             break;
         
         case 2://B
+
             if(h_path > 0){
                 if(queue_empty())h_path--;
                 enqueue(0);
@@ -1186,6 +1205,7 @@ void remake_shortest_path_list_naname2(){
 
         switch(mode){
         case -1://L
+
             if(naname_cnt == 0){
                 naname_cnt = 1;
                 lr = -1;
@@ -1279,6 +1299,7 @@ void remake_shortest_path_list_naname2(){
             enqueue(num);
             break;
         case 1://R
+
             if(naname_cnt == 0){
                 naname_cnt = 1;
                 lr = 1;
@@ -1601,6 +1622,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 
                         switch(ni){
                             case -1://L
+
                                 if(h_path > 0){
                                     if(queue_empty())h_path--;
                                     enqueue(0);
@@ -1626,6 +1648,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
                                 //last = 0;
                                 break;
                             case 1://R
+
                                 if(h_path > 0){
                                     if(queue_empty())h_path--;
                                     enqueue(0);
@@ -1644,7 +1667,8 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
                                 last = 1;
                                 break;
                             
-                            case 2://B  最短走行で逆走はありえない
+                            case 2://B
+            //  最短走行で逆走はありえない
                                 
                                 my_angle = (4+my_angle+2)%4;//メモ　無限ループ回避のため、仕方なく実装
                                 break;
@@ -1782,6 +1806,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
 
         switch(ni){
         case -1://L
+
             if(h_path > 0){
                 if(queue_empty())h_path--;
                 enqueue(0);
@@ -1807,6 +1832,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
             //last = 0;
             break;
         case 1://R
+
             if(h_path > 0){
                 if(queue_empty())h_path--;
                 enqueue(0);
@@ -1826,6 +1852,7 @@ void shortest_path_search_perfect_unknown(short* target_x,short* target_y){
             break;
         
         case 2://B
+
             if(h_path > 0){
                 if(queue_empty())h_path--;
                 enqueue(0);
@@ -1929,6 +1956,7 @@ void maze_search_unknown(short* target_x,short* target_y){
 	
     	switch(ni){
         case -1://L
+
             angle = (4+angle-1)%4;
                     
             last = -1;
@@ -1942,11 +1970,13 @@ void maze_search_unknown(short* target_x,short* target_y){
             break;
                     
         case 1://R
+
             angle = (4+angle+1)%4;
                 
             last = 1;
             break;
-        case 2://B 不要のはず
+        case 2://B
+            // 不要のはず
                 
             angle = (4+angle+2)%4;
                     
@@ -2280,6 +2310,7 @@ void make_shortest_path_list(short target_x,short target_y){
 	
         switch(ni){
             case -1://L
+
                 if(s_path > 0){
                     if(unknown_flag == 1 && s_path == 1){//1マスだけなら確定の直線
                         enqueue(0);
@@ -2339,6 +2370,7 @@ void make_shortest_path_list(short target_x,short target_y){
                 break;
                         
             case 1://R
+
                 if(s_path > 0){
                     if(unknown_flag == 1 && s_path == 1){//1マスだけなら確定の直線
                         enqueue(0);
@@ -2368,6 +2400,7 @@ void make_shortest_path_list(short target_x,short target_y){
                 last = 1;
                 break;
             case 2://B
+
                 if(s_path > 0){
                     if(unknown_flag == 1 && s_path == 1){//1マスだけなら確定の直線
                         enqueue(0);
