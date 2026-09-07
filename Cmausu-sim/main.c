@@ -13,9 +13,11 @@
 
 char Get_Goal_x(void);
 char Get_Goal_y(void);
+char Get_Goal_angle(void);
 short get_r_cost(void);
 short get_r45_cost(void);
 char shortest_path_search(short target_x,short target_y);
+void shortest_path_search_perfect(void);
 void run_shortest_path(void);
 void make_shortest_path_list(short target_x,short target_y);
 void maze_search_adachi(short,short);
@@ -28,6 +30,8 @@ void maze_search_all(void);
 int get_node_num(int x,int y,int a);
 void remake_shortest_path_list_naname2(void);
 void path_compression(void);
+char shortest_path_search_check_full(void);
+void shortest_path_search_dijkstra(void);
 
 //空関数
 void GyroSum_reset(void){
@@ -72,10 +76,15 @@ long long time_limit = 9999;
 int pickup_x = 1;
 int pickup_y = 1;
 
+char Goal_angle_offset = 0;
+
 //------------------------------------------------------------------------------------------------------------------------------------
 
 void maze_input(void);
 void print_maze(void);
+void print_maze_wait(void);
+void print_maze_wait_perfect(void);
+void print_maze_wait_dijkstra(void);
 
 char maze_w_input[H][W] = {0};	//上位4bit = 壁の確定bit 下位4bit = 壁の情報（未確定含む）
 int loop_cnt = 0;
@@ -88,13 +97,26 @@ int main(){
 
     maze_input();
 
-    //maze_search_adachi(Get_Goal_x(),Get_Goal_y());
-    //maze_search_adachi(Start_x,Start_y);
+    //----------------
+    maze_search_adachi(Get_Goal_x(),Get_Goal_y());
+    maze_search_adachi(Start_x,Start_y);
 
     maze_search_adachi(Get_Goal_x(),Get_Goal_y());
     maze_search_all();
 
+
+    //----------------
     print_maze();
+
+    shortest_path_search_check_full();
+    print_maze_wait();
+
+    shortest_path_search_perfect();
+    print_maze_wait_perfect();
+
+    shortest_path_search_dijkstra();
+    print_maze_wait_dijkstra();
+
     return 0;
 }
 
@@ -152,12 +174,114 @@ void print_maze(){
                 }else if(my_angle == 3){
                     printf("  ← ");
                 }
+            }else if((i == Goal_y) && (j == Goal_x)){
+                printf("  G ");
                 
             }else if(min(maze_d[i][j][3],min(maze_d[i][j][2],min(maze_d[i][j][1],maze_d[i][j][0] ))) == maze_d_max){
 				printf("    ");
 			}else{
                 printf("    ");
 				//printf("%4d",min(maze_d[i][j][3],min(maze_d[i][j][2],min(maze_d[i][j][1],maze_d[i][j][0] )))  );	
+			}
+			
+		}
+		printf("|\n");
+    }
+    printf("+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n");
+    Sleep(PRINT_WAIT);
+    loop_cnt++;
+}
+
+void print_maze_wait(){
+    //printf("\033[H");
+    printf("shortest_path_search_check_full()                                                        \n");
+    printf("loop_cnt=%d  total_path=%d  total_cost=%d                                  \n", loop_cnt, total_path, total_cost);
+    printf("X=%2d Y=%2d A=%d                                                                               \n",my_x,my_y,my_angle);
+    for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++){
+			printf("+");
+			if(maze_w[i][j]&0x01)printf("----");
+			else if(maze_w[i][j]&0x10)printf("    ");
+			else printf("....");
+		}
+		printf("+\n");
+		
+		for(int j = 0; j < W; j++){
+			if(maze_w[i][j]&0x08)printf("|");
+			else if(maze_w[i][j]&0x80)printf(" ");
+			else printf(":");
+			
+            
+            if(min(maze_d[i][j][3],min(maze_d[i][j][2],min(maze_d[i][j][1],maze_d[i][j][0] ))) == maze_d_max){
+				printf("    ");
+			}else{
+				printf("%4d",min(maze_d[i][j][3],min(maze_d[i][j][2],min(maze_d[i][j][1],maze_d[i][j][0] )))  );	
+			}
+			
+		}
+		printf("|\n");
+    }
+    printf("+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n");
+    Sleep(PRINT_WAIT);
+    loop_cnt++;
+}
+
+void print_maze_wait_perfect(){
+    //printf("\033[H");
+    printf("shortest_path_search_perfect()                                               \n");
+    printf("loop_cnt=%d  total_path=%d  total_cost=%d                                  \n", loop_cnt, total_path, total_cost);
+    printf("X=%2d Y=%2d A=%d                                                                               \n",my_x,my_y,my_angle);
+    for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++){
+			printf("+");
+			if(maze_w[i][j]&0x01)printf("----");
+			else if(maze_w[i][j]&0x10)printf("    ");
+			else printf("....");
+		}
+		printf("+\n");
+		
+		for(int j = 0; j < W; j++){
+			if(maze_w[i][j]&0x08)printf("|");
+			else if(maze_w[i][j]&0x80)printf(" ");
+			else printf(":");
+			
+            if(maze_d_perfect[i][j] >= maze_d_max){
+				printf("    ");
+			}else{
+				printf("%4d",maze_d_perfect[i][j] );	
+			}
+			
+		}
+		printf("|\n");
+    }
+    printf("+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n");
+    Sleep(PRINT_WAIT);
+    loop_cnt++;
+}
+
+void print_maze_wait_dijkstra(){
+    //printf("\033[H");
+    printf("shortest_path_search_dijkstra()                                               \n");
+    printf("loop_cnt=%d  total_path=%d  total_cost=%d                                  \n", loop_cnt, total_path, total_cost);
+    printf("X=%2d Y=%2d A=%d                                                                               \n",my_x,my_y,my_angle);
+    for(int i = 0; i < H;i++){
+		for(int j = 0; j < W; j++){
+			printf("+");
+			if(maze_w[i][j]&0x01)printf("----");
+			else if(maze_w[i][j]&0x10)printf("    ");
+			else printf("....");
+		}
+		printf("+\n");
+		
+		for(int j = 0; j < W; j++){
+			if(maze_w[i][j]&0x08)printf("|");
+			else if(maze_w[i][j]&0x80)printf(" ");
+			else printf(":");
+			
+            if(maze_d_dijkstra[i][j] >= maze_d_max){
+				printf("    ");
+			}else{
+				printf("%4d",maze_d_dijkstra[i][j] );	
 			}
 			
 		}
@@ -342,6 +466,7 @@ void run_shortest_path(){
 	    switch(comand){
         case -1://L
             total_cost += get_r_cost();
+            total_path += 1;
 
             maze_update(my_x,my_y,my_angle,3);
 
@@ -401,6 +526,7 @@ void run_shortest_path(){
 
         case 1://R
             total_cost += get_r_cost();
+            total_path += 1;
 
             maze_update(my_x,my_y,my_angle,3);
 
@@ -411,6 +537,7 @@ void run_shortest_path(){
 
         case 2://B
             total_cost += get_r_cost() * 2;
+            total_path += 1;
 
             maze_update(my_x,my_y,my_angle,3);
 
@@ -445,6 +572,15 @@ char Get_Goal_y(void){
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：ゴール座標を返却する		   		 			            */
+/* 関 数 詳 細：										    */
+/* 引       数： なし										    */
+/* 戻  り   値： ゴール座標									    */
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+char Get_Goal_angle(void){
+	return Goal_angle;
+}
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：90度回転の重みを取得										  			            */
 /* 関 数 詳 細：												                                   */
 /* 引       数： 													    */
@@ -469,6 +605,739 @@ short get_r45_cost(void){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //以下、実機と同じコード
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：					*/
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void shortest_path_search_dijkstra(){
+
+    char my_x_tmp = my_x,my_y_tmp = my_y,my_angle_tmp = my_angle;//現在位置のバックアップ
+    
+    led(0);
+ 
+    int node_num_centor;
+    
+    init_dijkstra();
+    
+    //壁情報からパス情報を生成
+    		//add_edge(int, int, int );
+    for(int i = 0; i < H; i++){
+	    for(int j = 0; j < W;j++){
+		    
+		    node_num_centor = get_node_num(j,i,4);
+		    
+		    for(int k = 0; k < 4;k++){
+			    
+			   //マスの中央と壁
+			   if(  ((maze_w[i][j] & (1 << (k+4))) != 0) && ((maze_w[i][j] & (1 << k)) == 0)) {//壁が無ければマスの中央とつながってる 確定壁のみ
+				   add_edge(get_node_num(j,i,k), node_num_centor, cost_centor_wall );
+				   
+				   //printf2("x=%d y=%d a=%d\n",j,i,k);
+				   //斜めの壁と壁
+				   if(((maze_w[i][j] & (1 << (((k+1)%4)+4) )) != 0) && ((maze_w[i][j] & (1 << ((k+1)%4))) == 0)){ //確定壁
+					   add_edge(get_node_num(j,i,k), get_node_num(j,i,((k+1)%4))  ,cost_wall_wall );
+				   }
+				   if((((maze_w[i][j] & (1 << (((k+4-1)%4)+4) ))) != 0) &&  (((maze_w[i][j] & (1 << ((k+4-1)%4)))) == 0)){ //確定壁
+					   add_edge(get_node_num(j,i,k), get_node_num(j,i,((k+4-1)%4))  , cost_wall_wall );
+				   }
+			   }   
+		    }
+	    }
+    }
+    
+    //ゴール地点からダイクストラを実行
+    run_dijkstra(get_node_num(Get_Goal_x(),Get_Goal_y(),4)); //ゴールのマス中央を設定する
+
+    //距離情報から歩数マップを生成
+    		//long get_dist(int);
+     for(int i = 0; i < H; i++){
+	    for(int j = 0; j < W;j++){
+		    maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
+		    
+	    }
+     }
+    
+    //歩数マップから走行リストを生成
+    //run_list
+    queue_reset();
+    short h_path = 0;
+    char maze_flag[H][W] = {0};
+    
+    my_x = Start_x;my_y = Start_y;my_angle = Start_angle;
+ 
+    int last = 0;
+	
+    
+    while(my_x != Get_Goal_x() || my_y != Get_Goal_y()){
+	
+	short num = maze_d_max -100; //maze_d_dijkstra[my_y][my_x];  周囲のマスが現在地より小さいとは言えないため最大値-100に変更
+	short n_num = 0;
+	char first_flag = 0;
+	
+	maze_flag[my_y][my_x] = 1;//一度到達したマスには戻らないようにする
+ 
+	//printf2("%d  %d\n",my_x,my_y);
+	 
+	for(int i = 0;i < 4;i++){//ゴールに近いマスを探す
+		int nx = my_x+dx[i],ny = my_y+dy[i];
+		
+		//迷路の範囲内　＆＆　壁が無いことが確定している
+		if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<i)) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+i))) != 0 ) ){
+			
+			if(maze_flag[ny][nx] != 1){//まだ到達してなければ
+				if(first_flag == 0 || num > maze_d_dijkstra[ny][nx]){//初めのマスは無条件で移動す候補にする || ゴールに近いマスを見つけた
+					num = maze_d_dijkstra[ny][nx];
+					n_num = i;
+					
+					first_flag = 1;
+					
+				 }else if(num == maze_d_dijkstra[ny][nx]){// LとRが同じ重み　斜めを優先したい
+				 
+				 	//printf2("hoge   %d ,  %d  , %d\n",my_angle , i, (i - my_angle + 4)%4);
+					
+					/*if( maze_d[ny][nx][i] < maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num] ){//斜めを考慮しない重みの小さいほうを優先する
+						n_num = i;
+						
+					}else if( maze_d[ny][nx][i] == maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num]) {
+					*/	if(last == -1 && (i - my_angle + 4)%4 == 1   ){//前回がL かつ　今回はR  
+							n_num = i;
+								 
+						}else if(last == 1 && (i - my_angle + 4)%4 == -1   ){//前回がR　かつ　今回はL
+							n_num = i;
+								 
+						}else{//前回がSなら今回は?
+							if( maze_d[ny][nx][i] < maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num] ){//斜めを考慮しない重みの小さいほうを優先する
+								n_num = i;
+							}
+						}
+					//}
+					
+					first_flag = 1;
+				}
+			}
+		}
+	}
+	
+   	//移動する
+	short ni = ((4 + n_num - ((4+my_angle-1)%4))%4) -1;// -1 ~ 2
+
+	switch(ni){
+	case -1://L
+	    if(h_path > 0){
+		if(queue_empty())h_path--;
+		enqueue(0);
+		enqueue(h_path);
+		h_path = 0;
+	    }
+
+	    enqueue(-1);
+	    enqueue(1);
+	    my_angle = (4+my_angle-1)%4;
+        
+	    my_x += dx[n_num];
+	    my_y += dy[n_num];
+		
+	    last = -1;
+	    break;
+	case 0://S
+   
+	    h_path +=2;
+	    my_x += dx[n_num];
+	    my_y += dy[n_num];
+		
+	    //last = 0;
+	    break;
+	case 1://R
+	    if(h_path > 0){
+		if(queue_empty())h_path--;
+		enqueue(0);
+		enqueue(h_path);
+		h_path = 0;
+	    }
+        
+	    enqueue(1);
+	    enqueue(1);
+     
+	    my_angle = (4+my_angle+1)%4;
+
+	    my_x += dx[n_num];
+	    my_y += dy[n_num];
+		
+	    last = 1;
+	    break;
+	}
+    }
+ 
+    if(h_path > 0){
+	if(queue_empty())h_path--;
+	enqueue(0);
+	enqueue(h_path+1);
+	h_path = 0;
+    }else{
+	enqueue(0);
+	enqueue(1);
+    }
+  
+    led_down();
+    
+    //ゴール方角を変更する
+    Goal_angle_offset = (my_angle - Goal_angle + 4)%4;
+  
+    //現在位置をバックアップから復元
+    my_x = my_x_tmp;
+    my_y = my_y_tmp;
+    my_angle = my_angle_tmp;
+  
+}
+    
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路探索（最終版）斜めも考慮して経路選択する					*/
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+void shortest_path_search_perfect(){
+
+    int comand ,path_num;
+
+    char my_x_tmp = my_x,my_y_tmp = my_y,my_angle_tmp = my_angle;//現在位置のバックアップ
+    
+    led(0);
+    ////////////// ゴールからの距離を計算する
+    queue_reset();
+    for(int i = 0; i < H;i++){
+	for(int j = 0;j < W; j++){
+	    for(int k = 0; k < 4; k++){
+		maze_d[i][j][k] = maze_d_max;
+	    }
+	}
+    }
+    /*
+    for(int k = 0; k < 4; k++){
+	if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<k)) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+k))) != 0 )){
+	    maze_d[Get_Goal_y()][Get_Goal_x()][k] = 0;
+	}
+    }*/
+    
+    //ゴール方角
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +2)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +2)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +2)%4] = 0;
+    }
+    //ゴール方角+1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +3)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +3)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +3)%4] = get_r_cost();
+    }
+    //ゴール方角-1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +1)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +1)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +1)%4] = get_r_cost();
+    }
+    //ゴール方角+2
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +4)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +4)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +4)%4] = get_r_cost() *2;
+    }
+    
+    
+    enqueue(Get_Goal_x()*100 + Get_Goal_y());
+  
+    while(!queue_empty()){
+	short x = dequeue(),y;
+	y = x%100;
+	x /=100;
+
+	for(char i =0;i<4;i++){
+	    char update_flag = 0;
+	    short nx = x+dx[i],ny = y+dy[i];
+	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){//未確定の壁は通過しない
+
+		short num = maze_d[y][x][i];
+		for(int k = 0; k < 4; k++){
+           
+		    if(i == k){//S
+			if(maze_d[ny][nx][k] > num + 1){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num + 1;
+			}
+		    }else if((i+2+4)%4 == k){//B
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()*2){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost()*2;
+			}
+		    }else{// L or R
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost();
+			}
+		    }
+		}
+		if(update_flag)enqueue(nx*100 + ny);
+	    }
+	}
+    }
+    
+   
+    //////////////////////////////////////////////////
+    for(int i = 0; i < H;i++){
+	for(int j = 0;j < W; j++){
+	    maze_d_perfect[i][j] = maze_d_max;
+	}
+    }
+    
+   
+    for(int i = 0; i < H;i++){//全マスからゴールまでの走行経路を算出する
+	for(int j = 0;j < W; j++){
+	   //led(i);
+	  // printf2("%d %d ",i,j);
+	    
+	   if(i == Get_Goal_y() && j == Get_Goal_x()){
+	   	maze_d_perfect[Get_Goal_y()][Get_Goal_x()] = 0; 
+		
+	   }else if (maze_d[i][j][0] == maze_d_max){//到達不能マス
+	   	maze_d_perfect[i][j] = maze_d_max;
+		   
+	   }else{//走行経路を算出する
+	   	
+	   	 //run_list
+		
+		maze_d_perfect[i][j] = maze_d_max;
+			
+		for(int k = 0;k < 4;k++){//スタート向きの設定
+			queue_reset();
+    			short h_path = 0;
+    			my_x = j;my_y = i;my_angle = 0;//スタート位置の設定
+		
+			/*if(maze_d[i][j][my_angle] > maze_d[i][j][k]){
+				my_angle = k;
+			}*/
+		
+			if((maze_w[my_y][my_x] & (1 << ((k+2)%4))) != 0){//目の前に壁がある場合スタートの向きにはならない
+				//printf2("NG \n");
+				continue;
+			}
+			my_angle = k;
+			
+			my_angle = (my_angle+2)%4;
+			//printf2("%d ",my_angle);
+			int last = 0;
+		
+			    while(my_x != Get_Goal_x() || my_y != Get_Goal_y()){
+
+				short num = maze_d[my_y][my_x][(my_angle+2)%4];
+				short n_num = 0;
+				char s_flag = 0;
+				int nx = my_x+dx[my_angle],ny = my_y+dy[my_angle];
+				
+				
+				if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<my_angle)) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+my_angle))) != 0 ) ){
+				    short next = maze_d[ny][nx][(my_angle+2)%4];
+				    if(num == next+1){
+					n_num = (my_angle+2)%4;
+					num = next;
+					s_flag = true;
+				    }
+				}
+
+				if(s_flag == false){
+				    for(int ii = 0;ii < 4;ii++){
+					if(ii == (my_angle+2)%4){//逆走はありえない
+					}else{// L or R
+					    short next = maze_d[my_y][my_x][ii];
+					    if(num > next){
+						n_num = ii;
+						num = next;
+					    }else if(num == next){// LとRが同じ重み　斜めを優先したい
+						if(last == -1){//前回がLなら今回はR
+						    n_num = (my_angle-1+4)%4;
+							 
+						}else if(last == 1){//前回がRなら今回はL
+						    n_num = (my_angle+1+4)%4;
+							 
+						}else{//前回がSなら今回は?
+						    //わからんから先に見つかった方にする
+						}
+					    }
+					}
+				    }
+				}
+			   
+				n_num = (n_num+2)%4;// 0 ~ 4
+				short ni = ((4 + n_num - ((4+my_angle-1)%4))%4) -1;// -1 ~ 2
+
+				switch(ni){
+				case -1://L
+				    if(h_path > 0){
+					if(queue_empty())h_path--;
+					enqueue(0);
+					enqueue(h_path);
+					h_path = 0;
+				    }
+
+				    enqueue(-1);
+				    enqueue(1);
+				    my_angle = (4+my_angle-1)%4;
+			        
+				    my_x += dx[n_num];
+				    my_y += dy[n_num];
+					
+				    last = -1;
+				    break;
+				case 0://S
+			   
+				    h_path +=2;
+				    my_x += dx[n_num];
+				    my_y += dy[n_num];
+					
+				    //last = 0;
+				    break;
+				case 1://R
+				    if(h_path > 0){
+					if(queue_empty())h_path--;
+					enqueue(0);
+					enqueue(h_path);
+					h_path = 0;
+				    }
+			        
+				    enqueue(1);
+				    enqueue(1);
+			     
+				    my_angle = (4+my_angle+1)%4;
+
+				    my_x += dx[n_num];
+				    my_y += dy[n_num];
+					
+				    last = 1;
+				    break;
+				    
+				case 2://B
+					my_angle = (4+my_angle+2)%4; //メモ 最短走行ではありえないが実装する
+					break;
+				}
+			    }
+			 
+			    if(h_path > 0){
+				if(queue_empty())h_path--;
+				enqueue(0);
+				enqueue(h_path+1);
+				h_path = 0;
+			    }else{
+				enqueue(0);
+				enqueue(1);
+			    }
+			    
+			    
+			 //ここまでで走行経路が算出完了 
+			 remake_shortest_path_list_naname2(); //２マスも斜めにするモード
+		   	 path_compression();//大曲など  
+			 
+			 //走行経路から距離に変換
+			 short maze_d_perfect_tmp = 0;
+			 while(!queue_empty()){
+				comand = dequeue();path_num = dequeue();
+				//printf2("%d %d\n",comand,path_num);
+				//delay(1)
+				
+				if(comand == 0){//直線
+					maze_d_perfect_tmp += max(1,(path_num+1) / 2) * 2;//メモ　斜め１マス＝１としたときの直線の重み
+					
+				}else if(comand == 10){//斜め直線
+					maze_d_perfect_tmp += max(1, path_num);  //斜め１マス
+					
+				}else if(comand == -11 || comand == -13 || comand == -14 || comand == 11 || comand == 13 || comand == 14){//斜め45
+					maze_d_perfect_tmp += get_r45_cost();  //１マス
+					
+				}else{//カーブ
+					maze_d_perfect_tmp += path_num * get_r_cost();
+				}
+				
+			} 
+			 
+			maze_d_perfect[i][j] = min(maze_d_perfect_tmp,maze_d_perfect[i][j]); 
+		}
+		
+	    }
+	   
+	   // printf2("OK \n");
+	}
+    }
+    
+    
+    
+    /*
+    for(int i = 0; i < H;i++){
+	for(int j = 0; j < W; j++){
+		printf2("+");
+		if(maze_w[i][j]&0x01)printf2("----");
+		else if(maze_w[i][j]&0x10)printf2("    ");
+		else printf2("....");
+	}
+	printf2("+\n");
+		
+	for(int j = 0; j < W; j++){
+		if(maze_w[i][j]&0x08)printf2("|");
+		else if(maze_w[i][j]&0x80)printf2(" ");
+		else printf2(":");
+			
+		if(maze_d_perfect[i][j] == maze_d_max){
+			printf2("    ");
+		}else{
+			printf2("%4d",maze_d_perfect[i][j] );	
+		}
+			
+	}
+	printf2("|\n");
+    }
+    printf2("+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+\n");
+    */    
+  
+    ///////////////////////////////////////////////
+    
+    //run_list
+    queue_reset();
+    short h_path = 0;
+    char maze_flag[H][W] = {0};
+    
+    my_x = Start_x;my_y = Start_y;my_angle = Start_angle;
+ 
+    int last = 0;
+	
+    
+    while(my_x != Get_Goal_x() || my_y != Get_Goal_y()){
+	
+	short num = maze_d_max -100; //maze_d_perfect[my_y][my_x];  周囲のマスが現在地より小さいとは言えないため最大値-100に変更
+	short n_num = 0;
+	char first_flag = 0;
+	
+	maze_flag[my_y][my_x] = 1;//一度到達したマスには戻らないようにする
+ 
+	//printf2("%d  %d\n",my_x,my_y);
+	 
+	for(int i = 0;i < 4;i++){//ゴールに近いマスを探す
+		int nx = my_x+dx[i],ny = my_y+dy[i];
+		
+		//迷路の範囲内　＆＆　壁が無いことが確定している
+		if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[my_y][my_x] & (1<<i)) == 0 )  && ((maze_w[my_y][my_x] & (1<<(4+i))) != 0 ) ){
+			
+			if(maze_flag[ny][nx] != 1){//まだ到達してなければ
+				if(first_flag == 0 || num > maze_d_perfect[ny][nx]){//初めのマスは無条件で移動す候補にする || ゴールに近いマスを見つけた
+					num = maze_d_perfect[ny][nx];
+					n_num = i;
+					
+					first_flag = 1;
+					
+				 }else if(num == maze_d_perfect[ny][nx]){// LとRが同じ重み　斜めを優先したい
+				 
+				 	//printf2("hoge   %d ,  %d  , %d\n",my_angle , i, (i - my_angle + 4)%4);
+					
+					/*if( maze_d[ny][nx][i] < maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num] ){//斜めを考慮しない重みの小さいほうを優先する
+						n_num = i;
+						
+					}else if( maze_d[ny][nx][i] == maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num]) {
+					*/	if(last == -1 && (i - my_angle + 4)%4 == 1   ){//前回がL かつ　今回はR  
+							n_num = i;
+								 
+						}else if(last == 1 && (i - my_angle + 4)%4 == -1   ){//前回がR　かつ　今回はL
+							n_num = i;
+								 
+						}else{//前回がSなら今回は?
+							if( maze_d[ny][nx][i] < maze_d[my_y+dy[n_num]][my_x+dx[n_num]][n_num] ){//斜めを考慮しない重みの小さいほうを優先する
+								n_num = i;
+							}
+						}
+					//}
+					
+					first_flag = 1;
+				}
+			}
+		}
+	}
+	
+   	//移動する
+	short ni = ((4 + n_num - ((4+my_angle-1)%4))%4) -1;// -1 ~ 2
+
+	switch(ni){
+	case -1://L
+	    if(h_path > 0){
+		if(queue_empty())h_path--;
+		enqueue(0);
+		enqueue(h_path);
+		h_path = 0;
+	    }
+
+	    enqueue(-1);
+	    enqueue(1);
+	    my_angle = (4+my_angle-1)%4;
+        
+	    my_x += dx[n_num];
+	    my_y += dy[n_num];
+		
+	    last = -1;
+	    break;
+	case 0://S
+   
+	    h_path +=2;
+	    my_x += dx[n_num];
+	    my_y += dy[n_num];
+		
+	    //last = 0;
+	    break;
+	case 1://R
+	    if(h_path > 0){
+		if(queue_empty())h_path--;
+		enqueue(0);
+		enqueue(h_path);
+		h_path = 0;
+	    }
+        
+	    enqueue(1);
+	    enqueue(1);
+     
+	    my_angle = (4+my_angle+1)%4;
+
+	    my_x += dx[n_num];
+	    my_y += dy[n_num];
+		
+	    last = 1;
+	    break;
+	}
+    }
+ 
+    if(h_path > 0){
+	if(queue_empty())h_path--;
+	enqueue(0);
+	enqueue(h_path+1);
+	h_path = 0;
+    }else{
+	enqueue(0);
+	enqueue(1);
+    }
+  
+    //led_down();
+  
+    //現在位置をバックアップから復元
+    my_x = my_x_tmp;
+    my_y = my_y_tmp;
+    my_angle = my_angle_tmp;
+		
+    ////////////////////////////////////
+    /*   for(int i = 0; i < H;i++){
+	 for(int j = 0;j < W; j++){
+	 int temp = maze_d_max;
+	 for(int k = 0; k < 4; k++){
+	 if(temp > maze_d[i][j][k]){
+	 temp = 	maze_d[i][j][k];
+	 }
+	 }
+	 if(temp != maze_d_max)printf2("%d\t",temp);
+	 else printf2("%d\t",-1);
+	 }
+	 printf2("\n");
+	 }*/
+    //////////////////////////////////
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* 関 数 概 要：最短経路が存在するか確認する(未確定の壁はしない）											  			            */
+/* 関 数 詳 細：												                                   */
+/* 引       数： なし														    */
+/* 戻  り   値： なし										    									*/
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+char shortest_path_search_check_full(){
+    queue_reset();
+    for(int i = 0; i < H;i++){
+	for(int j = 0;j < W; j++){
+	    for(int k = 0; k < 4; k++){
+		maze_d[i][j][k] = maze_d_max;
+	    }
+	}
+    }
+    
+    /*
+    for(int k = 0; k < 4; k++){
+	if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<k)) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+k))) != 0 )){
+	    maze_d[Get_Goal_y()][Get_Goal_x()][k] = 0;
+	}
+    }*/
+    
+    //ゴール方角
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +2)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +2)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +2)%4] = 0;
+    }
+    //ゴール方角+1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +3)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +3)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +3)%4] = get_r_cost();
+    }
+    //ゴール方角-1
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +1)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +1)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +1)%4] = get_r_cost();
+    }
+    //ゴール方角+2
+    if(((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<((Get_Goal_angle() +4)%4))) == 0 ) && ((maze_w[Get_Goal_y()][Get_Goal_x()] & (1<<(4+((Get_Goal_angle() +4)%4)))) != 0 )){
+	maze_d[Get_Goal_y()][Get_Goal_x()][(Get_Goal_angle() +4)%4] = get_r_cost() *2;
+    }
+    
+    enqueue(Get_Goal_x()*100 + Get_Goal_y());
+  
+    while(!queue_empty()){
+	short x = dequeue(),y;
+	y = x%100;
+	x /=100;
+
+	for(char i =0;i<4;i++){
+	    char update_flag = 0;
+	    short nx = x+dx[i],ny = y+dy[i];
+	    if((0 <= nx && nx < W) && (0 <= ny && ny < H) && ((maze_w[y][x] & (1<<i)) == 0 )  && ((maze_w[y][x] & (1<<(4+i))) != 0 )  ){//未確定の壁は通過しない
+	    
+		short num = maze_d[y][x][i];
+		for(int k = 0; k < 4; k++){
+           
+		    if(i == k){//S
+			if(maze_d[ny][nx][k] > num + 1){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num + 1;
+			}
+		    }else if((i+2+4)%4 == k){//B
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()*2){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost()*2;
+			}
+		    }else{// L or R
+			if(maze_d[ny][nx][k] > num+1 + get_r_cost()){
+			    update_flag = true;
+			    maze_d[ny][nx][k] = num+1 + get_r_cost();
+			}
+		    }
+		}
+		if(update_flag){
+			enqueue(nx*100 + ny);
+		
+			if(Start_y == ny && Start_x == nx){
+				for(int k = 0; k < 4; k++){
+		    			if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+		    				return 0;
+		    			}
+	    			}
+			}
+		}
+	    }
+	}
+    }
+    
+    
+    char ng_flag = 1;
+    for(int k = 0; k < 4; k++){
+    	if(maze_d[Start_y][Start_x][k] != maze_d_max ){//スタート位置の重みが更新されてなかったら＝最短経路が存在しない
+    		ng_flag = 0;
+    	}
+    }
+    if(ng_flag == 1){
+	return 1;    
+    }
+    
+    return 0;
+}
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：					*/
