@@ -1,4 +1,5 @@
 #include"dijkstra.h"
+#include "Parameters.h"
 
 #define MAX_V 810     //16x16x3 + 16 + 16
 #define MAX_E 4096  // 16x16x8 x2 無向グラフなので2倍のエッジ数を確保
@@ -77,6 +78,54 @@ void run_dijkstra(short start) {
         for (int i = head[v]; i != -1; i = edges[i].next) {
             short u = edges[i].to;
             short cost = edges[i].cost;
+	    
+	    if(v != start){//現在地がゴールではないとき
+                if(v < 256){//現在地がマスの中央
+                    if((prev[v]+1 == u) || (prev[v]-1 == u) ){
+                        //横一列 追加コスト無し
+                    }else if((prev[v]+16 == u) || (prev[v]-16 == u) ){
+                         //縦一列 追加コスト無し
+                    }else{
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }
+                }else if(v < 256*2) {//現在地がマスの上側
+                    if((prev[v]+1+16 == u) || (prev[v]-1-16 == u) ){
+                        //斜め
+                    }else if((prev[v]-1+16 == u) || (prev[v]+1-16 == u) ){
+                        //斜め
+                    }else if( (prev[v]< 256) && ((prev[v]+16 == u) || (prev[v]-16 == u) )){
+                        //縦
+                    }else if( (256 <= prev[v]) && ((prev[v]+1 == u) || (prev[v]-1 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else if( (256 <= prev[v]) && ((prev[v]+16 == u) || (prev[v]-16 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else{
+                        //45度回転あり　コスト追加
+                        cost += r45_cost_diijkstra;
+                    }
+                    
+                }else{//現在地がマスの左側
+                    if((prev[v]+1+16 == u) || (prev[v]-1-16 == u) ){
+                        //斜め
+                    }else if((prev[v]-1+16 == u) || (prev[v]+1-16 == u) ){
+                        //斜め
+                    }else if( (prev[v]< 256) && ((prev[v]+1 == u) || (prev[v]-1 == u) )){
+                        //横
+                    }else if( (256 <= prev[v]) && ((prev[v]+1 == u) || (prev[v]-1 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else if( (256 <= prev[v]) && ((prev[v]+16 == u) || (prev[v]-16 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else{
+                        //45度回転あり　コスト追加
+                        cost += r45_cost_diijkstra;
+                    }
+                }
+            }
             if (dist[u] > dist[v] + cost) {
                 dist[u] = dist[v] + cost;
                 prev[u] = v;

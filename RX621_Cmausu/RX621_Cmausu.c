@@ -5428,8 +5428,13 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
     		//long get_dist(int);
      for(int i = 0; i < H; i++){
 	    for(int j = 0; j < W;j++){
-		    maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
-		    
+		    //maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
+		    maze_d_dijkstra[i][j] = min(min(min(min(
+                                     get_dist(get_node_num(j,i,0)) 
+                                    ,get_dist(get_node_num(j,i,1)) ) 
+                                    ,get_dist(get_node_num(j,i,2)) )
+                                    ,get_dist(get_node_num(j,i,3)) )
+                                    ,get_dist(get_node_num(j,i,4)) ) ;
 	    }
      }
     
@@ -5635,8 +5640,13 @@ void shortest_path_search_dijkstra(){
     		//long get_dist(int);
      for(int i = 0; i < H; i++){
 	    for(int j = 0; j < W;j++){
-		    maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
-		    
+		    //maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
+		    maze_d_dijkstra[i][j] = min(min(min(min(
+                                     get_dist(get_node_num(j,i,0)) 
+                                    ,get_dist(get_node_num(j,i,1)) ) 
+                                    ,get_dist(get_node_num(j,i,2)) )
+                                    ,get_dist(get_node_num(j,i,3)) )
+                                    ,get_dist(get_node_num(j,i,4)) ) ;
 	    }
      }
     
@@ -5980,17 +5990,17 @@ void maze_search_all(){
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 			phese_flag = 1;
 		}
-		
+		//phese_flag = 1;
 	}
 	
 	if(phese_flag == 1){
-		//phese_flag = 2;
-		
+	
 		shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
 		
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 			phese_flag = 2;
 		}
+        //phese_flag = 2;
 	}
 	
 	if(phese_flag == 2){
@@ -6024,25 +6034,25 @@ void maze_search_all(){
 	
 	
 		
-		/*
+		
 			//確実に最短経路にならないマスも探索することになる　無効化する
 			
-			if(phese_flag == 0){//大まかに探索
+			//if(phese_flag == 0){//大まかに探索
 	
-				shortest_path_search(my_x,my_y);//ゴールに近いマスではなく、現在位置に近いマスから探索する場合
+			//	shortest_path_search(my_x,my_y);//ゴールに近いマスではなく、現在位置に近いマスから探索する場合
 				
-				maze_search_unknown_wall(&target_x_tmp,&target_y_tmp);//4方向すべての壁が確定していないマスからゴールに近いマスの座標を取得
+			//	maze_search_unknown_wall(&target_x_tmp,&target_y_tmp);//4方向すべての壁が確定していないマスからゴールに近いマスの座標を取得
 				
-				if(target_x_tmp == Get_Goal_x() && target_y_tmp == Get_Goal_y()){//ゴール座標が設定されているときは対象のマスがないとき
-					phese_flag = 1;
+			//	if(target_x_tmp == Get_Goal_x() && target_y_tmp == Get_Goal_y()){//ゴール座標が設定されているときは対象のマスがないとき
+			//		phese_flag = 1;
 					
-				}else{//目標地点を大まかに探索した結果に置き換える
-					target_x = target_x_tmp;
-					target_y = target_y_tmp;
-				}
+			//	}else{//目標地点を大まかに探索した結果に置き換える
+			//		target_x = target_x_tmp;
+			//		target_y = target_y_tmp;
+			//	}
 				
-			}
-		*/	
+			//}
+			
 		
 	
 		
@@ -6054,9 +6064,10 @@ void maze_search_all(){
 	mazed_kiti = maze_d[my_y][my_x][my_angle];
 
 	cost_tmp = (get_r_cost() * Search_all_r_num) + Search_all_s_num;
-	if((mazed_kiti == maze_d_max) || (mazed_miti <= cost_tmp && cost_tmp < mazed_kiti) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
+	//if((mazed_kiti == maze_d_max) || (mazed_miti <= cost_tmp && cost_tmp < mazed_kiti) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
+	if((mazed_kiti == maze_d_max) || (mazed_miti <= cost_tmp) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
 		shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
-	}
+    	}
 	
 	
 	//走行経路作成
@@ -6090,14 +6101,7 @@ void maze_search_all(){
 	
 	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
 	
-	
-/*	while(1){
-		motor(0,0);
-		if(get_sw() == 1){
-			printf2("%d : %d \n",target_x,target_y);	
-		}
-	}
-*/
+
 	if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 		
 		shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
