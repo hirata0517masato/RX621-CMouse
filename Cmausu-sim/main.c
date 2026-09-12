@@ -32,6 +32,7 @@ void remake_shortest_path_list_naname2(void);
 void path_compression(void);
 char shortest_path_search_check_full(void);
 void shortest_path_search_dijkstra(void);
+char shortest_path_search_kichikukan(short target_x,short target_y);
 
 //空関数
 void GyroSum_reset(void){
@@ -95,6 +96,21 @@ int total_cost = 0;  // Straight-path and turn cost total
 
 int main(){
 
+     for(int i = 0; i < H;i++)for(int j = 0; j < W; j++)maze_w[i][j] = 0;
+	//迷路の外周の確定壁を設定
+	//0
+	for(int i = 0; i < W;i++)maze_w[0][i] |= 0x11;
+	//1
+	for(int i = 0; i < H;i++)maze_w[i][W-1] |= 0x22;
+	//2
+	for(int i = 0; i < W;i++)maze_w[H-1][i] |= 0x44;
+	//3
+	for(int i = 0; i < H;i++)maze_w[i][0] |= 0x88;
+    //スタート地点の確定壁を設定
+	maze_w[my_y][my_x] = 0xfd;//13;//15-2;
+	maze_w[my_y+1][my_x] |= 0x11;
+	maze_w[my_y][my_x+1] |= 0x80;
+
     maze_input();
 
     //----------------
@@ -102,6 +118,14 @@ int main(){
     maze_search_adachi(Start_x,Start_y);
 
     maze_search_adachi(Get_Goal_x(),Get_Goal_y());
+   // maze_search_adachi(Start_x,Start_y);
+    
+
+    
+ //   shortest_path_search_kichikukan(Get_Goal_x(),Get_Goal_y());//未確定の壁は　ある　として考える　＝　未探索のマスを走行しない　＝　ほこりが少ない経路を選択する
+//	make_shortest_path_list(Get_Goal_x(),Get_Goal_y()); //未確定マスでも連続する直線なら進む
+//	run_shortest_path();
+
     maze_search_all();
 
 
@@ -655,8 +679,13 @@ void shortest_path_search_dijkstra(){
     		//long get_dist(int);
      for(int i = 0; i < H; i++){
 	    for(int j = 0; j < W;j++){
-		    maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
-		    
+		   // maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
+		   maze_d_dijkstra[i][j] = min(min(min(min(
+                                     get_dist(get_node_num(j,i,0)) 
+                                    ,get_dist(get_node_num(j,i,1)) ) 
+                                    ,get_dist(get_node_num(j,i,2)) )
+                                    ,get_dist(get_node_num(j,i,3)) )
+                                    ,get_dist(get_node_num(j,i,4)) ) ; 
 	    }
      }
     
@@ -1862,7 +1891,7 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
     int node_num_centor;
     
     init_dijkstra();
-    
+
     //壁情報からパス情報を生成
     		//add_edge(int, int, int );
     for(int i = 0; i < H; i++){
@@ -1871,12 +1900,12 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
 		    node_num_centor = get_node_num(j,i,4);
 		    
 		    for(int k = 0; k < 4;k++){
-			    
+			  
 			   //マスの中央と壁
 			   if((maze_w[i][j] & (1 << k)) == 0) {//壁が無ければマスの中央とつながってる  未確定の壁は壁無しとする
 				   add_edge(get_node_num(j,i,k), node_num_centor, cost_centor_wall );
 				   
-				   //printf2("x=%d y=%d a=%d\n",j,i,k);
+				   //printf("x=%d y=%d a=%d\n",j,i,k);
 				   //斜めの壁と壁
 				   if((maze_w[i][j] & (1 << ((k+1)%4))) == 0){ //未確定の壁は壁無しとする
 					   add_edge(get_node_num(j,i,k), get_node_num(j,i,((k+1)%4))  ,cost_wall_wall );
@@ -1888,7 +1917,7 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
 		    }
 	    }
     }
-    
+  
     //ゴール地点からダイクストラを実行
     run_dijkstra(get_node_num(Get_Goal_x(),Get_Goal_y(),4)); //ゴールのマス中央を設定する
 
@@ -1896,8 +1925,13 @@ void shortest_path_search_dijkstra_unknown(short* target_x,short* target_y){
     		//long get_dist(int);
      for(int i = 0; i < H; i++){
 	    for(int j = 0; j < W;j++){
-		    maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
-		    
+		   // maze_d_dijkstra[i][j] = get_dist(get_node_num(j,i,4));//ゴールからマスの中央の距離を設定する
+		    maze_d_dijkstra[i][j] = min(min(min(min(
+                                     get_dist(get_node_num(j,i,0)) 
+                                    ,get_dist(get_node_num(j,i,1)) ) 
+                                    ,get_dist(get_node_num(j,i,2)) )
+                                    ,get_dist(get_node_num(j,i,3)) )
+                                    ,get_dist(get_node_num(j,i,4)) ) ;
 	    }
      }
     
@@ -2769,7 +2803,7 @@ void maze_search_unknown(short* target_x,short* target_y){
     int last = 0;
     
     short Goal_x_tmp,Goal_y_tmp;
-    
+
 
     Goal_x_tmp = Get_Goal_x();
     Goal_y_tmp = Get_Goal_y();
@@ -2820,7 +2854,6 @@ void maze_search_unknown(short* target_x,short* target_y){
             *target_y = y;
             
             return;
-	    	
 	    }
 	
     	switch(ni){
@@ -2916,17 +2949,17 @@ void maze_search_all(){
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 			phese_flag = 1;
 		}
-		
+		//phese_flag = 1;
 	}
 	
 	if(phese_flag == 1){
-		//phese_flag = 2;
-		
+	
 		shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得
 		
 		if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 			phese_flag = 2;
 		}
+        //phese_flag = 2;
 	}
 	
 	if(phese_flag == 2){
@@ -2960,25 +2993,25 @@ void maze_search_all(){
 	
 	
 		
-		/*
+		
 			//確実に最短経路にならないマスも探索することになる　無効化する
 			
-			if(phese_flag == 0){//大まかに探索
+			//if(phese_flag == 0){//大まかに探索
 	
-				shortest_path_search(my_x,my_y);//ゴールに近いマスではなく、現在位置に近いマスから探索する場合
+			//	shortest_path_search(my_x,my_y);//ゴールに近いマスではなく、現在位置に近いマスから探索する場合
 				
-				maze_search_unknown_wall(&target_x_tmp,&target_y_tmp);//4方向すべての壁が確定していないマスからゴールに近いマスの座標を取得
+			//	maze_search_unknown_wall(&target_x_tmp,&target_y_tmp);//4方向すべての壁が確定していないマスからゴールに近いマスの座標を取得
 				
-				if(target_x_tmp == Get_Goal_x() && target_y_tmp == Get_Goal_y()){//ゴール座標が設定されているときは対象のマスがないとき
-					phese_flag = 1;
+			//	if(target_x_tmp == Get_Goal_x() && target_y_tmp == Get_Goal_y()){//ゴール座標が設定されているときは対象のマスがないとき
+			//		phese_flag = 1;
 					
-				}else{//目標地点を大まかに探索した結果に置き換える
-					target_x = target_x_tmp;
-					target_y = target_y_tmp;
-				}
+			//	}else{//目標地点を大まかに探索した結果に置き換える
+			//		target_x = target_x_tmp;
+			//		target_y = target_y_tmp;
+			//	}
 				
-			}
-		*/	
+			//}
+			
 		
 	
 		
@@ -2990,9 +3023,10 @@ void maze_search_all(){
 	mazed_kiti = maze_d[my_y][my_x][my_angle];
 
 	cost_tmp = (get_r_cost() * Search_all_r_num) + Search_all_s_num;
-	if((mazed_kiti == maze_d_max) || (mazed_miti <= cost_tmp && cost_tmp < mazed_kiti) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
+	//if((mazed_kiti == maze_d_max) || (mazed_miti <= cost_tmp && cost_tmp < mazed_kiti) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
+	if((mazed_kiti == maze_d_max) || (mazed_miti <= cost_tmp) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
 		shortest_path_search(target_x,target_y);//重みマップの作成　未確定の壁は無いと考える
-	}
+    }
 	
 	
 	//走行経路作成
@@ -3026,14 +3060,7 @@ void maze_search_all(){
 	
 	maze_search_unknown(&target_x,&target_y);//最短経路上の未確定マスの座標を取得 
 	
-	
-/*	while(1){
-		motor(0,0);
-		if(get_sw() == 1){
-			printf2("%d : %d \n",target_x,target_y);	
-		}
-	}
-*/
+
 	if(target_x == Get_Goal_x() && target_y == Get_Goal_y()){//最短経路上に未確定マスがなければ
 		
 		shortest_path_search_perfect_unknown(&target_x,&target_y);//斜めも考慮した最短経路上の未確定マスの座標を取得 
@@ -3099,6 +3126,233 @@ void maze_search_all(){
     }
 }
 
+
+/*
+void maze_search_all(){
+    GyroSum_reset();
+   // Encoder_reset();
+
+    led_down();
+	
+    short target_x[4],target_y[4];
+    
+    char path_ng = 0;
+    
+    static char phese_flag = 0;
+    
+    short mazed_miti[4],mazed_kiti[4],cost_tmp;
+    int n,n_kiti;
+    
+ 
+    while(time_limit > 0){//制限時間の間走行可能
+        path_ng = 0;
+        n = 99;
+        n_kiti = 99;
+        
+        maze_update(my_x,my_y,my_angle,3);
+       
+        path_ng = shortest_path_search(Get_Goal_x(),Get_Goal_y());//重みマップの作成　未確定の壁は無いと考える
+        
+        if(path_ng == 1){//最短経路が存在しない→迷路情報を元に戻す
+            for(int i = 0; i < H;i++){
+                for(int j = 0; j < W; j++){
+                    maze_w[i][j] = maze_w_backup[i][j];
+                    for(int k = 0; k < 4;k++)maze_d[i][j][k] = maze_d_backup[i][j][k];
+                }
+            
+                }
+        }else{//迷路情報をバックアップする
+            for(int i = 0; i < H;i++){
+                for(int j = 0; j < W; j++){
+                    maze_w_backup[i][j] = maze_w[i][j];
+                    for(int k = 0; k < 4;k++)maze_d_backup[i][j][k] = maze_d[i][j][k];
+                }
+            
+                }	
+        }
+        
+        //これ以降は確実に最短経路が存在する迷路情報を持っている必要がある
+        if((phese_flag&0x01) == 0){
+            maze_search_unknown(&target_x[0],&target_y[0]);//最短経路上の未確定マスの座標を取得	
+            
+            if(target_x[0] == Get_Goal_x() && target_y[0] == Get_Goal_y()){//最短経路上に未確定マスがなければ
+                phese_flag |= 0x01;
+            }
+        }
+
+        if((phese_flag&0x02) == 0){
+        
+            shortest_path_search_perfect_unknown(&target_x[1],&target_y[1]);//斜めも考慮した最短経路上の未確定マスの座標を取得
+            
+            if(target_x[1] == Get_Goal_x() && target_y[1] == Get_Goal_y()){//最短経路上に未確定マスがなければ
+                phese_flag |= 0x02;
+            }
+        }
+       
+        if((phese_flag&0x04) == 0){
+            shortest_path_search_dijkstra_unknown(&target_x[2],&target_y[2]);//ダイクストラ　最短経路上の未確定マスの座標を取得
+
+            if(target_x[2] == Get_Goal_x() && target_y[2] == Get_Goal_y()){//最短経路上に未確定マスがなければ
+                phese_flag |= 0x04;
+            }
+        }
+        
+        if(phese_flag == 7){
+            motor(0,0);
+
+    #ifdef Pickup_x
+            pickup_x = Pickup_x;
+            pickup_y = Pickup_y;
+            run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
+    #else
+            if( (Not_Pickup_y_min <= my_y  && my_y <=  Not_Pickup_y_max) && (Not_Pickup_x_min <= my_x &&  my_x <= Not_Pickup_x_max) ){//拾いにくいところにいる
+                search_pickup(&pickup_x,&pickup_y);
+                run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
+            }
+    #endif			
+    //		maze_search_adachi(Start_x,Start_y);//ピックアップ位置ではなくスタート位置に戻したいときに上の処理と切り替える
+                
+            led_down();
+            led_up();
+            led_down();
+            led_up();
+                            
+            motor(0,0);
+            led(7);
+            return;
+        }
+       
+        cost_tmp = (get_r_cost() * Search_all_r_num) + Search_all_s_num;
+
+        //走行経路の選択のため、重みマップの作成
+        for(int i = 0;i < 3;i++){
+            if((phese_flag&(1<<i)) == 0){
+                shortest_path_search(target_x[i],target_y[i]);//重みマップの作成　未確定の壁は無いと考える
+                mazed_miti[i] = maze_d[my_y][my_x][my_angle];
+
+                if((n == 99) || (mazed_miti[3] > mazed_miti[i])){
+                    n = i;
+                    mazed_miti[3] = mazed_miti[i];
+                }
+
+                shortest_path_search_kichikukan(target_x[i],target_y[i]);//未確定の壁は　ある　として考える　＝　未探索のマスを走行しない　＝　ほこりが少ない経路を選択する
+                mazed_kiti[i] = maze_d[my_y][my_x][my_angle];
+                
+                if((n_kiti == 99) || (mazed_kiti[3] > mazed_kiti[i])){
+                    n_kiti = i;
+                    mazed_kiti[3] = mazed_kiti[i];
+                }
+            }
+        }
+
+        
+        //if((n_kiti == 99)||(mazed_kiti[3] == maze_d_max) || (mazed_miti[3] <= cost_tmp && cost_tmp < mazed_kiti[3]) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
+        if((n_kiti == 99)||(mazed_kiti[3] == maze_d_max) || (mazed_miti[3] <= cost_tmp) ){//既知区間では到達できない場合　|| 未知区間だと近いのに既知区間だと遠い場合,振り回されるので未知区間で移動距離優先にする
+            shortest_path_search(target_x[n],target_y[n]);//重みマップの作成　未確定の壁は無いと考える
+            
+            //走行経路作成
+            make_shortest_path_list(target_x[n],target_y[n]); //未確定マスでも連続する直線なら進む
+        
+        }else{
+            shortest_path_search_kichikukan(target_x[n_kiti],target_y[n_kiti]);//未確定の壁は　ある　として考える
+            
+            //走行経路作成
+            make_shortest_path_list(target_x[n_kiti],target_y[n_kiti]); //未確定マスでも連続する直線なら進む
+        }
+            
+        run_shortest_path();
+        
+        motor(0,0);
+
+    }
+	
+    
+    
+    if(time_limit <= 0){//　制限時間内に探索できなかった　
+
+#ifdef Pickup_x
+	pickup_x = Pickup_x;
+	pickup_y = Pickup_y;
+	run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
+#else
+	if( (Not_Pickup_y_min <= my_y  && my_y <=  Not_Pickup_y_max) && (Not_Pickup_x_min <= my_x &&  my_x <= Not_Pickup_x_max) ){//拾いにくいところにいる
+		search_pickup(&pickup_x,&pickup_y);
+		run_pickup(pickup_x,pickup_y);//拾いやすいところまで移動する
+	}
+#endif
+//	maze_search_adachi(Start_x,Start_y);//ピックアップ位置ではなくスタート位置に戻したいときに上の処理と切り替える
+	
+	//以下は最短経路を確定できたかどうかの確認用
+	shortest_path_search(Get_Goal_x(),Get_Goal_y());
+	
+	maze_search_unknown(&target_x[0],&target_y[0]);//最短経路上の未確定マスの座標を取得 
+	
+	
+	if(target_x[0] == Get_Goal_x() && target_y[0] == Get_Goal_y()){//最短経路上に未確定マスがなければ
+		
+		shortest_path_search_perfect_unknown(&target_x[0],&target_y[0]);//斜めも考慮した最短経路上の未確定マスの座標を取得 
+	
+		if(target_x[0] == Get_Goal_x() && target_y[0] == Get_Goal_y()){//最短経路上に未確定マスがなければ
+		
+			shortest_path_search_dijkstra_unknown(&target_x[0],&target_y[0]);//ダイクストラ　最短経路上の未確定マスの座標を取得
+			
+			if(target_x[0] == Get_Goal_x() && target_y[0] == Get_Goal_y()){//最短経路上に未確定マスがなければ
+
+		    	led_down();
+				led_up();
+				led_down();
+				led_up();
+				
+				led(7);
+				motor(0,0);
+	    		return;
+				
+			}else{//ダイクストラは未確定マスがある
+				led(15);
+			        delay(500);
+			        led(0);
+			        delay(500);
+			        led(15);
+			        delay(500);
+		    
+		        	//Tmotor(l45 /2);//45度 / 2 回転し、最後まで探索できなかったことをわかるようにする
+				
+				led(3);
+			        motor(0,0);
+	    			return;
+			}
+			
+		}else{//斜め考慮は未確定マスがある
+			led(15);
+		        delay(500);
+		        led(0);
+		        delay(500);
+		        led(15);
+		        delay(500);
+		    
+		        //Tmotor(r45 /2);//45度 / 2 回転し、最後まで探索できなかったことをわかるようにする
+			
+			led(1);
+			motor(0,0);
+	    		return;
+		}
+	}else{
+	    led(15);
+	    delay(500);
+	    led(0);
+	    delay(500);
+	    led(15);
+	    delay(500);
+	    
+	    //Tmotor(r45);//45度回転し、最後まで探索できなかったことをわかるようにする
+	    
+	    led(8);
+	    motor(0,0);
+	    return;
+	}
+    }
+}
+*/
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* 関 数 概 要：最短経路作成											  			            */

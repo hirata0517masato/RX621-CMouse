@@ -1,11 +1,13 @@
 #include"dijkstra.h"
 
+#include "Parameters.h"
+
 #define MAX_V 810     //16x16x3 + 16 + 16
-#define MAX_E 4096  // 16x16x8 x2 �����O���t�Ȃ̂�2�{�̃G�b�W�����m��
+#define MAX_E 4096  // 16x16x8 x2 �����O���t�Ȃ̂�2�{�̃G�b�W�����m��
 #define DIST_MAX 9999
 
 
-// �O���[�o���ϐ��i�������m�ہj
+// �O���[�o���ϐ��i�������m�ہj
 Edge edges[MAX_E];
 int head[MAX_V];
 int edge_idx;
@@ -14,7 +16,7 @@ HeapNode heap[MAX_E];
 short dist[MAX_V];
 int prev[MAX_V];
 
-// --- ������ ---
+// --- ������ ---
 void init_dijkstra() {
     for (int i = 0; i < MAX_V; i++) {
         head[i] = -1;
@@ -24,7 +26,7 @@ void init_dijkstra() {
     edge_idx = 0;
 }
 
-// --- �ӂ̒ǉ��i�����j---
+// --- �ӂ̒ǉ��i�����j---
 void add_edge(short from, short to, short cost) {
     edges[edge_idx] = (Edge){to, cost, head[from]};
     head[from] = edge_idx++;
@@ -32,7 +34,7 @@ void add_edge(short from, short to, short cost) {
     head[to] = edge_idx++;
 }
 
-// --- �q�[�v���� ---
+// --- �q�[�v���� ---
 void push(HeapNode heap[], int* size, HeapNode node) {
     int i = (*size)++;
     while (i > 0) {
@@ -61,7 +63,7 @@ HeapNode pop(HeapNode heap[], int* size) {
     return top;
 }
 
-// --- �_�C�N�X�g�� ---
+// --- �_�C�N�X�g�� ---
 void run_dijkstra(short start) {
 
     int size = 0;
@@ -77,6 +79,56 @@ void run_dijkstra(short start) {
         for (int i = head[v]; i != -1; i = edges[i].next) {
             short u = edges[i].to;
             short cost = edges[i].cost;
+
+
+            if(v != start){//現在地がゴールではないとき
+                if(v < 256){//現在地がマスの中央
+                    if((prev[v]+1 == u) || (prev[v]-1 == u) ){
+                        //横一列 追加コスト無し
+                    }else if((prev[v]+16 == u) || (prev[v]-16 == u) ){
+                         //縦一列 追加コスト無し
+                    }else{
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }
+                }else if(v < 256*2) {//現在地がマスの上側
+                    if((prev[v]+1+16 == u) || (prev[v]-1-16 == u) ){
+                        //斜め
+                    }else if((prev[v]-1+16 == u) || (prev[v]+1-16 == u) ){
+                        //斜め
+                    }else if( (prev[v]< 256) && ((prev[v]+16 == u) || (prev[v]-16 == u) )){
+                        //縦
+                    }else if( (256 <= prev[v]) && ((prev[v]+1 == u) || (prev[v]-1 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else if( (256 <= prev[v]) && ((prev[v]+16 == u) || (prev[v]-16 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else{
+                        //45度回転あり　コスト追加
+                        cost += r45_cost_diijkstra;
+                    }
+                    
+                }else{//現在地がマスの左側
+                    if((prev[v]+1+16 == u) || (prev[v]-1-16 == u) ){
+                        //斜め
+                    }else if((prev[v]-1+16 == u) || (prev[v]+1-16 == u) ){
+                        //斜め
+                    }else if( (prev[v]< 256) && ((prev[v]+1 == u) || (prev[v]-1 == u) )){
+                        //横
+                    }else if( (256 <= prev[v]) && ((prev[v]+1 == u) || (prev[v]-1 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else if( (256 <= prev[v]) && ((prev[v]+16 == u) || (prev[v]-16 == u) )){
+                        //90度回転あり　コスト追加
+                        cost += r_cost_diijkstra;
+                    }else{
+                        //45度回転あり　コスト追加
+                        cost += r45_cost_diijkstra;
+                    }
+                }
+            }
+
             if (dist[u] > dist[v] + cost) {
                 dist[u] = dist[v] + cost;
                 prev[u] = v;
@@ -90,7 +142,7 @@ short get_dist(short v){
     return dist[v];
 }
 
-// --- �o�H�����i�t���ŕ\���j---
+// --- �o�H�����i�t���ŕ\���j---
 void print_path(int to) {
     if (to == -1) return;
     print_path(prev[to]);
