@@ -106,42 +106,40 @@ void pwm(float duty_L, float duty_R){
 	L_PM = 1;
 	duty_L = -duty_L;
     }
-	
+    if(duty_R < 0.0){
+	R_PM = 1;
+	duty_R = -duty_R;
+    }
+     
     /* デューティ比の算出 */
     dt_L = MTU1.TGRA * (100.0 - duty_L) / 100.0;//  dt_L = 0.9445*50/100 = 0.5
-		 
+    dt_R = MTU4.TGRA * (100.0 - duty_R) / 100.0;//  dt_R = 0.9445*50/100 = 0.5
+    
     /* デューティ比のオーバーフロー保護 */
     if(dt_L >= MTU1.TGRA)   dt_L = MTU1.TGRA - 1;  // 
-		
+    if(dt_R >= MTU4.TGRA)   dt_R = MTU3.TGRA - 1;  // 
+	
+    
     if(L_PM == 0){
 	/* デューティ比の設定 */
 	MTU0.TGRB = MTU1.TGRA - 1;
 	MTU1.TGRB = dt_L;
     }else{
 	/* デューティ比の設定 */
-	MTU0.TGRB = dt_L;
 	MTU1.TGRB = MTU1.TGRA - 1;
-    }
+	MTU0.TGRB = dt_L;
 	
-    if(duty_R < 0.0){
-	R_PM = 1;
-	duty_R = -duty_R;
     }
-	
-    /* デューティ比の算出 */
-    dt_R = MTU4.TGRA * (100.0 - duty_R) / 100.0;//  dt_R = 0.9445*50/100 = 0.5
-		 
-    /* デューティ比のオーバーフロー保護 */
-    if(dt_R >= MTU4.TGRA)   dt_R = MTU3.TGRA - 1;  // 
-		
+			
     if(R_PM == 0){
 	/* デューティ比の設定 */
 	MTU4.TGRB = MTU4.TGRA - 1;
 	MTU3.TGRB = dt_R;
     }else{
 	/* デューティ比の設定 */
-	MTU4.TGRB = dt_R;
 	MTU3.TGRB = MTU3.TGRA - 1;
+	MTU4.TGRB = dt_R;
+	
     }
 }
 
@@ -1422,7 +1420,7 @@ void ETmotorU(long long A, long long E, char non_stop){
     //Encoder_reset();
 
     int M_kabe = 20;//13
-    int M 		= 35;//33
+    int M 		= 33;//33
 	
     //壁切れ
  /*   if(A > 0){//R
@@ -1563,7 +1561,7 @@ void ETmotorBIG(long long A, long long E, char non_stop){
     //Encoder_reset();
 	
     int M_kabe = 18;//18
-    int M 		= 33;//33
+    int M 		= 30;//33
 
     
     ESmotor(50,M_kabe,true,true);//50
