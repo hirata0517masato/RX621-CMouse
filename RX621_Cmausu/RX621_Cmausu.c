@@ -187,13 +187,13 @@ void main(void)
     delay(100);
 	
 
- /*  
+   
     ///////////////////////////////
-    int path_hosei_test[16] = {0,
+/*    int path_hosei_test[16] = {0,
  			 	  0,0,0,0,0,0,0,0, 
  			  	  0,0,0,0,0,0,0};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
 			  
-    int path_num_test = 2;
+    int path_num_test = 15;
     
     delay(1000);
     
@@ -225,13 +225,13 @@ void main(void)
     while(1);
     /////////////////////////////////////////
  */
- /*
+ 
        ///////////////////////////////
-    int path_hosei_test[31] = {0,
+ /*   int path_hosei_test[31] = {0,
  			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 
  			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
   			  
-    int path_num_test = 8;
+    int path_num_test = 30;
     
     delay(1000);
     
@@ -2556,14 +2556,14 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 	
 	    }else if(Lflag == 1){
 		
-		if(get_IR(IR_LT) < 15){//15
+		if(get_IR(IR_LT) < 17){//15
 		    if(get_IR(IR_LT) != Ltmp){
 			cnt++;
 			Ltmp = get_IR(IR_LT);
 			if(Ltmp == 0)Ltmp = 999;
 		    }
 		    
-		    if(cnt > 2){
+		    if(cnt > 1){
 		    	led(0);
 		    	break;
 		    }
@@ -2630,14 +2630,14 @@ void S_run_kabe_BIG(int powor, char flag, int LR, int pathnum){//•ÇØ‚ê‚Ü‚Å‘–s 
 		}	
 
 	    }else if(Rflag == 1){
-		if(get_IR(IR_RT) < 15){//15
+		if(get_IR(IR_RT) < 17){//15
 		    if(get_IR(IR_RT) != Rtmp){
 			cnt++;
 			Rtmp = get_IR(IR_RT);
 			if(Rtmp == 0)Rtmp = 999;
 		    }
 		   
-		    if(cnt > 2){
+		    if(cnt > 1){
 		    	led(0);
 		    	break;
 		    }
@@ -2935,7 +2935,7 @@ void S_run_kabe_naname2(int powor, char flag, int LR, int v2_flag){//•ÇØ‚ê‚Ü‚Å‘
     	ESmotor(190,powor,true,false);//190
 
     }else if(v2_flag == 6){//Î‚ß‚ÌŒã@’¼ü
-    	ESmotor(400,powor,true,false);
+    	ESmotor(350,powor,true,false);//400
 
     }else if(v2_flag == 7){//‚Å‚½‚ ‚ÆƒJ[ƒu
     	ESmotor(220,powor,true,false);//180
@@ -7619,18 +7619,18 @@ void run_shortest_path_fin(	char naname){
 */
     int path_hosei[31] = {0,
  			      0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,100, 
- 			      100,100, 100,100, 100,100, 100,100, 100,100, 100,100, 100,100};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
+ 			      100,100, 100,100, 100,100, 100,100, 100,100, 200,200, 200,200};//path_num‚²‚Æ‚É‹——£•â³‚·‚é
 
     int kabegire_tuika = 0;//h1 / 4;//’¼ü@•ÇØ‚êŠm”F‚Ì‹——£‚ğ•â³‚·‚é@‚O‚Ì‚Æ‚«‚Í”¼ƒ}ƒX@{‚Å‹——£‚ª’Z‚­‚È‚é
 			  
     int run_speed        = 95;
-    int run_speed_naname = 70;//60
+    int run_speed_naname = 60;//60
     
     int enc_limit_kabe 	   	  = 60; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ¬‹È‚°‘O‚Ì•ÇØ‚ê
     int enc_limit_kabe_BIG 	  = 90; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ‘å‹È‚°‘O‚Ì•ÇØ‚ê
     int enc_limit_kabe_BIG_U 	  = 80; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ‘å‹È‚°‘O‚Ì•ÇØ‚ê
     int enc_limit_kabe_BIG_naname = 80; //0‚Ìê‡‚Í§ŒÀ‚È‚µ ’¼ü‚©‚çÎ‚ßi“ü‚Ì•ÇØ‚ê
-    int enc_limit_kabe_naname     = 60; //0‚Ìê‡‚Í§ŒÀ‚È‚µ Î‚ß’†‚Ìo‚é‚Æ‚«•ÇØ‚ê
+    int enc_limit_kabe_naname     = 55; //0‚Ìê‡‚Í§ŒÀ‚È‚µ Î‚ß’†‚Ìo‚é‚Æ‚«•ÇØ‚ê
     
     /*   
 	 R_curveU(ur180,true);

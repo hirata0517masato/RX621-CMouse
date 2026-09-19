@@ -150,9 +150,8 @@ void motor(int LM,int RM){
     if(RM < -100)RM = -100;
     if(100 < RM)RM = 100;
 
-  
+ /* 
     //if(((LM - RM) > 50) || ((RM - LM) > 50))motor_stop();
-
     if(abs(LM) > 10){
 	if(abs(get_encoder_L()) < 5){
 	    safe_cnt ++;
@@ -166,7 +165,20 @@ void motor(int LM,int RM){
 	    if(safe_cnt > 20000)motor_stop();
 	}else safe_cnt = 0;
     }else safe_cnt = 0;
-  
+ */
+ 
+  if((abs(LM) > 10) && (abs(get_encoder_L()) < 5)){
+	  safe_cnt ++;
+	  if(safe_cnt > 20000)motor_stop();
+	  
+  }else if((abs(RM) > 10) && (abs(get_encoder_R()) < 5)){
+	 safe_cnt ++;
+	 if(safe_cnt > 20000)motor_stop();
+	 
+  }else {
+	 safe_cnt = 0;
+  }
+ 
     if(motor_stop_flag == 1){
 	LM = 0;
 	RM = 0;
@@ -238,15 +250,15 @@ void Smotor(int M,char w_flag){
 				    naname_flag = 1;
 				    
 				}else if(get_IR(IR_FL) > 30 ){
-				    GyroSum_add(30);
+				    GyroSum_add(35);
 				   naname_flag = 1;
 				
 				}else if(get_IR(IR_FL) > 25 ){
-				    GyroSum_add(15);
+				    GyroSum_add(20);
 				   naname_flag = 1;
 				
 				}else if(get_IR(IR_FL) > 15 ){
-				    GyroSum_add(10);
+				    GyroSum_add(15);
 				   naname_flag = 1;
 				  
 				}else{
@@ -296,15 +308,15 @@ void Smotor(int M,char w_flag){
 				    naname_flag = 1;
 				     
 				}else if(get_IR(IR_FR) > 30){
-				    GyroSum_add(-30);
+				    GyroSum_add(-35);
 				    naname_flag = 1;
 				
 				}else if(get_IR(IR_FR) > 25){
-				    GyroSum_add(-15);
+				    GyroSum_add(-20);
 				    naname_flag = 1;
 				
 				}else if(get_IR(IR_FR) > 15){
-				    GyroSum_add(-10);
+				    GyroSum_add(-15);
 				    naname_flag = 1;
 				  
 				}else{
