@@ -2206,7 +2206,7 @@ void Tmotor_naname_in(long long A){
     if(A > 0){//R
 	    //while(get_IR(IR_R) > 15){
 	    //while((get_IR(IR_R) > 10) || ( get_IR(IR_F) > 15 && get_IR(IR_F) < 23 ) ){ //‘O•Ç•â³‚ÍŽÎ‚ß‚É‚È‚é‚Æˆ«‰e‹¿‚ª‚ ‚é
-	    while((get_IR(IR_R) > 10) || (get_IR(IR_RT) > 10) ){ 
+	    while((get_IR(IR_R) > 15) || (get_IR(IR_RT) > 15) ){ 
 	  
 		Smotor(M_kabe,true);
 		//	flag = 1;
@@ -2215,7 +2215,7 @@ void Tmotor_naname_in(long long A){
     }else{//L
 	    //while(get_IR(IR_L) > 15){
 	    //while((get_IR(IR_L) > 10) || ( get_IR(IR_F) > 15 && get_IR(IR_F) < 23 ) ){ //‘O•Ç•â³‚ÍŽÎ‚ß‚É‚È‚é‚Æˆ«‰e‹¿‚ª‚ ‚é
-	    while((get_IR(IR_L) > 10) || (get_IR(IR_LT) > 10) ){ 
+	    while((get_IR(IR_L) > 15) || (get_IR(IR_LT) > 15) ){ 
 		Smotor(M_kabe,true);
 		//	flag = 1;
 	    }
@@ -2301,10 +2301,10 @@ void Tmotor_naname_in_BIG(long long A ){
     int LM = 0, RM = 0,LM_prev = 0, RM_prev = 0;
     int MA = 5,min_M = 15;
 	
-    int powor_max = 25;//25
+    int powor_max = 28;//25
     int powor;
 
-    int M = 15;
+    int M = 10;
 
 	
     if(A > 0){//R
@@ -2353,9 +2353,9 @@ void Tmotor_naname_in_BIG(long long A ){
 	if(0 > RM && RM > -min_M)RM = -min_M;
 	
 	if(A > 0){//R
-	    motor(LM + M ,10 + M);//2
+	    motor(LM + M ,8 + M);//2
 	}else{//L
-	    motor(10 + M ,RM + M);//2
+	    motor(8 + M ,RM + M);//2
 	}
 	
 	
@@ -2363,9 +2363,9 @@ void Tmotor_naname_in_BIG(long long A ){
 	RM_prev = RM;
 		
 	if(A > 0){//R
-	    if(GyroSum_get() < 0)break;
+	    if(GyroSum_get() < 0 && (get_IR(IR_FL) < 10))break;
 	}else{//L
-	    if(GyroSum_get() > 0)break;
+	    if(GyroSum_get() > 0 && (get_IR(IR_FR) < 10))break;
 	}
     }
     

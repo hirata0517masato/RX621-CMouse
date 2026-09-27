@@ -75,9 +75,9 @@
 #define rslsr90 	(900)	//スラローム 664
 #define rslsr90_offset  (-40)
 
-#define rslsl90_BIG (1500)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsl90_BIG (1540)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsl90_BIG_offset  (-170)	      //タイヤ削れた時：-100	
-#define rslsr90_BIG (1500)	//スラローム 大 タイヤ削れた時：1600  1700
+#define rslsr90_BIG (1540)	//スラローム 大 タイヤ削れた時：1600  1700
 #define rslsr90_BIG_offset  (-170)	      //タイヤ削れた時：-100
 
 #define usll180     (2220)	//Uターン 2240
