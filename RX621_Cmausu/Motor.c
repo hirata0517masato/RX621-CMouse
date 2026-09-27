@@ -2304,7 +2304,7 @@ void Tmotor_naname_in_BIG(long long A ){
     int powor_max = 25;//25
     int powor;
 
-    int M = 5;
+    int M = 15;
 
 	
     if(A > 0){//R
@@ -2353,9 +2353,9 @@ void Tmotor_naname_in_BIG(long long A ){
 	if(0 > RM && RM > -min_M)RM = -min_M;
 	
 	if(A > 0){//R
-	    motor(LM + M ,2 + M);
+	    motor(LM + M ,10 + M);//2
 	}else{//L
-	    motor(2 + M ,RM + M);
+	    motor(10 + M ,RM + M);//2
 	}
 	
 	

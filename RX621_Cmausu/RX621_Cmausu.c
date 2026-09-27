@@ -7603,8 +7603,8 @@ void run_shortest_path_fin(	char naname){
     
     int enc_limit_kabe 	   	  = 60; //0の場合は制限なし 小曲げ前の壁切れ
     int enc_limit_kabe_BIG 	  = 90; //0の場合は制限なし 大曲げ前の壁切れ
-    int enc_limit_kabe_BIG_U 	  = 80; //0の場合は制限なし 大曲げ前の壁切れ
-    int enc_limit_kabe_BIG_naname = 80; //0の場合は制限なし 直線から斜め進入の壁切れ
+    int enc_limit_kabe_BIG_U 	  = 80; //0の場合は制限なし Uターン前の壁切れ
+    int enc_limit_kabe_BIG_naname = 90; //0の場合は制限なし 直線から斜め進入の壁切れ
     int enc_limit_kabe_naname     = 55; //0の場合は制限なし 斜め中の出るとき壁切れ
     
     /*   
@@ -7910,7 +7910,8 @@ void run_shortest_path_fin(	char naname){
 					 S_run_kabe_BIG(40,4,1,path_num); //w_flag = 4 串の壁補正あり
 					 Set_enc_limit(0);//速度制限なし
 					 
-					  
+					 status_log = 4;//ログに壁切れ後の距離補正を記録するため
+					 
 					 if(first_flag == 0){
 					 	first_naname_z = 1;
 						ESmotor(200,45,true,true);//距離、スピード
@@ -7924,7 +7925,8 @@ void run_shortest_path_fin(	char naname){
 					 S_run_kabe_BIG(25,4,1,path_num);  //w_flag = 4 串の壁補正あり 
 					 Set_enc_limit(0);//速度制限なし
 					 
-					 ESmotor(200,25,true,true);//距離、スピード
+					 status_log = 4;//ログに壁切れ後の距離補正を記録するため
+					// ESmotor(200,25,true,true);//距離、スピード
 				    }
 						
 				}else if(queue_next(1) > 0){//次　右
@@ -7942,6 +7944,7 @@ void run_shortest_path_fin(	char naname){
 					 S_run_kabe_BIG(40,4,2,path_num);  //w_flag = 4 串の壁補正あり
 					 Set_enc_limit(0);//速度制限なし
 					 
+					 status_log = 4;//ログに壁切れ後の距離補正を記録するため
 					 if(first_flag == 0){
 					 	first_naname_z = 1;
 						ESmotor(200,45,true,true);//距離、スピード 
@@ -7953,7 +7956,8 @@ void run_shortest_path_fin(	char naname){
 					 S_run_kabe_BIG(25,4,2,path_num);  //w_flag = 4 串の壁補正あり
 					 Set_enc_limit(0);//速度制限なし
 					 
-					 ESmotor(200,25,true,true);//距離、スピード
+					 status_log = 4;//ログに壁切れ後の距離補正を記録するため
+					// ESmotor(200,25,true,true);//距離、スピード
 				    }
 
 				}
