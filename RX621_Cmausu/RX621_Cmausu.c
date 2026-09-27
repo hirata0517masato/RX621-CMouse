@@ -187,13 +187,13 @@ void main(void)
     delay(100);
 	
 
-   
+/*   
     ///////////////////////////////
-/*    int path_hosei_test[16] = {0,
+    int path_hosei_test[16] = {0,
  			 	  0,0,0,0,0,0,0,0, 
  			  	  0,0,0,0,0,0,0};//path_numごとに距離補正する
 			  
-    int path_num_test = 15;
+    int path_num_test = 2;
     
     delay(1000);
     
@@ -208,10 +208,14 @@ void main(void)
     Encoder_reset();
     
     Set_motor_pid_mode(0);//低速
-    ESmotor((s1 *(long long) path_num_test) + path_hosei_test[path_num_test],60,0,1); 
     
-    //S_run_maze_search(path_num_test,65,65 ,  4);
- 
+    //for(int i = 0; i < 5;i++){
+    	//ESmotor((s1 *(long long) path_num_test) + path_hosei_test[path_num_test],60,0,1); 
+    //}
+    
+    for(int i = 0; i < 3;i++){
+    	S_run_maze_search(path_num_test,60,60 ,  4);
+    }
     ir_flag = 0;
     motor(0,0);
     
@@ -2099,9 +2103,9 @@ void mae_kabe(){
 	
 	int cnt = 0;
 	
+
 	if(150 < get_IR(IR_F) ){//前壁　激突対策
 	
-		//ESmotor(-35,F_pow,true,false);//ちょっと下がる
 		t_1ms = 0;
 		while(t_1ms < 50){//前壁補正
 			motor(-F_pow, -F_pow);
@@ -2109,15 +2113,12 @@ void mae_kabe(){
 		
 	}
 	
-	/*
-	while((F_min + F_max)/2  < get_IR(IR_F) ){//前壁　激突対策
-	//while(F_min  < get_IR(IR_F) ){//前壁　激突対策
-		motor(-F_pow, -F_pow);
-	}*/
-	
 	while( get_IR(IR_F) < 130 ){
-		Smotor(+F_pow,true);
-		//motor(F_pow, F_pow);
+		if(get_encoder_C() < 10){
+			Smotor(+F_pow,true);
+		}else{
+			motor(0, 0);
+		}
 	}
 	
 	t_1ms = 0;
@@ -3071,38 +3072,42 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	
 	if(enc_now >= A){//目標距離に到達
 	
-	    //マスの中心まで移動(戻る）
-	    //while(enc_now - ((long long)s1 * path_cnt ) > s1){
-	    cnt = 0;
-	    while(cnt < 500 && get_IR(IR_F) < 200){
-		//Smotor(-10,true);
-		//motor(-10,-10);
-		
-		if(A - enc_now < -5){
-			M = max( -20 ,(A - enc_now) / 5);// * p ; 
-			M = min( -8 , M);
-			
-		}else if(A - enc_now > 5){
-			M = 5;
-		}else{
-			M = 0;
-		}
-		
-		Smotor(M,true);//(M,w_flag)
-		
-		if(abs(enc_now - A) < 30){
-			cnt++;	
-	    	}else{
-			cnt = 0;
-	    	}
-	    
-		enc_now = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);
-	    }  
-			
-	    if(get_IR(IR_F) > 150 ){//前壁があった場合は
+            if(get_IR(IR_F) > 200 ){//前壁があった場合は
 	    	mae_kabe();//前壁距離補正
-	    }
+		
+	    }else{ //マスの中心まで移動(戻る）
+		    cnt = 0;
+		    while(1){
+			   
+			if(enc_now < A){//戻りすぎた
+				M = 10;
+			}else{
+				if(A - enc_now < -5){
+					M = max( -30 ,(A - enc_now) / 4);// * p ; 
+					M = min( -8 , M);
+				}else{
+					M = 0;
+				}	
+			}
 			
+			
+			if(abs(enc_now - A) < 30){
+				cnt++;	
+				if(abs(enc_now - A) < 10){
+				    cnt += 10;	
+				}
+				motor(0,0);
+			}else{
+				cnt = 0;
+				Smotor(M,true);//(M,w_flag)
+			}
+			if(cnt > 5000)break;//数値を大きくしたほうが距離ずれが減るが遅くなる
+			
+			enc_now = min(get_encoder_total_L()  - enc_base_L , get_encoder_total_R() - enc_base_R);    
+		    }
+	    }
+
+
 	    //現在地の更新
 	    my_x += dx[my_angle];
 	    my_y += dy[my_angle];
@@ -3115,6 +3120,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	//if( path_cnt < path-1 && get_IR(IR_F) > 60){//目標まで１マス以上残ってる　＆＆　前壁が出現
 	if( get_IR(IR_F) > 60){//目標まで１マス以上残ってる　＆＆　前壁が出現
 	    
+	    motor(0,0);
 	    mae_kabe();//前壁距離補正
 	    motor(0,0);	
 			
@@ -3165,48 +3171,17 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 	    }
 	}
 */		
-
-/* 古いコードのメモ　下に　ESmotor　と同じコードを移植した
-	if(enc_now < (long long)path * s1 /4){// 進んだ距離 < 目標距離 * 1/4　＝ 加速区間
-	    M_pwm = M_pwm_min + (enc_now / 10);	
-			
-	}else if(enc_now > (long long)path * s1 * 5/8){// 進んだ距離 > 目標距離 * 3/4 = //減速区間
-	    M_pwm = M_pwm_min + ( ((long long)path * s1 - enc_now) / 15);	
-			
-	}else{
-	    if((get_IR(IR_F) < ir_up) && (path_cnt < path-1)){//前壁が確実になければ速度上げる && 目標まで１マス以上残ってる
-	    	M_pwm = powor_up;
-	    }else{
-		M_pwm = powor;   
-	    }
-	}
-
-	if((get_IR(IR_F) < ir_up) && (path_cnt < path-1)){//前壁が確実になければ速度上げる && 目標まで1マス以上残ってる
-	    if(M_pwm > powor_up)M_pwm = powor_up;
-	}else{
-	    if(M_pwm > powor)M_pwm = powor;
-	}
-	if(M_pwm < M_pwm_min)M_pwm = M_pwm_min;
 	
-	
-	if( path_cnt < path-1){//目標まで１マス以上残ってる
-	    Smotor(M_pwm,4);// w_flag = 4 串の壁補正あり
-	}else{
-	    Smotor(M_pwm,true);
-	}
-		
-	//Smotor(M_pwm,true);
-*/	
 	min_M_use = min_M;
 	
 	if(path == 1){
-		if((enc_now > A * 6/8)){// 進んだ距離 < 目標距離 * 3/4　= //減速区間
+		if((enc_now > A * 5/8)){// 進んだ距離 < 目標距離 * 3/4　= //減速区間
 			
 		    	if((A - enc_now) < 100){
 				M = min_M_use ;
 				
 			}else{
-				M = min_M_use + ( (A - enc_now -100) / 10);
+				M = min_M_use + ( (A - enc_now -100) / 30);//10
 			}
 				
 		 }else{//加速区間
@@ -3214,7 +3189,7 @@ void S_run_maze_search(int path,int powor, int powor_up , int ir_up){
 				M = min_M_use;
 					
 			}else{
-				M = min_M_use + ((enc_now - 100) / 5);
+				M = min_M_use + ((enc_now - 100) / 5);//5
 			}      
 		 }
 	}else{
@@ -4400,7 +4375,7 @@ void run_shortest_path(){
 			}    
 		    }
 					
-		}else{
+		}else{// 1 < path_num 
 		    
 		    
 		    //Set_motor_pid_mode(1);//高速

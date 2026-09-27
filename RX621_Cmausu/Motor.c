@@ -1038,7 +1038,7 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	    
 	    if(non_stop == 0 || non_stop == 4){
 		    if(A - enc_now < -5){
-			    M = max( -20 ,(A - enc_now) / 5);// * p ; 
+			    M = max( -30 ,(A - enc_now) / 4);// * p ; 
 			    M = min( -8 , M);
 		    }else{
 			    M = 0;
@@ -1298,6 +1298,9 @@ void ESmotor(long long A, int max_M,char non_stop,char w_flag){
 	if(non_stop == 0 || non_stop == 4){
 	    if(abs(enc_now - A) < 30){
 		cnt++;	
+		if(abs(enc_now - A) < 10){
+			cnt += 10;	
+		}
 	    }else{
 		cnt = 0;
 	    }
