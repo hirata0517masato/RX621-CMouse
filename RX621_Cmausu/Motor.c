@@ -254,11 +254,11 @@ void Smotor(int M,char w_flag){
 				   naname_flag = 1;
 				
 				}else if(get_IR(IR_FL) > 25 ){
-				    GyroSum_add(20);
+				    GyroSum_add(15);
 				   naname_flag = 1;
 				
 				}else if(get_IR(IR_FL) > 15 ){
-				    GyroSum_add(15);
+				    GyroSum_add(10);
 				   naname_flag = 1;
 				  
 				}else{
@@ -312,11 +312,11 @@ void Smotor(int M,char w_flag){
 				    naname_flag = 1;
 				
 				}else if(get_IR(IR_FR) > 25){
-				    GyroSum_add(-20);
+				    GyroSum_add(-15);
 				    naname_flag = 1;
 				
 				}else if(get_IR(IR_FR) > 15){
-				    GyroSum_add(-15);
+				    GyroSum_add(-10);
 				    naname_flag = 1;
 				  
 				}else{
@@ -393,7 +393,7 @@ void Smotor(int M,char w_flag){
 		}
 	    }else{//高速
 		if((get_encoder_L() > 10 || get_encoder_R() > 10) && abs(GyroSum_get()) < 1000){
-		    if( get_IR(IR_L) < 110 &&  get_IR(IR_FL) > 15  /*&&  get_IR(IR_F) < 15*/  && get_IR(IR_FR) < 5 /*&&  get_IR(IR_R) < 40*/){//左前のみ
+		    if( get_IR(IR_L) < 90 &&  get_IR(IR_FL) > 15  /*&&  get_IR(IR_F) < 15*/  && get_IR(IR_FR) < 5 &&  get_IR(IR_R) < 90){//左前のみ
 			cnt3++;
 			if(cnt3 > 0){
 			    cnt3 = 0;
@@ -413,7 +413,7 @@ void Smotor(int M,char w_flag){
 			}	
 		    }else cnt3 = 0;
 					
-		    if(/* get_IR(IR_L) < 40 &&*/  get_IR(IR_FL) < 5 /* &&  get_IR(IR_F) < 15 */ && get_IR(IR_FR) > 15 &&  get_IR(IR_R) < 110){//右前のみ
+		    if( get_IR(IR_L) < 90 &&  get_IR(IR_FL) < 5 /* &&  get_IR(IR_F) < 15 */ && get_IR(IR_FR) > 15 &&  get_IR(IR_R) < 90){//右前のみ
 			cnt4++;
 			if(cnt4 > 0){
 			    cnt4 = 0;
@@ -2363,9 +2363,9 @@ void Tmotor_naname_in_BIG(long long A ){
 	RM_prev = RM;
 		
 	if(A > 0){//R
-	    if(GyroSum_get() < 0 && (get_IR(IR_FL) < 10))break;
+	    if(GyroSum_get() < 0 && (get_IR(IR_FL) < 28))break;
 	}else{//L
-	    if(GyroSum_get() > 0 && (get_IR(IR_FR) < 10))break;
+	    if(GyroSum_get() > 0 && (get_IR(IR_FR) < 28))break;
 	}
     }
     
@@ -2437,11 +2437,19 @@ void Tmotor_naname_out(long long A ){
 	
 	LM_prev = LM;
 	RM_prev = RM;
+	
+	/*
+	if(A > r45*1.70){//R Vターンなので柱が見えなくなるまで
+		if(GyroSum_get() < 0 && (get_IR(IR_FL) < 28))break;
 		
-	if(A > 0){//R
-	    if(GyroSum_get() < 0)break;
+	}else if(A < l45*1.70){//L　Vターンなので柱が見えなくなるまで
+		if(GyroSum_get() > 0 && (get_IR(IR_FR) < 28))break;
+		
+	}else */if(A > 0){//R
+		if(GyroSum_get() < 0)break;
+		
 	}else{//L
-	    if(GyroSum_get() > 0)break;
+		if(GyroSum_get() > 0)break;
 	}
     }
     
